@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateQrCodeDto } from './dto/create-qr-code.dto';
+import { CreateQrCodeDto } from '../auth/dto/create-qrcode.dto';
 
 type SubscriptionPlan = 'STARTER' | 'PRO' | 'ENTERPRISE';
 
