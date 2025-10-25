@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateQrCodeDto } from './dto/create-qr-code.dto';
+import { CreateQrCodeDto } from '../auth/dto/create-qrcode.dto';
 
 type SubscriptionPlan = 'STARTER' | 'PRO' | 'ENTERPRISE';
 
@@ -35,21 +35,13 @@ export class QrCodeService {
         `QR code limit reached for your plan (${limit}). Please upgrade.`,
       );
     }
-
-    const dataToCreate = {
-      name: dto.name,
-      location: dto.location,
-      project: {
-        create: {
-          name: 'Default Project', // Tên project tạm thời
-          tenantId: tenantId,
-        },
-      },
-      tenantId: tenantId,
-    };
-
     const newQrCode = await this.prisma.qRCode.create({
-      data: dataToCreate,
+      data: {
+        name: dto.name,
+        location: dto.location,
+        projectId: dto.projectId,
+        tenantId: tenantId,
+      },
     });
 
     return newQrCode;

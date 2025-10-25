@@ -7,7 +7,12 @@ import { ConfigModule } from '@nestjs/config';
 import { QrcodeModule } from './qrcode/qrcode.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ConfigModule.forRoot({ isGlobal: true }), QrcodeModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    QrcodeModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
