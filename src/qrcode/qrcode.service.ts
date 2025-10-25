@@ -1,6 +1,7 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQrCodeDto } from '../auth/dto/create-qrcode.dto';
+import { UpdateQrCodeDto } from '../auth/dto/update-qrcode.dto';
 
 type SubscriptionPlan = 'STARTER' | 'PRO' | 'ENTERPRISE';
 
@@ -47,9 +48,112 @@ export class QrCodeService {
 
     return newQrCode;
   }
+
   async findAll(tenantId: string) {
     return this.prisma.qRCode.findMany({
       where: { tenantId: tenantId },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
+  }
+
+  async findOne(id: string, tenantId: string) {
+    const qrCode = await this.prisma.qRCode.findFirst({
+      where: {
+        id: id,
+        tenantId: tenantId,
+      },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!qrCode) {
+      throw new NotFoundException('QR code not found or access denied.');
+    }
+
+    return qrCode;
+  }
+
+  async update(id: string, dto: UpdateQrCodeDto, tenantId: string) {
+    // Kiểm tra QR code có tồn tại và thuộc tenant không
+    const existingQrCode = await this.prisma.qRCode.findFirst({
+      where: {
+        id: id,
+        tenantId: tenantId,
+      },
+    });
+
+    if (!existingQrCode) {
+      throw new NotFoundException('QR code not found or access denied.');
+    }
+
+    // Nếu đổi project, kiểm tra project mới có thuộc tenant không
+    if (dto.projectId && dto.projectId !== existingQrCode.projectId) {
+      const project = await this.prisma.project.findFirst({
+        where: {
+          id: dto.projectId,
+          tenantId: tenantId,
+        },
+      });
+
+      if (!project) {
+        throw new ForbiddenException('Project not found or access denied.');
+      }
+    }
+
+    const updatedQrCode = await this.prisma.qRCode.update({
+      where: { id: id },
+      data: {
+        ...(dto.name && { name: dto.name }),
+        ...(dto.location !== undefined && { location: dto.location }),
+        ...(dto.projectId && { projectId: dto.projectId }),
+        ...(dto.isActive !== undefined && { isActive: dto.isActive }),
+      },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return updatedQrCode;
+  }
+
+  async delete(id: string, tenantId: string) {
+    // Kiểm tra QR code có tồn tại và thuộc tenant không
+    const existingQrCode = await this.prisma.qRCode.findFirst({
+      where: {
+        id: id,
+        tenantId: tenantId,
+      },
+    });
+
+    if (!existingQrCode) {
+      throw new NotFoundException('QR code not found or access denied.');
+    }
+
+    await this.prisma.qRCode.delete({
+      where: { id: id },
+    });
+
+    return { message: 'QR code deleted successfully', id: id };
   }
 }
