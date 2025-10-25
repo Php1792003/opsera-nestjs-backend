@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+
+model Tenant {
+  id                    String                @id @default(uuid())
+  name                  String
+  subscriptionPlan      String                @default("STARTER") // Changed from enum to String
+  subscriptionExpiresAt DateTime?
+  isActive              Boolean               @default(true)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  users         User[]
+  projects      Project[]
+  roles         Role[]
+  qrcodes       QRCode[]
+  tasks         Task[]
+  scanLogs      ScanLog[]
+  activityLogs  ActivityLog[]
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  fullName      String
+  isTenantAdmin Boolean   @default(false)
+  isSuperAdmin  Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  roleId        String?
+  role          Role?     @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Added onUpdate
+
+  createdTasks  Task[]    @relation("Creator")
+  assignedTasks Task[]    @relation("Assignee")
+  scanLogs      ScanLog[]
+  activityLogs  ActivityLog[]
+
+  @@index([tenantId])
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String
+  // Changed from String[] to a single String. We'll store it as a comma-separated value, e.g., "CREATE_USER,SCAN_QR"
+  permissions String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  users       User[]
+
+  @@index([tenantId])
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  qrcodes     QRCode[]
+  tasks       Task[]
+
+  @@index([tenantId])
+}
+
+model QRCode {
+  id        String   @id @default(uuid())
+  name      String
+  location  String?
+  data      String   @unique @default(cuid())
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  scanLogs  ScanLog[]
+
+  @@index([projectId])
+  @@index([tenantId])
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("PENDING") // Changed from enum to String
+  deadline    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  creatorId   String
+  creator     User     @relation("Creator", fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  assigneeId  String?
+  assignee    User?    @relation("Assignee", fields: [assigneeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([tenantId])
+}
+
+
+model ScanLog {
+  id          String   @id @default(cuid())
+  scannedAt   DateTime @default(now())
+  notes       String?
+  // Changed from String[] to String. We'll store URLs as a JSON string array, e.g., '["url1", "url2"]'
+  attachments String?
+
+  qrCodeId    String
+  qrCode      QRCode   @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([qrCodeId])
+  @@index([userId])
+  @@index([tenantId])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String
+  // Changed from Json to String. We'll store details as a JSON string.
+  details   String?
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([userId])
+  @@index([tenantId])
+}

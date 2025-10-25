@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "module": "commonjs", // Thay "nodenext" bằng "commonjs" cho NestJS
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021", // Hạ xuống ES2021 để tương thích rộng hơn
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "typeRoots": [ // <-- Thêm vào đây
+      "./node_modules/@types",
+      "./src/types"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
