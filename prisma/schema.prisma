@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
@@ -14,9 +14,12 @@ datasource db {
 model Tenant {
   id                    String                @id @default(uuid())
   name                  String
-  subscriptionPlan      String                @default("STARTER") // Changed from enum to String
+  subscriptionPlan      String                @default("STARTER") // STARTER, PROFESSIONAL, ENTERPRISE
   subscriptionExpiresAt DateTime?
   isActive              Boolean               @default(true)
+  maxQRCodes            Int                   @default(100)
+  maxUsers              Int                   @default(5)
+  maxProjects           Int                   @default(1)
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
 
@@ -27,6 +30,7 @@ model Tenant {
   tasks         Task[]
   scanLogs      ScanLog[]
   activityLogs  ActivityLog[]
+  subscriptions Subscription[]
 }
 
 model User {
@@ -169,4 +173,49 @@ model ActivityLog {
 
   @@index([userId])
   @@index([tenantId])
+}
+
+model Subscription {
+  id                String   @id @default(uuid())
+  plan              String   // STARTER, PROFESSIONAL, ENTERPRISE
+  price             Decimal  @db.Decimal(10, 2)
+  status            String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED
+  startDate         DateTime @default(now())
+  endDate           DateTime
+  autoRenew         Boolean  @default(true)
+  paymentMethod     String?
+  lastPaymentDate   DateTime?
+  nextPaymentDate   DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+}
+
+model MasterAdmin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activityLogs MasterActivityLog[]
+}
+
+model MasterActivityLog {
+  id        String      @id @default(cuid())
+  action    String
+  details   String?
+  createdAt DateTime    @default(now())
+
+  masterAdminId String
+  masterAdmin   MasterAdmin @relation(fields: [masterAdminId], references: [id], onDelete: Cascade)
+
+  @@index([masterAdminId])
 }

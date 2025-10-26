@@ -6,23 +6,19 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQrCodeDto } from '../auth/dto/create-qrcode.dto';
 import { UpdateQrCodeDto } from '../auth/dto/update-qrcode.dto';
-
-type SubscriptionPlan = 'STARTER' | 'PRO' | 'ENTERPRISE';
-
-const PLAN_LIMITS: Record<SubscriptionPlan, number> = {
-  STARTER: 100,
-  PRO: 500,
-  ENTERPRISE: 2000,
-};
+import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class QrCodeService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditService: AuditService
+  ) {}
 
-  async create(dto: CreateQrCodeDto, tenantId: string): Promise<any> {
+  async create(dto: CreateQrCodeDto, tenantId: string, userId: string): Promise<any> {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id: tenantId },
-      select: { subscriptionPlan: true },
+      select: { subscriptionPlan: true, maxQRCodes: true },
     });
 
     if (!tenant) {
@@ -33,9 +29,8 @@ export class QrCodeService {
       where: { tenantId: tenantId },
     });
 
-    const plan = tenant.subscriptionPlan as SubscriptionPlan;
-    const limit = PLAN_LIMITS[plan] ?? 0;
-    if (currentQrCount >= limit) {
+    const limit = tenant.maxQRCodes;
+    if (limit !== -1 && currentQrCount >= limit) {
       throw new ForbiddenException(
         `QR code limit reached for your plan (${limit}). Please upgrade.`,
       );
@@ -49,6 +44,16 @@ export class QrCodeService {
         tenantId: tenantId,
       },
     });
+
+    // Ghi log hoạt động
+    await this.auditService.logActivity(
+      userId,
+      tenantId,
+      'CREATE_QR_CODE',
+      { qrCodeId: newQrCode.id, qrCodeName: newQrCode.name },
+      'QR_CODE',
+      newQrCode.id
+    );
 
     return newQrCode;
   }
