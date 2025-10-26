@@ -28,21 +28,23 @@ export class RoleController {
   async create(
     @Body() createRoleDto: CreateRoleDto,
     @Request() req: RequestWithUser,
-  ) {
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
+
     return this.roleService.create(createRoleDto, tenantId);
   }
 
   @Get()
   @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  async findAll(@Request() req: RequestWithUser) {
+  async findAll(@Request() req: RequestWithUser): Promise<any> {
     const tenantId = req.user.tenantId;
+
     return this.roleService.findAll(tenantId);
   }
 
   @Get('permissions/list')
   @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  async getAvailablePermissions() {
+  getAvailablePermissions(): any {
     return {
       permissions: Object.values(Permission),
       description: 'List of all available permissions in the system',
@@ -50,7 +52,7 @@ export class RoleController {
   }
 
   @Get('my-permissions')
-  async getMyPermissions(@Request() req: RequestWithUser) {
+  async getMyPermissions(@Request() req: RequestWithUser): Promise<any> {
     const userId = req.user.userId;
     const permissions = await this.roleService.getUserPermissions(userId);
     return {
@@ -62,8 +64,12 @@ export class RoleController {
 
   @Get(':id')
   @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  async findOne(@Param('id') id: string, @Request() req: RequestWithUser) {
+  async findOne(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
+
     return this.roleService.findOne(id, tenantId);
   }
 
@@ -73,15 +79,20 @@ export class RoleController {
     @Param('id') id: string,
     @Body() updateRoleDto: UpdateRoleDto,
     @Request() req: RequestWithUser,
-  ) {
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
+
     return this.roleService.update(id, updateRoleDto, tenantId);
   }
 
   @Delete(':id')
   @Permissions(Permission.DELETE_ROLE, Permission.MANAGE_ROLE)
-  async delete(@Param('id') id: string, @Request() req: RequestWithUser) {
+  async delete(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
+
     return this.roleService.delete(id, tenantId);
   }
 }

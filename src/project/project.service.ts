@@ -2,12 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProjectDto } from '../auth/dto/create-project.dto';
 import { UpdateProjectDto } from '../auth/dto/update-project.dto';
+import {
+  Project,
+  ProjectWithDetails,
+  DeleteResult,
+} from '../types/prisma.types';
 
 @Injectable()
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateProjectDto, tenantId: string) {
+  async create(dto: CreateProjectDto, tenantId: string): Promise<Project> {
     const newProject = await this.prisma.project.create({
       data: {
         name: dto.name,
@@ -19,7 +24,7 @@ export class ProjectService {
     return newProject;
   }
 
-  async findAll(tenantId: string) {
+  async findAll(tenantId: string): Promise<Project[]> {
     return this.prisma.project.findMany({
       where: { tenantId: tenantId },
       include: {
@@ -36,7 +41,7 @@ export class ProjectService {
     });
   }
 
-  async findOne(id: string, tenantId: string) {
+  async findOne(id: string, tenantId: string): Promise<ProjectWithDetails> {
     const project = await this.prisma.project.findFirst({
       where: {
         id: id,
@@ -84,7 +89,11 @@ export class ProjectService {
     return project;
   }
 
-  async update(id: string, dto: UpdateProjectDto, tenantId: string) {
+  async update(
+    id: string,
+    dto: UpdateProjectDto,
+    tenantId: string,
+  ): Promise<Project> {
     // Kiểm tra project có tồn tại và thuộc tenant không
     const existingProject = await this.prisma.project.findFirst({
       where: {
@@ -116,7 +125,7 @@ export class ProjectService {
     return updatedProject;
   }
 
-  async delete(id: string, tenantId: string) {
+  async delete(id: string, tenantId: string): Promise<DeleteResult> {
     // Kiểm tra project có tồn tại và thuộc tenant không
     const existingProject = await this.prisma.project.findFirst({
       where: {

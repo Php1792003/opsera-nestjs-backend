@@ -19,7 +19,7 @@ const PLAN_LIMITS: Record<SubscriptionPlan, number> = {
 export class QrCodeService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateQrCodeDto, tenantId: string) {
+  async create(dto: CreateQrCodeDto, tenantId: string): Promise<any> {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id: tenantId },
       select: { subscriptionPlan: true },
@@ -53,7 +53,7 @@ export class QrCodeService {
     return newQrCode;
   }
 
-  async findAll(tenantId: string) {
+  async findAll(tenantId: string): Promise<any> {
     return this.prisma.qRCode.findMany({
       where: { tenantId: tenantId },
       include: {
@@ -70,7 +70,7 @@ export class QrCodeService {
     });
   }
 
-  async findOne(id: string, tenantId: string) {
+  async findOne(id: string, tenantId: string): Promise<any> {
     const qrCode = await this.prisma.qRCode.findFirst({
       where: {
         id: id,
@@ -93,8 +93,13 @@ export class QrCodeService {
     return qrCode;
   }
 
-  async update(id: string, dto: UpdateQrCodeDto, tenantId: string) {
+  async update(
+    id: string,
+    dto: UpdateQrCodeDto,
+    tenantId: string,
+  ): Promise<any> {
     // Kiểm tra QR code có tồn tại và thuộc tenant không
+
     const existingQrCode = await this.prisma.qRCode.findFirst({
       where: {
         id: id,
@@ -140,8 +145,9 @@ export class QrCodeService {
     return updatedQrCode;
   }
 
-  async delete(id: string, tenantId: string) {
+  async delete(id: string, tenantId: string): Promise<any> {
     // Kiểm tra QR code có tồn tại và thuộc tenant không
+
     const existingQrCode = await this.prisma.qRCode.findFirst({
       where: {
         id: id,
