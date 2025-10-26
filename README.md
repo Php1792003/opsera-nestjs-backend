@@ -1,98 +1,159 @@
+# 🚀 OPSERA - Hệ thống Quản lý Tuần tra QR Code
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" />
+  <img src="https://img.shields.io/badge/SQL_Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white" alt="SQL Server" />
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📋 Mô tả
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**Opsera** là hệ thống quản lý tuần tra quét mã QR đa người thuê (multi-tenant) được xây dựng với **NestJS**, **Prisma ORM** và **SQL Server**. Hệ thống cung cấp giải pháp toàn diện cho việc quản lý dự án, phân công công việc, và theo dõi hoạt động tuần tra thông qua quét mã QR với GPS tracking.
 
-## Description
+### ✨ Tính năng chính
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 🏢 **Multi-tenant Architecture** - Hỗ trợ nhiều tổ chức độc lập
+- 🔐 **Role-based Access Control (RBAC)** - 52 permissions chi tiết
+- 📱 **QR Code Management** - Tạo, quản lý và quét mã QR
+- 📍 **GPS Tracking** - Yêu cầu di chuyển tối thiểu 50m giữa các lần quét
+- ✅ **Task Management** - Phân công và theo dõi công việc
+- 📊 **Analytics & Reports** - Thống kê chi tiết và báo cáo
+- 📝 **Activity Logging** - Audit trail đầy đủ
+- 💳 **Subscription Plans** - 3 gói dịch vụ (STARTER, PRO, ENTERPRISE)
 
-## Project setup
+## 💰 Gói dịch vụ
 
-```bash
-$ npm install
-```
+| Gói | Giá/tháng | QR Codes | Users | Projects | Storage |
+|-----|-----------|----------|-------|----------|---------|
+| **STARTER** | 299,000đ | 100 | 5 | 3 | 1GB |
+| **PRO** | 899,000đ | 500 | 20 | 15 | 5GB |
+| **ENTERPRISE** | 2,499,000đ | 2000 | Unlimited | Unlimited | 20GB |
 
-## Compile and run the project
+## 🛠️ Công nghệ sử dụng
 
-```bash
-# development
-$ npm run start
+- **Framework**: NestJS 11.x
+- **Language**: TypeScript 5.7
+- **ORM**: Prisma 6.18
+- **Database**: Microsoft SQL Server
+- **Authentication**: JWT (Passport)
+- **Validation**: class-validator, class-transformer
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+## 📦 Cài đặt nhanh
 
 ```bash
-# unit tests
-$ npm run test
+# Clone repository
+git clone <repository-url>
+cd opsera-nestjs-backend
 
-# e2e tests
-$ npm run test:e2e
+# Cài đặt dependencies
+npm install
 
-# test coverage
-$ npm run test:cov
+# Setup database (xem SETUP_GUIDE.md)
+npx prisma generate
+npx prisma db push
+
+# Chạy development server
+npm run start:dev
 ```
 
-## Deployment
+Server sẽ chạy tại: http://localhost:3000
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📚 Documentation
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- 📖 **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Hướng dẫn cài đặt chi tiết
+- 📖 **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - API documentation đầy đủ
+
+## 🏗️ Cấu trúc Module
+
+```
+src/
+├── auth/              # Authentication & JWT
+├── role/              # Role & Permission System (52 permissions)
+├── project/           # Project Management
+├── qrcode/            # QR Code CRUD
+├── task/              # Task Management (PENDING, IN_PROGRESS, COMPLETED)
+├── scan-log/          # QR Scanning với GPS Tracking
+├── activity-log/      # Activity Logging & Audit Trail
+├── subscription/      # Subscription & Payment Management
+└── prisma/            # Database Service
+```
+
+## 🔐 Permissions
+
+Hệ thống có **52 permissions** được nhóm theo:
+- User Management (5)
+- Role Management (5)
+- Project Management (5)
+- QR Code Management (6)
+- Task Management (7)
+- Reports & Analytics (6)
+- Activity & Scan Logs (6)
+- Tenant Settings (2)
+
+## 🚀 Scripts
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Development
+npm run start:dev       # Chạy với hot reload
+
+# Production
+npm run build          # Build project
+npm run start:prod     # Chạy production
+
+# Database
+npx prisma generate    # Generate Prisma Client
+npx prisma db push     # Push schema to database
+npx prisma studio      # Mở Prisma Studio GUI
+
+# Testing
+npm run test           # Unit tests
+npm run test:e2e       # End-to-end tests
+npm run test:cov       # Test coverage
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## 🎯 Roadmap
 
-## Resources
+### ✅ Completed (Phase 1 - Backend)
+- [x] Multi-tenant authentication system
+- [x] Role & Permission management (RBAC)
+- [x] Project & QR Code CRUD
+- [x] Task management system
+- [x] QR Scanning with GPS tracking
+- [x] Activity logging & Audit trail
+- [x] Subscription & Payment management
+- [x] API documentation
 
-Check out a few resources that may come in handy when working with NestJS:
+### 🔲 In Progress (Phase 2)
+- [ ] Super Admin dashboard
+- [ ] Tenant management API
+- [ ] User management within tenant
+- [ ] Payment gateway integration (MoMo, Visa)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 🔲 Planned (Phase 3 - Frontend)
+- [ ] Next.js setup với Glassmorphism UI
+- [ ] Authentication pages
+- [ ] Dashboard with analytics
+- [ ] QR Scanner interface
+- [ ] Task board (Kanban view)
+- [ ] Reports & Export
 
-## Support
+## 🤝 Contributing
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Contributions are welcome! Please read our contributing guidelines first.
 
-## Stay in touch
+## 📄 License
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+This project is proprietary software. All rights reserved.
 
-## License
+## 📞 Support
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **Email**: support@opsera.vn
+- **Documentation**: Xem `API_DOCUMENTATION.md`
+- **Setup Guide**: Xem `SETUP_GUIDE.md`
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: October 25, 2025  
+**Built with** ❤️ **by Opsera Development Team**
