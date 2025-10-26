@@ -12,6 +12,11 @@ import { MasterAdminModule } from './master-admin/master-admin.module';
 import { AuditModule } from './audit/audit.module';
 import { TaskModule } from './task/task.module';
 import { ScanLogModule } from './scan-log/scan-log.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ReportsModule } from './reports/reports.module';
+import { GeolocationModule } from './geolocation/geolocation.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -26,6 +31,11 @@ import { ScanLogModule } from './scan-log/scan-log.module';
     AuditModule,
     TaskModule,
     ScanLogModule,
+    AnalyticsModule,
+    NotificationsModule,
+    ReportsModule,
+    GeolocationModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
