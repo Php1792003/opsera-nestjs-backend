@@ -105,24 +105,6 @@ export interface RoleWithUsers extends Role {
   }>;
 }
 
-// Role response with permissions as array
-export interface RoleResponse {
-  id: string;
-  name: string;
-  permissions: string[];
-  tenantId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  _count?: {
-    users: number;
-  };
-  users?: Array<{
-    id: string;
-    email: string;
-    fullName: string;
-    createdAt: Date;
-  }>;
-}
 
 // Transaction result types
 export interface RegisterResult {

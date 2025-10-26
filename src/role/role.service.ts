@@ -12,13 +12,14 @@ import {
   stringToPermissions,
   Permission,
 } from './constants/permissions.constant';
-import { RoleResponse, Role, UserWithRole } from '../types/prisma.types';
+import { Role, UserWithRole } from '../types/prisma.types';
+import { RoleResponseDto } from './dto/role-response.dto';
 
 @Injectable()
 export class RoleService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateRoleDto, tenantId: string): Promise<RoleResponse> {
+  async create(dto: CreateRoleDto, tenantId: string): Promise<RoleResponseDto> {
     // Kiểm tra tên role đã tồn tại chưa trong tenant
 
     const existingRole = await this.prisma.role.findFirst({
@@ -48,7 +49,7 @@ export class RoleService {
     return this.formatRoleResponse(newRole);
   }
 
-  async findAll(tenantId: string): Promise<RoleResponse[]> {
+  async findAll(tenantId: string): Promise<RoleResponseDto[]> {
     const roles = await this.prisma.role.findMany({
       where: { tenantId: tenantId },
       include: {
@@ -66,7 +67,7 @@ export class RoleService {
     return roles.map((role) => this.formatRoleResponse(role));
   }
 
-  async findOne(id: string, tenantId: string): Promise<RoleResponse> {
+  async findOne(id: string, tenantId: string): Promise<RoleResponseDto> {
     const role = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -96,7 +97,7 @@ export class RoleService {
     return this.formatRoleResponse(role);
   }
 
-  async update(id: string, dto: UpdateRoleDto, tenantId: string): Promise<RoleResponse> {
+  async update(id: string, dto: UpdateRoleDto, tenantId: string): Promise<RoleResponseDto> {
     // Kiểm tra role có tồn tại và thuộc tenant không
 
     const existingRole = await this.prisma.role.findFirst({
@@ -189,11 +190,17 @@ export class RoleService {
   }
 
   // Helper method để format response với permissions array
-  private formatRoleResponse(role: Role & { _count?: { users: number }; users?: Array<{ id: string; email: string; fullName: string; createdAt: Date }> }): RoleResponse {
-    return {
-      ...role,
-      permissions: stringToPermissions(role.permissions),
-    };
+  private formatRoleResponse(role: Role & { _count?: { users: number }; users?: Array<{ id: string; email: string; fullName: string; createdAt: Date }> }): RoleResponseDto {
+    const dto = new RoleResponseDto();
+    dto.id = role.id;
+    dto.name = role.name;
+    dto.permissions = stringToPermissions(role.permissions);
+    dto.tenantId = role.tenantId;
+    dto.createdAt = role.createdAt;
+    dto.updatedAt = role.updatedAt;
+    dto._count = role._count || { users: 0 };
+    dto.permissionsStr = role.permissions; // Giữ lại để có thể exclude
+    return dto;
   }
 
   // Method để kiểm tra user có permission không
