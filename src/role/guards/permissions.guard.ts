@@ -31,20 +31,18 @@ export class PermissionsGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const user = request.user;
+    const user = request.user as { userId: string; isSuperAdmin: boolean };
 
     if (!user) {
       throw new ForbiddenException('User not authenticated');
     }
 
     // Super admin bypass all permission checks
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (user.isSuperAdmin) {
       return true;
     }
 
     // Get user permissions
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     const userPermissions = await this.roleService.getUserPermissions(
       user.userId,
     );

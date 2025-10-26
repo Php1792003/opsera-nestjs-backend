@@ -14,6 +14,11 @@ import { ProjectService } from './project.service';
 import { CreateProjectDto } from '../auth/dto/create-project.dto';
 import { UpdateProjectDto } from '../auth/dto/update-project.dto';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import {
+  Project,
+  ProjectWithDetails,
+  DeleteResult,
+} from '../types/prisma.types';
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard)
@@ -24,23 +29,23 @@ export class ProjectController {
   async create(
     @Body() createProjectDto: CreateProjectDto,
     @Request() req: RequestWithUser,
-  ): Promise<any> {
+  ): Promise<Project> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.projectService.create(createProjectDto, tenantId);
   }
 
   @Get()
-  async findAll(@Request() req: RequestWithUser): Promise<any> {
+  async findAll(@Request() req: RequestWithUser): Promise<Project[]> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.projectService.findAll(tenantId);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
+  async findOne(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<ProjectWithDetails> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.projectService.findOne(id, tenantId);
   }
 
@@ -49,16 +54,17 @@ export class ProjectController {
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
     @Request() req: RequestWithUser,
-  ): Promise<any> {
+  ): Promise<Project> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.projectService.update(id, updateProjectDto, tenantId);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
+  async delete(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<DeleteResult> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.projectService.delete(id, tenantId);
   }
 }

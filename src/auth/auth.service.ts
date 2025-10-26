@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { AuthResult } from '../types/prisma.types';
 
 @Injectable()
 export class AuthService {
@@ -16,8 +17,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  async register(dto: RegisterDto): Promise<AuthResult> {
     const existingUser = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -27,9 +27,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const result = await this.prisma.$transaction(async (tx) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const newTenant = await tx.tenant.create({
         data: {
           name: dto.companyName,
@@ -37,7 +35,6 @@ export class AuthService {
         },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const newUser = await tx.user.create({
         data: {
           email: dto.email,
@@ -51,7 +48,6 @@ export class AuthService {
       return { user: newUser, tenant: newTenant };
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     return this.signToken(
       result.user.id,
       result.tenant.id,
@@ -59,17 +55,14 @@ export class AuthService {
     );
   }
 
-  async login(dto: LoginDto): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  async login(dto: LoginDto): Promise<AuthResult> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     if (!user || !(await bcrypt.compare(dto.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     return this.signToken(user.id, user.tenantId, user.isSuperAdmin);
   }
 

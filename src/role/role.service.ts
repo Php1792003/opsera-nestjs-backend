@@ -19,7 +19,7 @@ export class RoleService {
 
   async create(dto: CreateRoleDto, tenantId: string): Promise<any> {
     // Kiểm tra tên role đã tồn tại chưa trong tenant
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
     const existingRole = await this.prisma.role.findFirst({
       where: {
         name: dto.name,
@@ -36,7 +36,6 @@ export class RoleService {
     // Convert permissions array thành string
     const permissionsStr = permissionsToString(dto.permissions);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const newRole = await this.prisma.role.create({
       data: {
         name: dto.name,
@@ -45,12 +44,10 @@ export class RoleService {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.formatRoleResponse(newRole);
   }
 
   async findAll(tenantId: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const roles = await this.prisma.role.findMany({
       where: { tenantId: tenantId },
       include: {
@@ -65,12 +62,11 @@ export class RoleService {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-return
     return roles.map((role) => this.formatRoleResponse(role));
   }
 
   async findOne(id: string, tenantId: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const role = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -97,13 +93,12 @@ export class RoleService {
       throw new NotFoundException('Role not found or access denied.');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.formatRoleResponse(role);
   }
 
   async update(id: string, dto: UpdateRoleDto, tenantId: string): Promise<any> {
     // Kiểm tra role có tồn tại và thuộc tenant không
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
     const existingRole = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -116,9 +111,8 @@ export class RoleService {
     }
 
     // Nếu đổi tên, kiểm tra tên mới đã tồn tại chưa
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (dto.name && dto.name !== existingRole.name) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const duplicateRole = await this.prisma.role.findFirst({
         where: {
           name: dto.name,
@@ -135,7 +129,7 @@ export class RoleService {
     }
 
     // Prepare update data
-    const updateData: any = {};
+    const updateData: { name?: string; permissions?: string } = {};
     if (dto.name) {
       updateData.name = dto.name;
     }
@@ -143,7 +137,6 @@ export class RoleService {
       updateData.permissions = permissionsToString(dto.permissions);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const updatedRole = await this.prisma.role.update({
       where: { id: id },
       data: updateData,
@@ -156,13 +149,12 @@ export class RoleService {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.formatRoleResponse(updatedRole);
   }
 
   async delete(id: string, tenantId: string): Promise<any> {
     // Kiểm tra role có tồn tại và thuộc tenant không
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
     const existingRole = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -182,29 +174,26 @@ export class RoleService {
     }
 
     // Kiểm tra role có users không
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (existingRole._count.users > 0) {
       throw new ForbiddenException(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         `Cannot delete role. It has ${existingRole._count.users} user(s). Please reassign users first.`,
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await this.prisma.role.delete({
       where: { id: id },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return { message: 'Role deleted successfully', id: id };
   }
 
   // Helper method để format response với permissions array
   private formatRoleResponse(role: any): any {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     return {
       ...role,
-      permissions: stringToPermissions(role.permissions),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      permissions: stringToPermissions(role.permissions as string),
     };
   }
 
@@ -213,7 +202,6 @@ export class RoleService {
     userId: string,
     requiredPermission: Permission,
   ): Promise<boolean> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -226,21 +214,20 @@ export class RoleService {
     }
 
     // Super admin có tất cả quyền
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (user.isSuperAdmin) {
       return true;
     }
 
     // Tenant admin có tất cả quyền trong tenant
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (user.isTenantAdmin) {
       return true;
     }
 
     // Kiểm tra permissions trong role
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (user.role) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       const permissions = stringToPermissions(user.role.permissions);
       return permissions.includes(requiredPermission);
     }
@@ -250,7 +237,6 @@ export class RoleService {
 
   // Method để lấy tất cả permissions của user
   async getUserPermissions(userId: string): Promise<Permission[]> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -263,21 +249,20 @@ export class RoleService {
     }
 
     // Super admin có tất cả quyền
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (user.isSuperAdmin) {
       return Object.values(Permission);
     }
 
     // Tenant admin có tất cả quyền trong tenant
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (user.isTenantAdmin) {
       return Object.values(Permission);
     }
 
     // Lấy permissions từ role
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     if (user.role) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       return stringToPermissions(user.role.permissions);
     }
 

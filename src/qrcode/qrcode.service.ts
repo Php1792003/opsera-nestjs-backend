@@ -20,7 +20,6 @@ export class QrCodeService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateQrCodeDto, tenantId: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const tenant = await this.prisma.tenant.findUnique({
       where: { id: tenantId },
       select: { subscriptionPlan: true },
@@ -30,12 +29,10 @@ export class QrCodeService {
       throw new ForbiddenException('Tenant not found.');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const currentQrCount = await this.prisma.qRCode.count({
       where: { tenantId: tenantId },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const plan = tenant.subscriptionPlan as SubscriptionPlan;
     const limit = PLAN_LIMITS[plan] ?? 0;
     if (currentQrCount >= limit) {
@@ -44,7 +41,6 @@ export class QrCodeService {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const newQrCode = await this.prisma.qRCode.create({
       data: {
         name: dto.name,
@@ -54,12 +50,10 @@ export class QrCodeService {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return newQrCode;
   }
 
   async findAll(tenantId: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     return this.prisma.qRCode.findMany({
       where: { tenantId: tenantId },
       include: {
@@ -77,7 +71,6 @@ export class QrCodeService {
   }
 
   async findOne(id: string, tenantId: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const qrCode = await this.prisma.qRCode.findFirst({
       where: {
         id: id,
@@ -97,13 +90,16 @@ export class QrCodeService {
       throw new NotFoundException('QR code not found or access denied.');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return qrCode;
   }
 
-  async update(id: string, dto: UpdateQrCodeDto, tenantId: string): Promise<any> {
+  async update(
+    id: string,
+    dto: UpdateQrCodeDto,
+    tenantId: string,
+  ): Promise<any> {
     // Kiểm tra QR code có tồn tại và thuộc tenant không
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
     const existingQrCode = await this.prisma.qRCode.findFirst({
       where: {
         id: id,
@@ -115,9 +111,7 @@ export class QrCodeService {
       throw new NotFoundException('QR code not found or access denied.');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (dto.projectId && dto.projectId !== existingQrCode.projectId) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const project = await this.prisma.project.findFirst({
         where: {
           id: dto.projectId,
@@ -130,7 +124,6 @@ export class QrCodeService {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const updatedQrCode = await this.prisma.qRCode.update({
       where: { id: id },
       data: {
@@ -149,13 +142,12 @@ export class QrCodeService {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return updatedQrCode;
   }
 
   async delete(id: string, tenantId: string): Promise<any> {
     // Kiểm tra QR code có tồn tại và thuộc tenant không
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
     const existingQrCode = await this.prisma.qRCode.findFirst({
       where: {
         id: id,
@@ -167,12 +159,10 @@ export class QrCodeService {
       throw new NotFoundException('QR code not found or access denied.');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await this.prisma.qRCode.delete({
       where: { id: id },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return { message: 'QR code deleted successfully', id: id };
   }
 }

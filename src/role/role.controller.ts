@@ -30,7 +30,7 @@ export class RoleController {
     @Request() req: RequestWithUser,
   ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.roleService.create(createRoleDto, tenantId);
   }
 
@@ -38,13 +38,13 @@ export class RoleController {
   @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
   async findAll(@Request() req: RequestWithUser): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.roleService.findAll(tenantId);
   }
 
   @Get('permissions/list')
   @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  async getAvailablePermissions(): Promise<any> {
+  getAvailablePermissions(): any {
     return {
       permissions: Object.values(Permission),
       description: 'List of all available permissions in the system',
@@ -64,9 +64,12 @@ export class RoleController {
 
   @Get(':id')
   @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  async findOne(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
+  async findOne(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.roleService.findOne(id, tenantId);
   }
 
@@ -78,15 +81,18 @@ export class RoleController {
     @Request() req: RequestWithUser,
   ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.roleService.update(id, updateRoleDto, tenantId);
   }
 
   @Delete(':id')
   @Permissions(Permission.DELETE_ROLE, Permission.MANAGE_ROLE)
-  async delete(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
+  async delete(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.roleService.delete(id, tenantId);
   }
 }

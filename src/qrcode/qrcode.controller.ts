@@ -28,7 +28,7 @@ export class QrcodeController {
     @Request() req: RequestWithUser,
   ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.qrCodeService.create(createQrCodeDto, tenantId);
   }
 
@@ -36,21 +36,23 @@ export class QrcodeController {
   @UseGuards(JwtAuthGuard)
   async findAll(@Request() req: RequestWithUser): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.qrCodeService.findAll(tenantId);
   }
 
   @Get('test/:tenantId')
   async findAllTest(@Param('tenantId') tenantId: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.qrCodeService.findAll(tenantId);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
+  async findOne(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.qrCodeService.findOne(id, tenantId);
   }
 
@@ -62,15 +64,18 @@ export class QrcodeController {
     @Request() req: RequestWithUser,
   ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.qrCodeService.update(id, updateQrCodeDto, tenantId);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async delete(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
+  async delete(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return this.qrCodeService.delete(id, tenantId);
   }
 }
