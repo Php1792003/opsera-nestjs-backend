@@ -105,6 +105,7 @@ export interface RoleWithUsers extends Role {
   }>;
 }
 
+
 // Transaction result types
 export interface RegisterResult {
   user: User;
