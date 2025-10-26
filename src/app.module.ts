@@ -5,6 +5,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { QrcodeModule } from './qrcode/qrcode.module';
+import { ProjectModule } from './project/project.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -12,6 +14,9 @@ import { QrcodeModule } from './qrcode/qrcode.module';
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     QrcodeModule,
+    ProjectModule,
+    ProjectModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
