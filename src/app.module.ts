@@ -17,6 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ReportsModule } from './reports/reports.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
 import { FilesModule } from './files/files.module';
+import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { FilesModule } from './files/files.module';
     ReportsModule,
     GeolocationModule,
     FilesModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],
