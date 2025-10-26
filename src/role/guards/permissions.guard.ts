@@ -30,7 +30,8 @@ export class PermissionsGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const user = request.user as { userId: string; isSuperAdmin: boolean };
 
     if (!user) {
       throw new ForbiddenException('User not authenticated');
