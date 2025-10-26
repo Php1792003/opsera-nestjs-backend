@@ -12,13 +12,16 @@ import {
   stringToPermissions,
   Permission,
 } from './constants/permissions.constant';
+import { Role, UserWithRole } from '../types/prisma.types';
+import { RoleResponseDto } from './dto/role-response.dto';
 
 @Injectable()
 export class RoleService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateRoleDto, tenantId: string) {
+  async create(dto: CreateRoleDto, tenantId: string): Promise<RoleResponseDto> {
     // Kiểm tra tên role đã tồn tại chưa trong tenant
+
     const existingRole = await this.prisma.role.findFirst({
       where: {
         name: dto.name,
@@ -46,7 +49,7 @@ export class RoleService {
     return this.formatRoleResponse(newRole);
   }
 
-  async findAll(tenantId: string) {
+  async findAll(tenantId: string): Promise<RoleResponseDto[]> {
     const roles = await this.prisma.role.findMany({
       where: { tenantId: tenantId },
       include: {
@@ -64,7 +67,7 @@ export class RoleService {
     return roles.map((role) => this.formatRoleResponse(role));
   }
 
-  async findOne(id: string, tenantId: string) {
+  async findOne(id: string, tenantId: string): Promise<RoleResponseDto> {
     const role = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -94,8 +97,13 @@ export class RoleService {
     return this.formatRoleResponse(role);
   }
 
-  async update(id: string, dto: UpdateRoleDto, tenantId: string) {
+  async update(
+    id: string,
+    dto: UpdateRoleDto,
+    tenantId: string,
+  ): Promise<RoleResponseDto> {
     // Kiểm tra role có tồn tại và thuộc tenant không
+
     const existingRole = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -108,6 +116,7 @@ export class RoleService {
     }
 
     // Nếu đổi tên, kiểm tra tên mới đã tồn tại chưa
+
     if (dto.name && dto.name !== existingRole.name) {
       const duplicateRole = await this.prisma.role.findFirst({
         where: {
@@ -125,7 +134,7 @@ export class RoleService {
     }
 
     // Prepare update data
-    const updateData: any = {};
+    const updateData: { name?: string; permissions?: string } = {};
     if (dto.name) {
       updateData.name = dto.name;
     }
@@ -148,8 +157,12 @@ export class RoleService {
     return this.formatRoleResponse(updatedRole);
   }
 
-  async delete(id: string, tenantId: string) {
+  async delete(
+    id: string,
+    tenantId: string,
+  ): Promise<{ message: string; id: string }> {
     // Kiểm tra role có tồn tại và thuộc tenant không
+
     const existingRole = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -169,6 +182,7 @@ export class RoleService {
     }
 
     // Kiểm tra role có users không
+
     if (existingRole._count.users > 0) {
       throw new ForbiddenException(
         `Cannot delete role. It has ${existingRole._count.users} user(s). Please reassign users first.`,
@@ -183,11 +197,27 @@ export class RoleService {
   }
 
   // Helper method để format response với permissions array
-  private formatRoleResponse(role: any) {
-    return {
-      ...role,
-      permissions: stringToPermissions(role.permissions),
-    };
+  private formatRoleResponse(
+    role: Role & {
+      _count?: { users: number };
+      users?: Array<{
+        id: string;
+        email: string;
+        fullName: string;
+        createdAt: Date;
+      }>;
+    },
+  ): RoleResponseDto {
+    const dto = new RoleResponseDto();
+    dto.id = role.id;
+    dto.name = role.name;
+    dto.permissions = stringToPermissions(role.permissions);
+    dto.tenantId = role.tenantId;
+    dto.createdAt = role.createdAt;
+    dto.updatedAt = role.updatedAt;
+    dto._count = role._count || { users: 0 };
+    dto.permissionsStr = role.permissions; // Giữ lại để có thể exclude
+    return dto;
   }
 
   // Method để kiểm tra user có permission không
@@ -195,28 +225,31 @@ export class RoleService {
     userId: string,
     requiredPermission: Permission,
   ): Promise<boolean> {
-    const user = await this.prisma.user.findUnique({
+    const user = (await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
         role: true,
       },
-    });
+    })) as UserWithRole | null;
 
     if (!user) {
       return false;
     }
 
     // Super admin có tất cả quyền
+
     if (user.isSuperAdmin) {
       return true;
     }
 
     // Tenant admin có tất cả quyền trong tenant
+
     if (user.isTenantAdmin) {
       return true;
     }
 
     // Kiểm tra permissions trong role
+
     if (user.role) {
       const permissions = stringToPermissions(user.role.permissions);
       return permissions.includes(requiredPermission);
@@ -227,28 +260,31 @@ export class RoleService {
 
   // Method để lấy tất cả permissions của user
   async getUserPermissions(userId: string): Promise<Permission[]> {
-    const user = await this.prisma.user.findUnique({
+    const user = (await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
         role: true,
       },
-    });
+    })) as UserWithRole | null;
 
     if (!user) {
       return [];
     }
 
     // Super admin có tất cả quyền
+
     if (user.isSuperAdmin) {
       return Object.values(Permission);
     }
 
     // Tenant admin có tất cả quyền trong tenant
+
     if (user.isTenantAdmin) {
       return Object.values(Permission);
     }
 
     // Lấy permissions từ role
+
     if (user.role) {
       return stringToPermissions(user.role.permissions);
     }
