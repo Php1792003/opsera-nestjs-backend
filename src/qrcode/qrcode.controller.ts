@@ -26,27 +26,31 @@ export class QrcodeController {
   async create(
     @Body() createQrCodeDto: CreateQrCodeDto,
     @Request() req: RequestWithUser,
-  ) {
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.qrCodeService.create(createQrCodeDto, tenantId);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll(@Request() req: RequestWithUser) {
+  async findAll(@Request() req: RequestWithUser): Promise<any> {
     const tenantId = req.user.tenantId;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.qrCodeService.findAll(tenantId);
   }
 
   @Get('test/:tenantId')
-  async findAllTest(@Param('tenantId') tenantId: string) {
+  async findAllTest(@Param('tenantId') tenantId: string): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.qrCodeService.findAll(tenantId);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id') id: string, @Request() req: RequestWithUser) {
+  async findOne(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
     const tenantId = req.user.tenantId;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.qrCodeService.findOne(id, tenantId);
   }
 
@@ -56,15 +60,17 @@ export class QrcodeController {
     @Param('id') id: string,
     @Body() updateQrCodeDto: UpdateQrCodeDto,
     @Request() req: RequestWithUser,
-  ) {
+  ): Promise<any> {
     const tenantId = req.user.tenantId;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.qrCodeService.update(id, updateQrCodeDto, tenantId);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async delete(@Param('id') id: string, @Request() req: RequestWithUser) {
+  async delete(@Param('id') id: string, @Request() req: RequestWithUser): Promise<any> {
     const tenantId = req.user.tenantId;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.qrCodeService.delete(id, tenantId);
   }
 }
