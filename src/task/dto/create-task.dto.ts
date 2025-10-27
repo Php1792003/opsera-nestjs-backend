@@ -62,4 +62,12 @@ export class CreateTaskDto {
   @IsOptional()
   @IsNumber()
   estimatedHours?: number;
+
+  @IsOptional()
+  @IsNumber()
+  actualHours?: number;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }

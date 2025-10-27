@@ -8,9 +8,9 @@ export class TimeTrackingDto {
   @IsNumber()
   duration: number; // in minutes
 
-  @IsOptional()
-  @IsDateString()
-  startTime?: string;
+  @IsString()
+  @IsNotEmpty()
+  startTime: string;
 
   @IsOptional()
   @IsDateString()

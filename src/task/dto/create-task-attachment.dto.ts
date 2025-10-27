@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateTaskAttachmentDto {
   @IsString()
@@ -7,9 +7,16 @@ export class CreateTaskAttachmentDto {
 
   @IsString()
   @IsNotEmpty()
-  fileUrl: string;
+  originalName: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  @IsNotEmpty()
+  filePath: string;
+
+  @IsString()
+  @IsNotEmpty()
+  mimeType: string;
+
+  @IsNumber()
+  size: number;
 }

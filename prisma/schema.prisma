@@ -28,6 +28,9 @@ model Tenant {
   roles         Role[]
   qrcodes       QRCode[]
   tasks         Task[]
+  taskComments  TaskComment[]
+  taskAttachments TaskAttachment[]
+  taskTimeEntries TaskTimeEntry[]
   scanLogs      ScanLog[]
   activityLogs  ActivityLog[]
   subscriptions Subscription[]
@@ -51,6 +54,9 @@ model User {
 
   createdTasks  Task[]    @relation("Creator")
   assignedTasks Task[]    @relation("Assignee")
+  taskComments  TaskComment[]
+  taskAttachments TaskAttachment[]
+  taskTimeEntries TaskTimeEntry[]
   scanLogs      ScanLog[]
   activityLogs  ActivityLog[]
 
@@ -111,13 +117,18 @@ model QRCode {
 }
 
 model Task {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  status      String   @default("PENDING") // Changed from enum to String
-  deadline    DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(uuid())
+  title          String
+  description    String?
+  status         String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, CANCELLED
+  priority       String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  deadline       DateTime?
+  tags           String?  // JSON string array
+  estimatedHours Float?
+  actualHours    Float?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   projectId   String
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -131,8 +142,80 @@ model Task {
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
+  comments     TaskComment[]
+  attachments  TaskAttachment[]
+  timeEntries  TaskTimeEntry[]
+
   @@index([projectId])
   @@index([assigneeId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([priority])
+}
+
+model TaskComment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  taskId   String
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  tenantId String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([tenantId])
+}
+
+model TaskAttachment {
+  id           String   @id @default(uuid())
+  fileName     String
+  originalName String
+  filePath     String
+  mimeType     String
+  size         Int
+  createdAt    DateTime @default(now())
+
+  taskId   String
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  tenantId String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([tenantId])
+}
+
+model TaskTimeEntry {
+  id          String    @id @default(uuid())
+  description String
+  startTime   DateTime
+  endTime     DateTime?
+  duration    Int       // in minutes
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  taskId   String
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  tenantId String
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([taskId])
+  @@index([userId])
   @@index([tenantId])
 }
 
