@@ -18,6 +18,7 @@ import { ReportsModule } from './reports/reports.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
 import { FilesModule } from './files/files.module';
 import { MemberModule } from './member/member.module';
+import { WorkflowModule } from './workflow/workflow.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MemberModule } from './member/member.module';
     GeolocationModule,
     FilesModule,
     MemberModule,
+    WorkflowModule,
   ],
   controllers: [AppController],
   providers: [AppService],

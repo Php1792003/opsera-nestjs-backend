@@ -34,6 +34,9 @@ model Tenant {
   notifications Notification[]
   locationLogs  LocationLog[]
   files         File[]
+  workflows     Workflow[]
+  workflowInstances WorkflowInstance[]
+  workflowApprovals WorkflowApproval[]
 }
 
 model User {
@@ -59,6 +62,10 @@ model User {
   notifications Notification[]
   locationLogs  LocationLog[]
   files         File[]
+  createdWorkflows Workflow[]
+  startedWorkflowInstances WorkflowInstance[]
+  assignedWorkflowApprovals WorkflowApproval[]
+  approvedWorkflowApprovals WorkflowApproval[]
 
   @@index([tenantId])
 }
@@ -293,4 +300,112 @@ model File {
   @@index([tenantId])
   @@index([category])
   @@index([createdAt])
+}
+
+model Workflow {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  type        String   // APPROVAL, NOTIFICATION, TASK_ASSIGNMENT, CUSTOM
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: NoAction)
+
+  steps       WorkflowStep[]
+  instances   WorkflowInstance[]
+
+  @@index([tenantId])
+  @@index([createdBy])
+}
+
+model WorkflowStep {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  stepType        String   // APPROVAL, NOTIFICATION, CONDITION, ACTION
+  order           Int
+  config          String?  // JSON configuration
+  assignedToRole  String?
+  assignedToUser  String?
+  isRequired      Boolean  @default(true)
+  timeoutHours    Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  workflowId      String
+  workflow        Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  approvals       WorkflowApproval[]
+
+  @@index([workflowId])
+  @@index([assignedToRole])
+  @@index([assignedToUser])
+}
+
+model WorkflowInstance {
+  id          String   @id @default(uuid())
+  entityType  String   // TASK, PROJECT, QRCODE, USER, CUSTOM
+  entityId    String
+  data        String?  // JSON data
+  status      String   @default("PENDING") // PENDING, COMPLETED, REJECTED, CANCELLED
+  currentStep Int      @default(0)
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  startedBy   String
+  starter     User     @relation(fields: [startedBy], references: [id], onDelete: NoAction)
+
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  approvals   WorkflowApproval[]
+
+  @@index([workflowId])
+  @@index([tenantId])
+  @@index([startedBy])
+  @@index([status])
+}
+
+model WorkflowApproval {
+  id            String   @id @default(uuid())
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  comments      String?
+  approvedAt    DateTime?
+  dueDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  instanceId    String
+  instance      WorkflowInstance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+
+  stepId        String
+  step          WorkflowStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  assignedToRole String?
+  assignedToUser String?
+  assignedUser   User?    @relation(fields: [assignedToUser], references: [id], onDelete: NoAction)
+
+  approvedBy    String?
+  approver      User?    @relation(fields: [approvedBy], references: [id], onDelete: NoAction)
+
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([instanceId])
+  @@index([stepId])
+  @@index([assignedToUser])
+  @@index([assignedToRole])
+  @@index([status])
+  @@index([tenantId])
 }
