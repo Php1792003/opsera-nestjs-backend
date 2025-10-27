@@ -23,7 +23,7 @@ export interface Tenant {
 export interface Project {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   tenantId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -36,8 +36,8 @@ export interface Project {
 export interface QrCode {
   id: string;
   name: string;
-  location?: string;
-  data?: string;
+  location?: string | null;
+  data?: string | null;
   isActive: boolean;
   projectId: string;
   tenantId: string;
@@ -75,8 +75,8 @@ export interface ProjectWithDetails extends Project {
   qrcodes?: Array<{
     id: string;
     name: string;
-    location?: string;
-    data?: string;
+    location?: string | null;
+    data?: string | null;
     isActive: boolean;
     createdAt: Date;
   }>;
@@ -84,7 +84,7 @@ export interface ProjectWithDetails extends Project {
     id: string;
     title: string;
     status: string;
-    deadline?: Date;
+    deadline?: Date | null;
     createdAt: Date;
   }>;
 }
