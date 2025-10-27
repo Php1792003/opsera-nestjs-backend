@@ -16,12 +16,12 @@ export class ProjectService {
     const newProject = await this.prisma.project.create({
       data: {
         name: dto.name,
-        description: dto.description,
+        description: dto.description || null,
         tenantId: tenantId,
       },
     });
 
-    return newProject;
+    return newProject as Project;
   }
 
   async findAll(tenantId: string): Promise<Project[]> {
@@ -38,7 +38,7 @@ export class ProjectService {
       orderBy: {
         createdAt: 'desc',
       },
-    });
+    }) as Project[];
   }
 
   async findOne(id: string, tenantId: string): Promise<ProjectWithDetails> {
@@ -86,7 +86,7 @@ export class ProjectService {
       throw new NotFoundException('Project not found or access denied.');
     }
 
-    return project;
+    return project as ProjectWithDetails;
   }
 
   async update(
@@ -110,7 +110,7 @@ export class ProjectService {
       where: { id: id },
       data: {
         ...(dto.name && { name: dto.name }),
-        ...(dto.description !== undefined && { description: dto.description }),
+        ...(dto.description !== undefined && { description: dto.description || null }),
       },
       include: {
         _count: {
@@ -122,7 +122,7 @@ export class ProjectService {
       },
     });
 
-    return updatedProject;
+    return updatedProject as Project;
   }
 
   async delete(id: string, tenantId: string): Promise<DeleteResult> {

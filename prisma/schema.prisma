@@ -6,17 +6,20 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 
 model Tenant {
   id                    String                @id @default(uuid())
   name                  String
-  subscriptionPlan      String                @default("STARTER") // Changed from enum to String
+  subscriptionPlan      String                @default("STARTER") // STARTER, PROFESSIONAL, ENTERPRISE
   subscriptionExpiresAt DateTime?
   isActive              Boolean               @default(true)
+  maxQRCodes            Int                   @default(100)
+  maxUsers              Int                   @default(5)
+  maxProjects           Int                   @default(1)
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
 
@@ -27,6 +30,10 @@ model Tenant {
   tasks         Task[]
   scanLogs      ScanLog[]
   activityLogs  ActivityLog[]
+  subscriptions Subscription[]
+  notifications Notification[]
+  locationLogs  LocationLog[]
+  files         File[]
 }
 
 model User {
@@ -49,6 +56,9 @@ model User {
   assignedTasks Task[]    @relation("Assignee")
   scanLogs      ScanLog[]
   activityLogs  ActivityLog[]
+  notifications Notification[]
+  locationLogs  LocationLog[]
+  files         File[]
 
   @@index([tenantId])
 }
@@ -89,6 +99,8 @@ model QRCode {
   id        String   @id @default(uuid())
   name      String
   location  String?
+  latitude  Float?
+  longitude Float?
   data      String   @unique @default(cuid())
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -169,4 +181,116 @@ model ActivityLog {
 
   @@index([userId])
   @@index([tenantId])
+}
+
+model Subscription {
+  id                String   @id @default(uuid())
+  plan              String   // STARTER, PROFESSIONAL, ENTERPRISE
+  price             Decimal  @db.Decimal(10, 2)
+  status            String   @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED
+  startDate         DateTime @default(now())
+  endDate           DateTime
+  autoRenew         Boolean  @default(true)
+  paymentMethod     String?
+  lastPaymentDate   DateTime?
+  nextPaymentDate   DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+}
+
+model MasterAdmin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activityLogs MasterActivityLog[]
+}
+
+model MasterActivityLog {
+  id        String      @id @default(cuid())
+  action    String
+  details   String?
+  createdAt DateTime    @default(now())
+
+  masterAdminId String
+  masterAdmin   MasterAdmin @relation(fields: [masterAdminId], references: [id], onDelete: Cascade)
+
+  @@index([masterAdminId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // task, scan, system, user
+  title     String
+  message   String
+  data      String?  // JSON string
+  priority  String   @default("medium") // low, medium, high
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tenantId])
+  @@index([isRead])
+}
+
+model LocationLog {
+  id         String   @id @default(cuid())
+  latitude   Float
+  longitude  Float
+  accuracy   Float?
+  altitude   Float?
+  heading    Float?
+  speed      Float?
+  recordedAt DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tenantId])
+  @@index([recordedAt])
+}
+
+model File {
+  id           String   @id @default(cuid())
+  originalName String
+  fileName     String
+  filePath     String
+  mimeType     String
+  size         Int
+  description  String?
+  category     String?
+  tags         String?  // JSON string array
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tenantId])
+  @@index([category])
+  @@index([createdAt])
 }
