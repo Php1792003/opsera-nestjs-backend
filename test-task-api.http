@@ -1,0 +1,35 @@
+### Test Create Task API
+POST http://localhost:3000/tasks
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+    "title": "Kiểm tra hệ thống PCCC tầng 5",
+    "description": "Kiểm tra tất cả các bình cứu hỏa và vòi phun nước tại tầng 5, báo cáo lại tình trạng.",
+    "projectId": "550e8400-e29b-41d4-a716-446655440000",
+    "assigneeId": "550e8400-e29b-41d4-a716-446655440001",
+    "deadline": "2025-12-31T17:00:00.000Z",
+    "priority": "HIGH",
+    "tags": ["PCCC", "Kiểm tra", "Tầng 5"],
+    "estimatedHours": 4
+}
+
+### Test Get All Tasks
+GET http://localhost:3000/tasks
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Get Task by ID
+GET http://localhost:3000/tasks/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Get Tasks by Project
+GET http://localhost:3000/tasks/by-project/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Get My Tasks
+GET http://localhost:3000/tasks/my-tasks
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Test Get Task Stats
+GET http://localhost:3000/tasks/stats
+Authorization: Bearer YOUR_JWT_TOKEN
