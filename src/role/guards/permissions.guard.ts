@@ -11,6 +11,7 @@ import {
   hasAnyPermission,
 } from '../constants/permissions.constant';
 import { RoleService } from '../role.service';
+import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -29,31 +30,27 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const user = request.user as { userId: string; isSuperAdmin: boolean };
+    const request: RequestWithUser = context.switchToHttp().getRequest();
+    const user = request.user; // Bây giờ 'user' sẽ có kiểu dữ liệu đúng
 
     if (!user) {
       throw new ForbiddenException('User not authenticated');
     }
 
-    // Super admin bypass all permission checks
     if (user.isSuperAdmin) {
       return true;
     }
 
-    // Get user permissions
     const userPermissions = await this.roleService.getUserPermissions(
       user.userId,
     );
 
-    // Check if user has any of the required permissions
-    const hasPermission = hasAnyPermission(
+    const hasRequiredPermission = hasAnyPermission(
       userPermissions,
       requiredPermissions,
     );
 
-    if (!hasPermission) {
+    if (!hasRequiredPermission) {
       throw new ForbiddenException(
         'You do not have permission to access this resource',
       );

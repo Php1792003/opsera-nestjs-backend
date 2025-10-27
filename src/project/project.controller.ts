@@ -1,27 +1,40 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from '../auth/dto/create-project.dto';
 import { UpdateProjectDto } from '../auth/dto/update-project.dto';
-import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
-import {
-  Project,
-  ProjectWithDetails,
-  DeleteResult,
-} from '../types/prisma.types';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('projects')
-@UseGuards(JwtAuthGuard)
+import { Prisma, Project } from '@prisma/client';
+import { projectWithDetails } from './projectWithDetails';
+
+type ProjectWithDetails = Prisma.ProjectGetPayload<typeof projectWithDetails>;
+
+export const projectWithCounts = Prisma.validator<Prisma.ProjectDefaultArgs>()({
+  include: { _count: { select: { qrcodes: true, tasks: true } } },
+});
+type ProjectWithCounts = Prisma.ProjectGetPayload<typeof projectWithCounts>;
+
+// Giả sử bạn có một type RequestWithUser
+interface RequestWithUser extends Request {
+  user: {
+    id: string;
+    tenantId: string;
+    // các trường khác trong payload JWT
+  };
+}
+
+@Controller('projects') // Nên đặt tên controller theo resource
+@UseGuards(JwtAuthGuard) // Bảo vệ tất cả các route trong controller này
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
@@ -35,9 +48,10 @@ export class ProjectController {
   }
 
   @Get()
-  async findAll(@Request() req: RequestWithUser): Promise<Project[]> {
+  async findAll(@Request() req: RequestWithUser): Promise<ProjectWithCounts[]> {
+    // <-- ĐÃ SỬA
     const tenantId = req.user.tenantId;
-    return this.projectService.findAll(tenantId);
+    return this.projectService.findAll(tenantId); // <-- KHÔNG CÒN LỖI
   }
 
   @Get(':id')
@@ -45,8 +59,9 @@ export class ProjectController {
     @Param('id') id: string,
     @Request() req: RequestWithUser,
   ): Promise<ProjectWithDetails> {
+    // <-- ĐÃ SỬA
     const tenantId = req.user.tenantId;
-    return this.projectService.findOne(id, tenantId);
+    return this.projectService.findOne(id, tenantId); // <-- KHÔNG CÒN LỖI
   }
 
   @Put(':id')
@@ -54,16 +69,15 @@ export class ProjectController {
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
     @Request() req: RequestWithUser,
-  ): Promise<Project> {
+  ): Promise<ProjectWithCounts> {
+    // <-- ĐÃ SỬA
     const tenantId = req.user.tenantId;
     return this.projectService.update(id, updateProjectDto, tenantId);
   }
 
   @Delete(':id')
-  async delete(
-    @Param('id') id: string,
-    @Request() req: RequestWithUser,
-  ): Promise<DeleteResult> {
+  async remove(@Param('id') id: string, @Request() req: RequestWithUser) {
+    // Kiểu trả về cho delete thường là void hoặc một object thông báo
     const tenantId = req.user.tenantId;
     return this.projectService.delete(id, tenantId);
   }

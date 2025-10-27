@@ -1,12 +1,54 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProjectDto } from '../auth/dto/create-project.dto';
-import { UpdateProjectDto } from '../auth/dto/update-project.dto';
-import {
-  Project,
-  ProjectWithDetails,
-  DeleteResult,
-} from '../types/prisma.types';
+import { CreateProjectDto } from '../auth/dto/create-project.dto'; // Đường dẫn này có thể cần sửa lại
+import { UpdateProjectDto } from '../auth/dto/update-project.dto'; // Đường dẫn này có thể cần sửa lại
+import { Prisma, Project } from '@prisma/client';
+import { projectWithCounts } from './projectWithCounts'; // <-- IMPORT TỪ ĐÂY
+
+// Định nghĩa một kiểu dữ liệu phức tạp hơn để sử dụng lại
+// Nó sẽ tự động suy ra kiểu trả về từ câu lệnh Prisma
+const projectWithDetails = Prisma.validator<Prisma.ProjectDefaultArgs>()({
+  include: {
+    qrcodes: {
+      select: {
+        id: true,
+        name: true,
+        location: true,
+        data: true,
+        isActive: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    },
+    tasks: {
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        deadline: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    },
+    _count: {
+      select: {
+        qrcodes: true,
+        tasks: true,
+      },
+    },
+  },
+});
+
+// Tạo một kiểu TypeScript từ định nghĩa trên
+type ProjectWithDetails = Prisma.ProjectGetPayload<typeof projectWithDetails>;
+
+type ProjectWithCounts = Prisma.ProjectGetPayload<typeof projectWithCounts>;
+
+// Kiểu cho kết quả xóa
+type DeleteResult = {
+  message: string;
+  id: string;
+};
 
 @Injectable()
 export class ProjectService {
@@ -20,11 +62,11 @@ export class ProjectService {
         tenantId: tenantId,
       },
     });
-
+    // Không còn lỗi vì kiểu trả về của Prisma khớp với kiểu Project import từ @prisma/client
     return newProject;
   }
 
-  async findAll(tenantId: string): Promise<Project[]> {
+  async findAll(tenantId: string): Promise<ProjectWithCounts[]> {
     return this.prisma.project.findMany({
       where: { tenantId: tenantId },
       include: {
@@ -47,39 +89,8 @@ export class ProjectService {
         id: id,
         tenantId: tenantId,
       },
-      include: {
-        qrcodes: {
-          select: {
-            id: true,
-            name: true,
-            location: true,
-            data: true,
-            isActive: true,
-            createdAt: true,
-          },
-          orderBy: {
-            createdAt: 'desc',
-          },
-        },
-        tasks: {
-          select: {
-            id: true,
-            title: true,
-            status: true,
-            deadline: true,
-            createdAt: true,
-          },
-          orderBy: {
-            createdAt: 'desc',
-          },
-        },
-        _count: {
-          select: {
-            qrcodes: true,
-            tasks: true,
-          },
-        },
-      },
+      // Sử dụng lại định nghĩa đã tạo ở trên
+      include: projectWithDetails.include,
     });
 
     if (!project) {
@@ -93,20 +104,16 @@ export class ProjectService {
     id: string,
     dto: UpdateProjectDto,
     tenantId: string,
-  ): Promise<Project> {
-    // Kiểm tra project có tồn tại và thuộc tenant không
+  ): Promise<ProjectWithCounts> {
     const existingProject = await this.prisma.project.findFirst({
-      where: {
-        id: id,
-        tenantId: tenantId,
-      },
+      where: { id: id, tenantId: tenantId },
     });
 
     if (!existingProject) {
       throw new NotFoundException('Project not found or access denied.');
     }
 
-    const updatedProject = await this.prisma.project.update({
+    return this.prisma.project.update({
       where: { id: id },
       data: {
         ...(dto.name && { name: dto.name }),
@@ -121,12 +128,9 @@ export class ProjectService {
         },
       },
     });
-
-    return updatedProject;
   }
 
   async delete(id: string, tenantId: string): Promise<DeleteResult> {
-    // Kiểm tra project có tồn tại và thuộc tenant không
     const existingProject = await this.prisma.project.findFirst({
       where: {
         id: id,
@@ -146,7 +150,6 @@ export class ProjectService {
       throw new NotFoundException('Project not found or access denied.');
     }
 
-    // Kiểm tra xem có QR codes hoặc tasks không
     if (
       existingProject._count.qrcodes > 0 ||
       existingProject._count.tasks > 0

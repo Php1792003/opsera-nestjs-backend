@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { RoleController } from './role.controller';
 import { RoleService } from './role.service';
+import { RoleController } from './role.controller';
 import { PrismaModule } from '../prisma/prisma.module';
-import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PrismaModule], // RoleService có thể cần PrismaModule
   controllers: [RoleController],
   providers: [RoleService],
-  exports: [RoleService],
+  exports: [RoleService], // <-- DÒNG NÀY RẤT QUAN TRỌNG
 })
 export class RoleModule {}
