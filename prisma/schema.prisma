@@ -37,6 +37,8 @@ model Tenant {
   workflows     Workflow[]
   workflowInstances WorkflowInstance[]
   workflowApprovals WorkflowApproval[]
+  rateLimitRules RateLimitRule[]
+  rateLimitLogs RateLimitLog[]
 }
 
 model User {
@@ -66,6 +68,8 @@ model User {
   startedWorkflowInstances WorkflowInstance[]
   assignedWorkflowApprovals WorkflowApproval[]
   approvedWorkflowApprovals WorkflowApproval[]
+  createdRateLimitRules RateLimitRule[]
+  rateLimitLogs RateLimitLog[]
 
   @@index([tenantId])
 }
@@ -408,4 +412,55 @@ model WorkflowApproval {
   @@index([assignedToRole])
   @@index([status])
   @@index([tenantId])
+}
+
+model RateLimitRule {
+  id                      String   @id @default(uuid())
+  name                    String
+  pattern                 String   // URL pattern to match
+  method                  String?  // HTTP method
+  windowMs                Int      // Time window in milliseconds
+  maxRequests             Int      // Max requests per window
+  skipSuccessfulRequests  Boolean  @default(false)
+  skipFailedRequests      Boolean  @default(false)
+  isActive                Boolean  @default(true)
+  priority                Int      @default(1)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  tenantId                String?
+  tenant                  Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdBy               String
+  creator                 User     @relation(fields: [createdBy], references: [id], onDelete: NoAction)
+
+  logs                    RateLimitLog[]
+
+  @@index([tenantId])
+  @@index([createdBy])
+  @@index([isActive])
+  @@index([priority])
+}
+
+model RateLimitLog {
+  id        String   @id @default(cuid())
+  action    String   // ALLOWED, BLOCKED
+  ruleId    String
+  rule      RateLimitRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  key       String   // Rate limit key
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: NoAction)
+
+  @@index([ruleId])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }

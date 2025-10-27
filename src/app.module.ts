@@ -19,6 +19,7 @@ import { GeolocationModule } from './geolocation/geolocation.module';
 import { FilesModule } from './files/files.module';
 import { MemberModule } from './member/member.module';
 import { WorkflowModule } from './workflow/workflow.module';
+import { RateLimitingModule } from './rate-limiting/rate-limiting.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { WorkflowModule } from './workflow/workflow.module';
     FilesModule,
     MemberModule,
     WorkflowModule,
+    RateLimitingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
