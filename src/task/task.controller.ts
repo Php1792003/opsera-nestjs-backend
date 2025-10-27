@@ -20,6 +20,7 @@ import { TimeTrackingDto } from './dto/time-tracking.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../role/guards/permissions.guard';
 import { Permissions } from '../role/decorators/permissions.decorator';
+import { Permission } from '../role/constants/permissions.constant';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('tasks')
@@ -27,21 +28,21 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  @Permissions('CREATE_TASK')
+  @Permissions(Permission.CREATE_TASK)
   create(@Body() createTaskDto: CreateTaskDto, @Request() req) {
     const { tenantId, userId } = req.user;
     return this.taskService.create(createTaskDto, tenantId, userId);
   }
 
   @Get()
-  @Permissions('READ_TASK')
+  @Permissions(Permission.READ_TASK)
   findAll(@Request() req, @Query() filters: any) {
     const { tenantId } = req.user;
     return this.taskService.findAll(tenantId, filters);
   }
 
   @Get('by-project/:projectId')
-  @Permissions('READ_TASK')
+  @Permissions(Permission.READ_TASK)
   findAllByProject(
     @Param('projectId', ParseUUIDPipe) projectId: string,
     @Request() req,
@@ -51,28 +52,28 @@ export class TaskController {
   }
 
   @Get('my-tasks')
-  @Permissions('READ_TASK')
+  @Permissions(Permission.READ_TASK)
   getMyTasks(@Request() req, @Query() filters: any) {
     const { tenantId, userId } = req.user;
     return this.taskService.getMyTasks(tenantId, userId, filters);
   }
 
   @Get('stats')
-  @Permissions('READ_TASK')
+  @Permissions(Permission.READ_TASK)
   getTaskStats(@Request() req, @Query('projectId') projectId?: string) {
     const { tenantId } = req.user;
     return this.taskService.getTaskStats(tenantId, projectId);
   }
 
   @Get(':id')
-  @Permissions('READ_TASK')
+  @Permissions(Permission.READ_TASK)
   findOne(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
     const { tenantId } = req.user;
     return this.taskService.findOne(id, tenantId);
   }
 
   @Put(':id')
-  @Permissions('UPDATE_TASK')
+  @Permissions(Permission.UPDATE_TASK)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTaskDto: UpdateTaskDto,
@@ -83,7 +84,7 @@ export class TaskController {
   }
 
   @Put(':id/assign')
-  @Permissions('ASSIGN_TASK')
+  @Permissions(Permission.ASSIGN_TASK)
   assignTask(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('assigneeId') assigneeId: string,
@@ -94,7 +95,7 @@ export class TaskController {
   }
 
   @Post(':id/comments')
-  @Permissions('UPDATE_TASK')
+  @Permissions(Permission.UPDATE_TASK)
   addComment(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() createCommentDto: CreateTaskCommentDto,
@@ -105,7 +106,7 @@ export class TaskController {
   }
 
   @Post(':id/attachments')
-  @Permissions('UPDATE_TASK')
+  @Permissions(Permission.UPDATE_TASK)
   addAttachment(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() createAttachmentDto: CreateTaskAttachmentDto,
@@ -121,7 +122,7 @@ export class TaskController {
   }
 
   @Post(':id/time-entries')
-  @Permissions('UPDATE_TASK')
+  @Permissions(Permission.UPDATE_TASK)
   addTimeEntry(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() timeTrackingDto: TimeTrackingDto,
@@ -132,7 +133,7 @@ export class TaskController {
   }
 
   @Delete(':id')
-  @Permissions('DELETE_TASK')
+  @Permissions(Permission.DELETE_TASK)
   remove(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
     const { tenantId, userId } = req.user;
     return this.taskService.remove(id, tenantId, userId);
