@@ -19,8 +19,7 @@ import { CreateTaskAttachmentDto } from './dto/create-task-attachment.dto';
 import { TimeTrackingDto } from './dto/time-tracking.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../role/guards/permissions.guard';
-import { Permissions } from '../role/decorators/permissions.decorator';
-import { Permission } from '../role/constants/permissions.constant';
+import { Permissions, Permission } from '../role';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('tasks')
