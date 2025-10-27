@@ -1,15 +1,86 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
 import { CreateTaskAttachmentDto } from './dto/create-task-attachment.dto';
 import { TimeTrackingDto } from './dto/time-tracking.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TaskService {
-  create(createTaskDto: CreateTaskDto, tenantId: string, userId: string) {
-    // TODO: Implement task creation logic
-    return { message: 'Task created successfully', data: createTaskDto };
+  constructor(private prisma: PrismaService) {}
+
+  async create(createTaskDto: CreateTaskDto, tenantId: string, userId: string) {
+    const {
+      title,
+      description,
+      projectId,
+      assigneeId,
+      deadline,
+      priority,
+      tags,
+      estimatedHours,
+    } = createTaskDto;
+
+    // Verify project exists and user has access
+    const project = await this.prisma.project.findFirst({
+      where: { id: projectId, tenantId },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found or access denied');
+    }
+
+    // Verify assignee exists if provided
+    if (assigneeId) {
+      const assignee = await this.prisma.user.findFirst({
+        where: { id: assigneeId, tenantId },
+      });
+
+      if (!assignee) {
+        throw new NotFoundException('Assignee not found or access denied');
+      }
+    }
+
+    const task = await this.prisma.task.create({
+      data: {
+        title,
+        description,
+        projectId,
+        creatorId: userId,
+        assigneeId,
+        deadline: deadline ? new Date(deadline) : null,
+        priority: priority || 'MEDIUM',
+        tags: tags ? JSON.stringify(tags) : null,
+        estimatedHours,
+        tenantId,
+      },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        creator: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            email: true,
+            fullName: true,
+          },
+        },
+      },
+    });
+
+    return task;
   }
 
   findAll(tenantId: string, filters: any) {

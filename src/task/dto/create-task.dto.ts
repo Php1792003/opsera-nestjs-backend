@@ -1,4 +1,14 @@
-import { IsString, IsOptional, IsUUID, IsEnum, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsUUID,
+  IsDateString,
+  MaxLength,
+  IsEnum,
+  IsArray,
+  IsNumber,
+} from 'class-validator';
 
 export enum TaskStatus {
   TODO = 'TODO',
@@ -15,18 +25,21 @@ export enum TaskPriority {
 }
 
 export class CreateTaskDto {
+  @IsNotEmpty()
   @IsString()
+  @MaxLength(255)
   title: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
-  @IsUUID()
+  @IsNotEmpty()
+  @IsUUID('4')
   projectId: string;
 
   @IsOptional()
-  @IsUUID()
+  @IsUUID('4')
   assigneeId?: string;
 
   @IsOptional()
@@ -39,9 +52,14 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsDateString()
-  dueDate?: string;
+  deadline?: string;
 
   @IsOptional()
-  @IsDateString()
-  startDate?: string;
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  estimatedHours?: number;
 }
