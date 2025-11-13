@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - AEGISM</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Sử dụng font Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'aegism-blue': '#2563EB', // Màu xanh dương từ hình
+                        'aegism-dark': '#1F2937',
+                        'aegism-input-bg': '#F3F4F6', // Màu nền ô input
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-white">
+
+    <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+        
+        <!-- Cột bên trái: Form đăng ký -->
+        <div class="flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24">
+            <div class="mx-auto w-full max-w-md">
+                <!-- Logo -->
+                <div class="flex items-center mb-10">
+                    <svg class="h-8 w-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.666 22.6667L8 27.3334H3.33301L7.99967 22.6667H12.666Z" fill="#2563EB"/>
+                        <path d="M19.3337 22.6667L24.0003 27.3334H28.667L24.0003 22.6667H19.3337Z" fill="#2563EB"/>
+                        <path d="M16.0013 16L20.668 20.6667H11.3346L16.0013 16Z" fill="#2563EB"/>
+                        <path d="M12.666 9.33333L8 -1.52588e-05L3.33301 4.66665L7.99967 9.33333H12.666Z" fill="#2563EB" fill-opacity="0.6"/>
+                        <path d="M19.3337 9.33333L24.0003 4.66665L28.667 9.33333H24.0003L19.3337 9.33333Z" fill="#2563EB" fill-opacity="0.6"/>
+                        <path d="M16.0013 16L20.668 11.3333H11.3346L16.0013 16Z" fill="#2563EB" fill-opacity="0.6"/>
+                    </svg>
+                    <span class="font-bold text-2xl text-aegism-dark ml-2">AEGISM</span>
+                </div>
+
+                <!-- Tiêu đề -->
+                <h1 class="text-3xl font-extrabold text-aegism-dark">Bắt đầu với AEGISM</h1>
+                <p class="mt-2 text-base text-gray-600">
+                    Tạo tài khoản để tối ưu hóa vận hành và giám sát an ninh.
+                </p>
+
+                <!-- Form -->
+                <form class="mt-8 space-y-6" action="#" method="POST" x-data="{ showPassword: false }">
+                    <!-- Họ và Tên -->
+                    <div>
+                        <label for="ho-va-ten" class="block text-sm font-medium text-gray-700 mb-2">Họ và Tên</label>
+                        <input id="ho-va-ten" name="ho-va-ten" type="text" required
+                               placeholder="Nhập họ và tên của bạn"
+                               class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                    </div>
+
+                    <!-- Địa chỉ Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ Email</label>
+                        <input id="email" name="email" type="email" autocomplete="email" required
+                               placeholder="Nhập địa chỉ email"
+                               class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                    </div>
+
+                    <!-- Mật khẩu -->
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
+                        <div class="relative">
+                            <input id="password" name="password" :type="showPassword ? 'text' : 'password'" required
+                                   placeholder="Tạo mật khẩu của bạn"
+                                   class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                            
+                            <!-- Nút JS để hiện/ẩn mật khẩu -->
+                            <button type="button" @click="showPassword = !showPassword"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 hover:text-aegism-dark focus:outline-none">
+                                <!-- Icon mắt (đang đóng) -->
+                                <svg x-show="!showPassword" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <!-- Icon mắt (đang mở) -->
+                                <svg x-show="showPassword" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="display: none;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.996 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.575M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Nút Submit -->
+                    <div>
+                        <button type="submit"
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-aegism-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aegism-blue">
+                            Tạo tài khoản
+                        </button>
+                    </div>
+
+                    <!-- Điều khoản -->
+                    <p class="text-center text-sm text-gray-500">
+                        Bằng việc đăng ký, bạn đồng ý với
+                        <a href="#" class="font-medium text-aegism-blue hover:text-blue-700">Điều khoản dịch vụ</a> và
+                        <a href="#" class="font-medium text-aegism-blue hover:text-blue-700">Chính sách bảo mật</a> của chúng tôi.
+                    </p>
+                </form>
+
+                <!-- Link Đăng nhập -->
+                <p class="mt-10 text-center text-sm text-gray-600">
+                    Đã có tài khoản?
+                    <a href="#" class="font-medium text-aegism-blue hover:text-blue-700">
+                        Đăng nhập ngay
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Cột bên phải: Hình ảnh -->
+        <div class="hidden lg:block relative bg-gray-900">
+            <!-- Placeholder cho hình ảnh, bạn có thể thay đổi URL -->
+            <div class="absolute inset-0 w-full h-full object-cover" 
+                 style="background-image: url('https://placehold.co/1200x1600/111827/4B5563?text=AEGISM+Dashboard'); 
+                        background-size: cover; 
+                        background-position: center;">
+            </div>
+            
+            <!-- Overlay tối -->
+            <div class="absolute inset-0 bg-gray-900 bg-opacity-60"></div>
+
+            <!-- Chữ trên ảnh -->
+            <div class="absolute bottom-16 left-10 right-10">
+                <h2 class="text-3xl font-bold text-white">
+                    Tối ưu vận hành. Giám sát an toàn.
+                </h2>
+                <p class="mt-3 text-lg text-gray-300 max-w-lg">
+                    Nền tảng toàn diện giúp bạn quản lý hiệu quả và bảo vệ hệ thống một cách chủ động.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

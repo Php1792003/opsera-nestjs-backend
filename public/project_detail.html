@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chi tiết dự án Opsera">
+  <title>Chi Tiết Dự Án - Opsera</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            // Using Inter as the primary font for consistency
+            sans: ['Inter', 'Poppins', 'sans-serif'], 
+          },
+        },
+      },
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="/img/opsera-logo.png" type="image/png">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: #1a202c; }
+    .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Ẩn/Hiện nút khi hover */
+    .list-item .actions {
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    .list-item:hover .actions {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-gray-800 text-gray-100">
+
+<div class="flex h-screen">
+  <!-- ==== SIDEBAR ==== -->
+  <aside id="sidebar" class="hidden md:flex flex-col w-64 bg-gray-900 text-gray-300 flex-shrink-0">
+    <!-- Nội dung Sidebar (giữ nguyên) -->
+    <div class="flex items-center justify-center h-20 border-b border-gray-700">
+      <a href="/dashboard.html">
+        <img src="img/opsera-logo.png" alt="Opsera Logo" class="h-16" onerror="this.src='https://placehold.co/150x64/111827/FFF?text=Opsera'; this.onerror=null;">
+      </a>
+    </div>
+    <nav class="flex-1 overflow-y-auto">
+      <a href="/dashboard.html" class="flex items-center px-6 py-4 hover:bg-gray-700 hover:text-white transition-colors">
+        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        Tổng quan
+      </a>
+      <a href="/project_detail.html" class="flex items-center px-6 py-4 bg-gray-700 text-white">
+        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 13v-1m4 1v-3m4 3V8M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+        Dự án
+      </a>
+      <a href="#" class="flex items-center px-6 py-4 hover:bg-gray-700 hover:text-white transition-colors">
+        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+        Công Việc
+      </a>
+      <a href="#" class="flex items-center px-6 py-4 hover:bg-gray-700 hover:text-white transition-colors">
+        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+        Tuần Tra QR
+      </a>
+      <a href="#" class="flex items-center px-6 py-4 hover:bg-gray-700 hover:text-white transition-colors">
+        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        Báo Cáo
+      </a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+      <div class="flex items-center group">
+        <img id="user-avatar" class="w-10 h-10 rounded-full object-cover bg-gray-600" alt="User Avatar">
+        <div class="ml-3">
+          <p id="sidebar-user-name" class="text-sm font-medium text-white group-hover:text-blue-400">Loading...</p>
+          <button id="logout-button" class="text-xs text-gray-400 hover:text-red-400">Đăng xuất</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==== MAIN CONTENT ==== -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <header class="flex items-center justify-between h-20 p-6 bg-gray-900 border-b border-gray-700 flex-shrink-0">
+      <div class="flex items-center">
+        <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-400 hover:text-white">
+          <i class="fas fa-bars w-6 h-6"></i>
+        </button>
+        <h1 id="page-title" class="text-2xl font-semibold text-white ml-2 md:ml-0">Đang tải...</h1>
+      </div>
+      <button id="create-project-btn" style="display: none;" class="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-plus w-5 h-5 mr-2"></i>
+        Tạo Dự án mới
+      </button>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-6">
+      <div id="loading-state" class="text-center py-20">
+        <div class="loading mx-auto mb-4"></div>
+        <p class="text-gray-400">Đang tải dữ liệu...</p>
+      </div>
+
+      <!-- [VIEW] Danh sách dự án -->
+      <div id="list-view" style="display: none;">
+        <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+      </div>
+
+      <!-- [VIEW] Chi tiết dự án -->
+      <div id="detail-view" style="display: none;" class="space-y-6">
+        <!-- Project Banner -->
+        <div id="project-banner" class="relative bg-gray-900 rounded-xl shadow-xl h-48 bg-cover bg-center flex items-end p-6" style="background-image: url('https://images.unsplash.com/photo-1517694712202-1428bc648c73?q=80&w=2070&auto=format&fit=crop');">
+          <div class="absolute inset-0 bg-black/50 rounded-xl"></div>
+          <div class="relative">
+            <h2 id="project-info-name" class="text-3xl font-bold text-white"></h2>
+          </div>
+          <!-- Nút Chỉnh sửa/Xoá Dự Án -->
+          <div class="absolute top-4 right-4 flex space-x-2">
+            <button id="edit-project-btn" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+              <i class="fas fa-pencil-alt mr-2"></i>Chỉnh sửa
+            </button>
+            <button id="delete-project-btn" class="bg-red-600/70 backdrop-blur-sm hover:bg-red-700/80 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+              <i class="fas fa-trash-alt mr-2"></i>Xoá dự án
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-semibold text-white mb-2">Mô tả dự án</h3>
+          <p id="project-description" class="text-gray-400"></p>
+        </div>
+
+        <!-- Các thẻ thông số -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-gray-900 rounded-xl p-5 shadow-md border border-gray-700">
+            <p class="text-sm font-medium text-gray-400">Thành Viên</p>
+            <p id="detail-member-count" class="text-3xl font-bold text-white"></p>
+          </div>
+          <div class="bg-gray-900 rounded-xl p-5 shadow-md border border-gray-700">
+            <p class="text-sm font-medium text-gray-400">Mã QR</p>
+            <p id="detail-qrcode-count" class="text-3xl font-bold text-white"></p>
+          </div>
+          <div class="bg-gray-900 rounded-xl p-5 shadow-md border border-gray-700">
+            <p class="text-sm font-medium text-gray-400">Công việc</p>
+            <p id="detail-task-count" class="text-3xl font-bold text-white"></p>
+          </div>
+          <div class="bg-gray-900 rounded-xl p-5 shadow-md border border-gray-700">
+            <p class="text-sm font-medium text-gray-400">Vai trò</p>
+            <p id="detail-role-count" class="text-3xl font-bold text-white"></p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Cột trái cho các mục quản lý (2/3 màn hình) -->
+          <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Quản lý Thành Viên -->
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-700">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white">Quản lý Thành Viên</h3>
+                <button id="add-member-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+                  <i class="fas fa-user-plus mr-2"></i>Thêm Thành Viên
+                </button>
+              </div>
+              <div id="members-container" class="space-y-3 max-h-72 overflow-y-auto pr-2"></div>
+            </div>
+
+            <!-- Quản lý Mã QR -->
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-700">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white">Quản lý Mã QR</h3>
+                <button id="add-qrcode-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+                  <i class="fas fa-qrcode mr-2"></i>Thêm QR
+                </button>
+              </div>
+              <div id="qrcodes-container" class="space-y-3 max-h-72 overflow-y-auto pr-2"></div>
+            </div>
+
+            <!-- Quản lý Vai trò -->
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-700">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white">Quản lý Vai trò</h3>
+                <button id="add-role-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+                  <i class="fas fa-user-tag mr-2"></i>Thêm Vai trò
+                </button>
+              </div>
+              <div id="roles-container" class="space-y-3 max-h-72 overflow-y-auto pr-2"></div>
+            </div>
+          </div>
+
+          <!-- Cột phải cho Công việc (1/3 màn hình) -->
+          <div class="lg:col-span-1 space-y-6">
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-700">
+              <h3 class="text-xl font-semibold text-white mb-4">Công việc trong Dự án</h3>
+              <div class="overflow-x-auto max-h-[44rem] overflow-y-auto">
+                <table class="w-full text-left">
+                  <thead>
+                    <tr class="text-gray-400 border-b border-gray-700">
+                      <th class="py-2 px-3 font-medium">Công Việc</th>
+                      <th class="py-2 px-3 font-medium">Trạng Thái</th>
+                    </tr>
+                  </thead>
+                  <tbody id="project-tasks-table" class="divide-y divide-gray-700"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODALS CONTAINER -->
+      <div id="modals-container">
+        
+        <!-- [MODAL] Thông báo (Thay thế cho alert) -->
+        <div id="message-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[100] hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-2xl p-8 w-full max-w-md border border-gray-700">
+              <div class="flex justify-between items-center mb-4">
+                <h3 id="message-title" class="text-2xl font-semibold text-white">Thông báo</h3>
+                <button id="close-message-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+              </div>
+              <div id="message-content" class="text-gray-300 mb-6 break-words"></div>
+              <div class="flex justify-end">
+                <button id="ok-message-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">OK</button>
+              </div>
+          </div>
+        </div>
+
+        <!-- [MODAL] Xác nhận Xoá (Chung) -->
+        <div id="confirm-delete-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[90] hidden backdrop-blur-sm">
+            <div class="bg-gray-800 rounded-xl shadow-2xl p-8 w-full max-w-sm border border-gray-700">
+                <h3 class="text-2xl font-semibold text-red-400 mb-4">Xác nhận xoá?</h3>
+                <p id="confirm-delete-message" class="text-gray-300 mb-6">Bạn có chắc chắn muốn xoá mục này không? Hành động này không thể hoàn tác.</p>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="cancel-delete-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                    <button type="button" id="confirm-delete-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Xoá</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- [MODAL] Sửa Dự Án -->
+        <div id="edit-project-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-xl p-8 w-full max-w-md border border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-semibold text-white">Chỉnh sửa dự án</h3>
+              <button id="close-edit-project-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <form id="edit-project-form">
+              <div class="space-y-4">
+                <div>
+                  <label for="edit-project-name" class="block text-sm font-medium text-gray-300 mb-2">Tên dự án</label>
+                  <input type="text" id="edit-project-name" name="name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                  <label for="edit-project-description" class="block text-sm font-medium text-gray-300 mb-2">Mô tả</label>
+                  <textarea id="edit-project-description" name="description" rows="3" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div>
+                  <label for="edit-project-banner" class="block text-sm font-medium text-gray-300 mb-2">URL Ảnh bìa (Tùy chọn)</label>
+                  <input type="text" id="edit-project-banner" name="banner" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://...">
+                </div>
+              </div>
+              <div class="mt-8 flex justify-end space-x-4">
+                <button type="button" id="cancel-edit-project" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Lưu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- [MODAL] Thêm Thành Viên -->
+        <div id="add-member-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-xl p-8 w-full max-w-md border border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-semibold text-white">Thêm thành viên mới</h3>
+              <button id="close-member-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <form id="add-member-form">
+              <div class="space-y-4">
+                <div>
+                  <label for="member-fullname" class="block text-sm font-medium text-gray-300 mb-2">Họ và tên</label>
+                  <input type="text" id="member-fullname" name="fullName" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nguyễn Văn A" required>
+                </div>
+                <div>
+                  <label for="member-email" class="block text-sm font-medium text-gray-300 mb-2">Email thành viên</label>
+                  <input type="email" id="member-email" name="email" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="nhap@email.com" required>
+                </div>
+                <div>
+                  <label for="member-role" class="block text-sm font-medium text-gray-300 mb-2">Vai trò</label>
+                  <select id="member-role" name="roleId" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">Đang tải vai trò...</option>
+                  </select>
+                </div>
+                <!-- Vị trí để hiển thị avatar, không cần input nếu dùng ui-avatars -->
+                <div class="text-sm text-gray-500 pt-2">
+                    * Nếu người dùng chưa tồn tại, mật khẩu tạm thời sẽ được tạo và hiển thị sau khi thêm.
+                </div>
+              </div>
+              <div class="mt-8 flex justify-end space-x-4">
+                <button type="button" id="cancel-add-member" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Thêm</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- [MODAL] Sửa Thành Viên (Bao gồm tên và vai trò) -->
+        <div id="edit-member-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-xl p-8 w-full max-w-md border border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-semibold text-white">Chỉnh sửa thông tin thành viên</h3>
+              <button id="close-edit-member-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <form id="edit-member-form">
+              <input type="hidden" id="edit-member-id">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Email thành viên</label>
+                  <p id="edit-member-email" class="w-full bg-gray-700/50 rounded-lg px-4 py-2 text-gray-400 select-none">loading...</p>
+                </div>
+                <div>
+                    <label for="edit-member-fullname" class="block text-sm font-medium text-gray-300 mb-2">Họ và tên</label>
+                    <input type="text" id="edit-member-fullname" name="fullName" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                  <label for="edit-member-role" class="block text-sm font-medium text-gray-300 mb-2">Vai trò</label>
+                  <select id="edit-member-role" name="roleId" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">Đang tải vai trò...</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-8 flex justify-end space-x-4">
+                <button type="button" id="cancel-edit-member" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Cập nhật</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- [MODAL] Thêm Mã QR -->
+        <div id="add-qrcode-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-xl p-8 w-full max-w-md border border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-semibold text-white">Tạo mã QR mới</h3>
+              <button id="close-qrcode-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <form id="add-qrcode-form">
+              <div class="space-y-4">
+                <div>
+                  <label for="qrcode-name" class="block text-sm font-medium text-gray-300 mb-2">Tên mã QR</label>
+                  <input type="text" id="qrcode-name" name="name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ví dụ: Tầng 1, Khu A" required>
+                </div>
+                <div>
+                  <label for="qrcode-location" class="block text-sm font-medium text-gray-300 mb-2">Vị trí (Tùy chọn)</label>
+                  <input type="text" id="qrcode-location" name="location" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ví dụ: Gần cửa thoát hiểm">
+                </div>
+              </div>
+              <div class="mt-8 flex justify-end space-x-4">
+                <button type="button" id="cancel-add-qrcode" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Tạo</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- [MODAL] Sửa Mã QR -->
+        <div id="edit-qrcode-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-xl p-8 w-full max-w-md border border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-semibold text-white">Chỉnh sửa mã QR</h3>
+              <button id="close-edit-qrcode-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <form id="edit-qrcode-form">
+              <input type="hidden" id="edit-qrcode-id">
+              <div class="space-y-4">
+                <div>
+                  <label for="edit-qrcode-name" class="block text-sm font-medium text-gray-300 mb-2">Tên mã QR</label>
+                  <input type="text" id="edit-qrcode-name" name="name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                  <label for="edit-qrcode-location" class="block text-sm font-medium text-gray-300 mb-2">Vị trí (Tùy chọn)</label>
+                  <input type="text" id="edit-qrcode-location" name="location" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+              </div>
+              <div class="mt-8 flex justify-end space-space-x-4">
+                <button type="button" id="cancel-edit-qrcode" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Lưu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- [MODAL] Thêm Vai Trò -->
+        <div id="add-role-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-xl p-8 w-full max-w-lg border border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-semibold text-white">Tạo vai trò mới</h3>
+              <button id="close-role-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <form id="add-role-form">
+              <div class="space-y-4">
+                <div>
+                  <label for="role-name" class="block text-sm font-medium text-gray-300 mb-2">Tên vai trò</label>
+                  <input type="text" id="role-name" name="name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ví dụ: Quản lý, Nhân viên" required>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Quyền</label>
+                  <div id="permissions-container" class="grid grid-cols-2 md:grid-cols-3 gap-2 bg-gray-700 p-4 rounded-lg max-h-60 overflow-y-auto">
+                    <!-- Permissions will be populated by JavaScript -->
+                  </div>
+                </div>
+              </div>
+              <div class="mt-8 flex justify-end space-x-4">
+                <button type="button" id="cancel-add-role" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Tạo</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- [MODAL] Sửa Vai Trò -->
+        <div id="edit-role-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+          <div class="bg-gray-800 rounded-xl shadow-xl p-8 w-full max-w-lg border border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-2xl font-semibold text-white">Chỉnh sửa vai trò</h3>
+              <button id="close-edit-role-modal" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <form id="edit-role-form">
+              <input type="hidden" id="edit-role-id">
+              <div class="space-y-4">
+                <div>
+                  <label for="edit-role-name" class="block text-sm font-medium text-gray-300 mb-2">Tên vai trò</label>
+                  <input type="text" id="edit-role-name" name="name" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Quyền</label>
+                  <div id="edit-permissions-container" class="grid grid-cols-2 md:grid-cols-3 gap-2 bg-gray-700 p-4 rounded-lg max-h-60 overflow-y-auto">
+                    <!-- Permissions will be populated by JavaScript -->
+                  </div>
+                </div>
+              </div>
+              <div class="mt-8 flex justify-end space-x-4">
+                <button type="button" id="cancel-edit-role" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Hủy</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Lưu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  const API_BASE_URL = '/api';
+  let allPermissions = []; // Lưu trữ danh sách tất cả quyền
+  let currentProjectData = null; // Lưu trữ dữ liệu dự án hiện tại
+
+  // --- Hàm Tiện Ích ---
+  function getToken() { return localStorage.getItem('accessToken'); }
+  function formatDate(dateString) { return dateString ? new Date(dateString).toLocaleDateString('vi-VN') : 'N/A'; }
+  function getProjectIdFromUrl() { return new URLSearchParams(window.location.search).get('id'); }
+
+  // --- Hàm Modal Thông Báo (Thay thế alert) ---
+  const messageModal = document.getElementById('message-modal');
+  const messageTitle = document.getElementById('message-title');
+  const messageContent = document.getElementById('message-content');
+  const closeMessageModalBtn = document.getElementById('close-message-modal');
+  const okMessageBtn = document.getElementById('ok-message-btn');
+
+  function showMessage(message, isError = false) {
+    messageTitle.textContent = isError ? 'Lỗi' : 'Thông báo';
+    messageTitle.className = `text-2xl font-semibold ${isError ? 'text-red-400' : 'text-white'}`;
+    // Sử dụng innerHTML để cho phép định dạng HTML trong thông báo
+    messageContent.innerHTML = message.replace(/\n/g, '<br>');
+    messageModal.classList.remove('hidden');
+  }
+  closeMessageModalBtn.addEventListener('click', () => messageModal.classList.add('hidden'));
+  okMessageBtn.addEventListener('click', () => messageModal.classList.add('hidden'));
+
+  // --- Hàm Modal Xác Nhận Xoá (Chung) ---
+  const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+  const confirmDeleteMessage = document.getElementById('confirm-delete-message');
+  const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+  const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+  let deleteHandler = null; // Sẽ lưu hàm xử lý xoá
+
+  function showDeleteConfirm(itemName, onConfirm) {
+    confirmDeleteMessage.innerHTML = `Bạn có chắc chắn muốn xoá "<strong>${itemName}</strong>"? Hành động này không thể hoàn tác.`;
+    deleteHandler = onConfirm; // Gán hàm callback
+    confirmDeleteModal.classList.remove('hidden');
+  }
+  cancelDeleteBtn.addEventListener('click', () => {
+    confirmDeleteModal.classList.add('hidden');
+    deleteHandler = null;
+  });
+  confirmDeleteBtn.addEventListener('click', async () => {
+    if (deleteHandler) {
+      const originalButtonText = confirmDeleteBtn.innerHTML;
+      confirmDeleteBtn.innerHTML = '<div class="loading"></div>';
+      confirmDeleteBtn.disabled = true;
+      try {
+        await deleteHandler();
+        showMessage('Xoá thành công!', false);
+        await initializePage(); // Tải lại dữ liệu trang
+      } catch (error) {
+        showMessage(`Lỗi khi xoá: ${error.message}`, true);
+      } finally {
+        confirmDeleteBtn.innerHTML = originalButtonText;
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteModal.classList.add('hidden');
+        deleteHandler = null;
+      }
+    }
+  });
+
+
+  // --- Hàm Fetch API (Đã cập nhật) ---
+  async function fetchWithAuth(url, options = {}) {
+    const token = getToken();
+    if (!token) { window.location.href = 'login.html'; return; }
+    
+    // Default headers
+    const defaultHeaders = { 
+        'Authorization': `Bearer ${token}`, 
+        'Content-Type': 'application/json' 
+    };
+    
+    // Merge headers, prioritizing custom headers
+    const finalHeaders = {
+        ...defaultHeaders,
+        ...options.headers
+    };
+
+    const response = await fetch(url, { ...options, headers: finalHeaders });
+    
+    if (response.status === 401) { 
+        localStorage.removeItem('accessToken'); 
+        window.location.href = 'login.html'; 
+        return; 
+    }
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Yêu cầu thất bại (Không thể đọc phản hồi JSON)' }));
+      throw new Error(errorData.message || 'Yêu cầu thất bại');
+    }
+    
+    // Trả về null nếu status là 204 (No Content)
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+      return null;
+    }
+    return response.json();
+  }
+
+  // --- Hàm Render UI ---
+  function renderUserInfo(user) {
+    if (user) {
+      document.getElementById('sidebar-user-name').textContent = user.fullName;
+      document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName)}&background=3B82F6&color=fff`;
+    }
+  }
+
+  // ** PHỤC HỒI: Hàm Render Danh sách Dự án (cho trường hợp không có ID) **
+  function renderProjectList(projects) {
+    const container = document.getElementById('projects-container');
+    if (!projects || projects.length === 0) {
+      container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">Bạn chưa có dự án nào. Hãy tạo dự án đầu tiên!</div>`;
+      return;
+    }
+    container.innerHTML = projects.map(project => `
+      <a href="/project_detail.html?id=${project.id}" class="block bg-gray-900 rounded-xl p-6 hover:bg-gray-700 transition-transform hover:-translate-y-1 shadow-lg border border-gray-700/50">
+        <h3 class="text-xl font-bold text-white mb-2 truncate">${project.name}</h3>
+        <p class="text-gray-400 text-sm mb-4 h-10 overflow-hidden">${project.description || 'Chưa có mô tả'}</p>
+        <div class="flex justify-between items-center text-sm text-gray-300 border-t border-gray-700 pt-4 mt-4">
+          <span><i class="fas fa-qrcode mr-2 text-blue-400"></i> ${project._count.qrcodes} QR Codes</span>
+          <span><i class="fas fa-tasks mr-2 text-green-400"></i> ${project._count.tasks} Tasks</span>
+        </div>
+      </a>`).join('');
+  }
+
+  function renderProjectDetail(projectData) {
+    currentProjectData = projectData; // Lưu dữ liệu dự án
+    
+    document.getElementById('project-info-name').textContent = projectData.name;
+    document.getElementById('project-description').textContent = projectData.description || 'Chưa có mô tả.';
+
+    const banner = document.getElementById('project-banner');
+    banner.style.backgroundImage = `url('${projectData.banner || 'https://images.unsplash.com/photo-1517694712202-1428bc648c73?q=80&w=2070&auto=format&fit=crop'}')`;
+
+    // Lấy các vai trò duy nhất từ thành viên dự án
+    // Giả định role được đính kèm vào user trong projectData.members.user.role
+    const projectRoles = [...new Map(projectData.members.map(item => [item.user.role?.id, item.user.role])).values()].filter(Boolean);
+
+    document.getElementById('detail-qrcode-count').textContent = projectData._count.qrcodes;
+    document.getElementById('detail-task-count').textContent = projectData._count.tasks;
+    document.getElementById('detail-member-count').textContent = projectData._count.members;
+    document.getElementById('detail-role-count').textContent = projectRoles.length;
+
+    // Render Mã QR (logic giữ nguyên)
+    const qrContainer = document.getElementById('qrcodes-container');
+    if (projectData.qrcodes && projectData.qrcodes.length > 0) {
+      qrContainer.innerHTML = projectData.qrcodes.map(qr => `
+        <div class="bg-gray-800 p-3 rounded-lg flex justify-between items-center list-item hover:bg-gray-700 transition-colors border border-gray-700/50">
+          <div>
+            <p class="font-semibold text-white">${qr.name}</p>
+            <p class="text-sm text-gray-400">${qr.location || 'Chưa có vị trí'}</p>
+            <p class="text-xs text-gray-500 mt-1">Tạo lúc: ${formatDate(qr.createdAt)}</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-xs px-2 py-1 rounded-full ${qr.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
+              ${qr.isActive ? 'Hoạt động' : 'Vô hiệu'}
+            </span>
+            <div class="actions flex space-x-2">
+              <button class="edit-qrcode-btn text-blue-400 hover:text-blue-300 transition-colors" data-id="${qr.id}" title="Sửa QR"><i class="fas fa-pencil-alt"></i></button>
+              <button class="delete-item-btn text-red-400 hover:text-red-300 transition-colors" data-id="${qr.id}" data-type="qrcode" data-name="${qr.name}" title="Xoá QR"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      qrContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Chưa có mã QR nào.</p>';
+    }
+
+    // Render Thành Viên (đã cập nhật)
+    const membersContainer = document.getElementById('members-container');
+    if (projectData.members && projectData.members.length > 0) {
+      membersContainer.innerHTML = projectData.members.map(memberData => `
+        <div class="flex items-center bg-gray-800 p-3 rounded-lg list-item hover:bg-gray-700 transition-colors border border-gray-700/50">
+          <img class="w-10 h-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=${encodeURIComponent(memberData.user.fullName)}&background=3B82F6&color=fff" alt="Avatar">
+          <div class="ml-3 overflow-hidden flex-1 min-w-0">
+            <p class="text-sm font-semibold text-white truncate">${memberData.user.fullName}</p>
+            <p class="text-xs text-gray-400 truncate">${memberData.user.email}</p>
+            <p class="text-xs text-blue-400 mt-1">${memberData.user.role?.name || 'Chưa có vai trò'}</p>
+          </div>
+          <div class="ml-auto flex items-center space-x-3 pr-2 actions">
+            <button class="edit-member-btn text-blue-400 hover:text-blue-300 transition-colors" data-user-id="${memberData.user.id}" data-email="${memberData.user.email}" data-fullname="${memberData.user.fullName}" data-role-id="${memberData.user.role?.id || ''}" title="Chỉnh sửa thành viên"><i class="fas fa-user-edit"></i></button>
+            <button class="delete-item-btn text-red-400 hover:text-red-300 transition-colors" data-id="${memberData.user.id}" data-type="member" data-name="${memberData.user.fullName}" title="Xoá thành viên"><i class="fas fa-user-minus"></i></button>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      membersContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Chưa có thành viên nào.</p>';
+    }
+
+    // Render Công Việc (logic giữ nguyên)
+    const tasksContainer = document.getElementById('project-tasks-table');
+    if (projectData.tasks && projectData.tasks.length > 0) {
+        tasksContainer.innerHTML = projectData.tasks.map(task => {
+        const statusClasses = { 'PENDING': 'bg-blue-500/20 text-blue-400', 'IN_PROGRESS': 'bg-yellow-500/20 text-yellow-400', 'COMPLETED': 'bg-green-500/20 text-green-400' };
+        const statusText = { 'PENDING': 'Mới', 'IN_PROGRESS': 'Đang làm', 'COMPLETED': 'Hoàn thành' };
+        return `
+          <tr class="hover:bg-gray-800 transition-colors">
+            <td class="py-3 px-3">
+              <p class="text-white font-medium">${task.title}</p>
+              <p class="text-xs text-gray-400">Tạo lúc: ${formatDate(task.createdAt)}</p>
+            </td>
+            <td class="py-3 px-3"><span class="${statusClasses[task.status] || 'bg-gray-500/20'} text-xs font-semibold px-2 py-1 rounded-full">${statusText[task.status] || task.status}</span></td>
+          </tr>`;
+      }).join('');
+    } else {
+      tasksContainer.innerHTML = '<tr><td colspan="2" class="text-center py-8 text-gray-500">Chưa có công việc nào.</td></tr>';
+    }
+
+    // Render Vai Trò (logic giữ nguyên)
+    const rolesContainer = document.getElementById('roles-container');
+    if (projectRoles.length > 0) {
+      rolesContainer.innerHTML = projectRoles.map(role => `
+        <div class="bg-gray-800 p-3 rounded-lg flex justify-between items-center list-item hover:bg-gray-700 transition-colors border border-gray-700/50">
+          <div>
+            <p class="font-semibold text-white">${role.name}</p>
+          </div>
+          <div class="actions flex space-x-2">
+            <button class="edit-role-btn text-blue-400 hover:text-blue-300 transition-colors" data-id="${role.id}" title="Sửa vai trò"><i class="fas fa-pencil-alt"></i></button>
+            <button class="delete-item-btn text-red-400 hover:text-red-300 transition-colors" data-id="${role.id}" data-type="role" data-name="${role.name}" title="Xoá vai trò"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      rolesContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Chưa có vai trò nào được gán trong dự án này.</p>';
+    }
+  }
+
+  // --- Hàm Chung để Tải Vai Trò & Quyền ---
+  async function populateRolesDropdown(selectElementId, selectedId = null) {
+    const select = document.getElementById(selectElementId);
+    select.innerHTML = '<option value="">Đang tải...</option>';
+    try {
+      const roles = await fetchWithAuth(`${API_BASE_URL}/roles`);
+      select.innerHTML = '<option value="" disabled>Chọn một vai trò</option>';
+      roles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role.id;
+        option.textContent = role.name;
+        if (role.id === selectedId) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+      if (!selectedId) {
+        select.querySelector('option[disabled]').selected = true;
+      }
+    } catch (error) {
+      console.error('Failed to fetch roles:', error);
+      select.innerHTML = '<option value="">Không thể tải vai trò</option>';
+    }
+  }
+
+  async function fetchAllPermissions() {
+    try {
+      const response = await fetchWithAuth(`${API_BASE_URL}/roles/permissions/list`);
+      allPermissions = response.permissions || [];
+    } catch (error) {
+      console.error('Failed to fetch permissions:', error);
+      allPermissions = [];
+    }
+  }
+  
+  // --- Hàm Chung cho Xử lý Form và Cập nhật trạng thái tải ---
+  async function handleFormSubmit(form, url, method, data, modalToClose, successMessage) {
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+    submitButton.innerHTML = '<div class="loading mx-auto"></div>';
+    submitButton.disabled = true;
+
+    try {
+        const responseData = await fetchWithAuth(url, {
+            method: method,
+            body: JSON.stringify(data),
+        });
+        
+        // Đóng modal chính
+        if (modalToClose) modalToClose();
+
+        await initializePage(); // Tải lại dữ liệu trang
+
+        // Xử lý trường hợp đặc biệt: Thêm thành viên trả về mật khẩu tạm thời
+        if (responseData && responseData.temporaryPassword) {
+            showMessage(`
+                <strong class="text-lg">Thêm thành viên mới thành công!</strong>
+                <br><br>
+                Mật khẩu tạm thời cho ${data.email}:
+                <div class="my-3 p-3 bg-gray-900 rounded-lg font-mono text-xl text-green-300 break-all">${responseData.temporaryPassword}</div>
+                <small class="text-gray-400">Hãy sao chép và gửi cho thành viên. Họ sẽ được yêu cầu đổi mật khẩu sau khi đăng nhập.</small>
+            `, false);
+        } else {
+            showMessage(successMessage, false);
+        }
+
+    } catch (error) {
+        showMessage(`Lỗi: ${error.message}`, true);
+    } finally {
+        submitButton.innerHTML = originalButtonText;
+        submitButton.disabled = false;
+    }
+  }
+
+  // --- Hàm Khởi Tạo Trang ---
+  async function initializePage() {
+    const projectId = getProjectIdFromUrl();
+    const loadingState = document.getElementById('loading-state');
+    const listView = document.getElementById('list-view');
+    const detailView = document.getElementById('detail-view');
+    const pageTitle = document.getElementById('page-title');
+    const createProjectBtn = document.getElementById('create-project-btn');
+
+    // Reset view
+    listView.style.display = 'none';
+    detailView.style.display = 'none';
+    loadingState.style.display = 'block';
+
+    try {
+      const user = await fetchWithAuth(`${API_BASE_URL}/auth/profile`);
+      renderUserInfo(user);
+
+      if (projectId) {
+        pageTitle.textContent = 'Chi Tiết Dự Án';
+        createProjectBtn.style.display = 'none';
+
+        const projectData = await fetchWithAuth(`${API_BASE_URL}/projects/${projectId}`);
+        renderProjectDetail(projectData);
+        detailView.style.display = 'block';
+      } else {
+        // ** LOGIC ĐƯỢC CHỈNH SỬA CHO TRƯỜNG HỢP KHÔNG CÓ ID DỰ ÁN **
+        pageTitle.textContent = 'Danh sách Dự án';
+        createProjectBtn.style.display = 'flex';
+        
+        // Cố gắng tải danh sách dự án
+        const projects = await fetchWithAuth(`${API_BASE_URL}/projects`);
+        
+        // Hiển thị danh sách dự án
+        renderProjectList(projects);
+        listView.style.display = 'block';
+        loadingState.style.display = 'none'; // Ẩn trạng thái tải sau khi render
+        return; // Kết thúc hàm ở đây
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Nếu có lỗi trong try block (bao gồm cả lỗi fetch), hiển thị lỗi và vẫn ẩn spinner.
+      loadingState.innerHTML = `<p class="text-red-400 text-center py-10">Lỗi: ${error.message}</p>`;
+      // Nếu không có project ID, nhưng lại xảy ra lỗi fetch (ví dụ: lỗi Auth),
+      // chúng ta muốn hiển thị lỗi thay vì để màn hình trống.
+    } finally {
+      // Chỉ ẩn loading spinner, nhưng giữ nguyên nội dung (hoặc thông báo lỗi) nếu đã được cập nhật.
+      if (loadingState.innerHTML.includes('loading')) {
+          loadingState.style.display = 'none';
+      }
+    }
+  }
+  
+  // Các hàm liên quan đến Quyền (Permissions)
+  function renderPermissionsCheckboxes(containerId, checkedPermissions = []) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    if (allPermissions.length === 0) {
+      container.innerHTML = '<p class="text-red-400 col-span-full">Không thể tải quyền.</p>';
+      return;
+    }
+    
+    allPermissions.forEach(permission => {
+      const isChecked = checkedPermissions.includes(permission);
+      const div = document.createElement('div');
+      div.className = 'flex items-center';
+      div.innerHTML = `
+        <input type="checkbox" id="perm-${containerId}-${permission}" name="permissions" value="${permission}" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded" ${isChecked ? 'checked' : ''}>
+        <label for="perm-${containerId}-${permission}" class="ml-2 text-sm text-gray-300">${permission}</label>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+
+  // --- Gán Sự Kiện ---
+  document.addEventListener('DOMContentLoaded', () => {
+    initializePage();
+    fetchAllPermissions(); // Tải danh sách quyền khi trang load
+
+    // Đăng xuất
+    document.getElementById('logout-button')?.addEventListener('click', () => {
+      localStorage.removeItem('accessToken');
+      window.location.href = 'login.html';
+    });
+
+    // Menu Mobile
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    if (mobileMenuBtn && sidebar) {
+      mobileMenuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        sidebar.classList.add('absolute', 'z-20', 'h-full');
+      });
+    }
+
+    // --- Logic Sửa/Xoá Dự Án ---
+    const editProjectModal = document.getElementById('edit-project-modal');
+    const editProjectForm = document.getElementById('edit-project-form');
+    const closeEditProjectModal = () => editProjectModal.classList.add('hidden');
+
+    document.getElementById('edit-project-btn')?.addEventListener('click', () => {
+        if(currentProjectData) {
+          document.getElementById('edit-project-name').value = currentProjectData.name;
+          document.getElementById('edit-project-description').value = currentProjectData.description || '';
+          document.getElementById('edit-project-banner').value = currentProjectData.banner || '';
+          editProjectModal.classList.remove('hidden');
+        }
+    });
+    document.getElementById('close-edit-project-modal').addEventListener('click', closeEditProjectModal);
+    document.getElementById('cancel-edit-project').addEventListener('click', closeEditProjectModal);
+    
+    editProjectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const projectId = getProjectIdFromUrl();
+        const data = {
+            name: e.target.name.value,
+            description: e.target.description.value,
+            banner: e.target.banner.value
+        };
+        handleFormSubmit(editProjectForm, `${API_BASE_URL}/projects/${projectId}`, 'PATCH', data, closeEditProjectModal, 'Cập nhật dự án thành công!');
+    });
+
+    document.getElementById('delete-project-btn')?.addEventListener('click', () => {
+        if(currentProjectData) {
+            showDeleteConfirm(`dự án "${currentProjectData.name}"`, async () => {
+                await fetchWithAuth(`${API_BASE_URL}/projects/${currentProjectData.id}`, { method: 'DELETE' });
+                // Xoá thành công, chuyển về trang danh sách (hoặc dashboard)
+                window.location.href = '/dashboard.html';
+            });
+        }
+    });
+
+    // --- Logic Thêm Thành Viên (ADD MEMBER) ---
+    const addMemberModal = document.getElementById('add-member-modal');
+    const addMemberBtn = document.getElementById('add-member-btn');
+    const closeMemberModalBtn = document.getElementById('close-member-modal');
+    const cancelAddMemberBtn = document.getElementById('cancel-add-member');
+    const addMemberForm = document.getElementById('add-member-form');
+    const closeMemberModal = () => addMemberModal.classList.add('hidden');
+
+    addMemberBtn?.addEventListener('click', () => {
+      addMemberForm.reset();
+      populateRolesDropdown('member-role');
+      addMemberModal.classList.remove('hidden');
+    });
+    
+    closeMemberModalBtn.addEventListener('click', closeMemberModal);
+    cancelAddMemberBtn.addEventListener('click', closeMemberModal);
+
+    addMemberForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const projectId = getProjectIdFromUrl();
+      const data = { 
+        fullName: e.target.fullName.value, 
+        email: e.target.email.value, 
+        roleId: e.target.roleId.value, 
+        projectId 
+      };
+      
+      // Sử dụng hàm handleFormSubmit đã được tùy chỉnh để xử lý mật khẩu tạm thời
+      handleFormSubmit(addMemberForm, `${API_BASE_URL}/members`, 'POST', data, closeMemberModal, 'Thêm thành viên thành công (Đã thêm người dùng đã tồn tại)!');
+    });
+
+    // --- Logic Sửa Thành Viên (EDIT MEMBER) ---
+    const editMemberModal = document.getElementById('edit-member-modal');
+    const editMemberForm = document.getElementById('edit-member-form');
+    const closeEditMemberModal = () => editMemberModal.classList.add('hidden');
+    
+    document.getElementById('members-container')?.addEventListener('click', async (e) => {
+      const editButton = e.target.closest('.edit-member-btn');
+      if (editButton) {
+          const userId = editButton.dataset.userId; // Dùng userId để update
+          const memberEmail = editButton.dataset.email;
+          const memberFullName = editButton.dataset.fullname;
+          const currentRoleId = editButton.dataset.roleId;
+
+          document.getElementById('edit-member-id').value = userId;
+          document.getElementById('edit-member-email').textContent = memberEmail;
+          document.getElementById('edit-member-fullname').value = memberFullName;
+
+          await populateRolesDropdown('edit-member-role', currentRoleId);
+          editMemberModal.classList.remove('hidden');
+      }
+    });
+    document.getElementById('close-edit-member-modal').addEventListener('click', closeEditMemberModal);
+    document.getElementById('cancel-edit-member').addEventListener('click', closeEditMemberModal);
+
+    editMemberForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const memberId = document.getElementById('edit-member-id').value;
+        const data = {
+            fullName: document.getElementById('edit-member-fullname').value,
+            roleId: document.getElementById('edit-member-role').value
+        };
+        
+        // Gửi fullName và roleId đến endpoint UPDATE
+        handleFormSubmit(editMemberForm, `${API_BASE_URL}/members/${memberId}`, 'PUT', data, closeEditMemberModal, 'Cập nhật thành viên thành công!');
+    });
+
+
+    // --- Logic Thêm Mã QR ---
+    const addQrcodeModal = document.getElementById('add-qrcode-modal');
+    const addQrcodeBtn = document.getElementById('add-qrcode-btn');
+    const closeQrcodeModalBtn = document.getElementById('close-qrcode-modal');
+    const cancelAddQrcodeBtn = document.getElementById('cancel-add-qrcode');
+    const addQrcodeForm = document.getElementById('add-qrcode-form');
+    const closeQrcodeModal = () => addQrcodeModal.classList.add('hidden');
+
+    addQrcodeBtn?.addEventListener('click', () => {
+      addQrcodeForm.reset();
+      addQrcodeModal.classList.remove('hidden');
+    });
+    closeQrcodeModalBtn.addEventListener('click', closeQrcodeModal);
+    cancelAddQrcodeBtn.addEventListener('click', closeQrcodeModal);
+
+    addQrcodeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const projectId = getProjectIdFromUrl();
+      const data = { 
+        name: e.target.name.value, 
+        location: e.target.location.value, 
+        projectId 
+      };
+      handleFormSubmit(addQrcodeForm, `${API_BASE_URL}/qrcodes`, 'POST', data, closeQrcodeModal, 'Tạo mã QR thành công!');
+    });
+
+    // --- Logic Sửa Mã QR ---
+    const editQrcodeModal = document.getElementById('edit-qrcode-modal');
+    const editQrcodeForm = document.getElementById('edit-qrcode-form');
+    const closeEditQrcodeModal = () => editQrcodeModal.classList.add('hidden');
+    
+    document.getElementById('qrcodes-container')?.addEventListener('click', async (e) => {
+        const editButton = e.target.closest('.edit-qrcode-btn');
+        if (editButton) {
+            const qrId = editButton.dataset.id;
+            try {
+                const qrData = await fetchWithAuth(`${API_BASE_URL}/qrcodes/${qrId}`);
+                document.getElementById('edit-qrcode-id').value = qrData.id;
+                document.getElementById('edit-qrcode-name').value = qrData.name;
+                document.getElementById('edit-qrcode-location').value = qrData.location || '';
+                editQrcodeModal.classList.remove('hidden');
+            } catch (error) {
+                showMessage(`Lỗi: ${error.message}`, true);
+            }
+        }
+    });
+    document.getElementById('close-edit-qrcode-modal').addEventListener('click', closeEditQrcodeModal);
+    document.getElementById('cancel-edit-qrcode').addEventListener('click', closeEditQrcodeModal);
+
+    editQrcodeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const qrId = document.getElementById('edit-qrcode-id').value;
+        const data = {
+            name: e.target.name.value,
+            location: e.target.location.value
+        };
+        handleFormSubmit(editQrcodeForm, `${API_BASE_URL}/qrcodes/${qrId}`, 'PATCH', data, closeEditQrcodeModal, 'Cập nhật mã QR thành công!');
+    });
+
+
+    // --- Logic Thêm Vai Trò ---
+    const addRoleModal = document.getElementById('add-role-modal');
+    const addRoleForm = document.getElementById('add-role-form');
+    const closeRoleModal = () => addRoleModal.classList.add('hidden');
+
+    document.getElementById('add-role-btn')?.addEventListener('click', () => {
+      addRoleForm.reset();
+      renderPermissionsCheckboxes('permissions-container', []);
+      addRoleModal.classList.remove('hidden');
+    });
+    document.getElementById('close-role-modal').addEventListener('click', closeRoleModal);
+    document.getElementById('cancel-add-role').addEventListener('click', closeRoleModal);
+
+    addRoleForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const selectedPermissions = Array.from(e.target.querySelectorAll('input[name="permissions"]:checked')).map(cb => cb.value);
+      const data = {
+          name: e.target.name.value,
+          permissions: selectedPermissions
+      };
+      handleFormSubmit(addRoleForm, `${API_BASE_URL}/roles`, 'POST', data, closeRoleModal, 'Tạo vai trò thành công!');
+    });
+
+    // --- Logic Sửa Vai Trò ---
+    const editRoleModal = document.getElementById('edit-role-modal');
+    const editRoleForm = document.getElementById('edit-role-form');
+    const closeEditRoleModal = () => editRoleModal.classList.add('hidden');
+    
+    document.getElementById('roles-container')?.addEventListener('click', async (e) => {
+      const editButton = e.target.closest('.edit-role-btn');
+      if (editButton) {
+          const roleId = editButton.dataset.id;
+          try {
+              const roleData = await fetchWithAuth(`${API_BASE_URL}/roles/${roleId}`);
+              document.getElementById('edit-role-id').value = roleData.id;
+              document.getElementById('edit-role-name').value = roleData.name;
+              renderPermissionsCheckboxes('edit-permissions-container', roleData.permissions);
+              editRoleModal.classList.remove('hidden');
+          } catch (error) {
+              showMessage(`Lỗi: ${error.message}`, true);
+          }
+      }
+    });
+    document.getElementById('close-edit-role-modal').addEventListener('click', closeEditRoleModal);
+    document.getElementById('cancel-edit-role').addEventListener('click', closeEditRoleModal);
+
+    editRoleForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const roleId = document.getElementById('edit-role-id').value;
+        const selectedPermissions = Array.from(e.target.querySelectorAll('input[name="permissions"]:checked')).map(cb => cb.value);
+        const data = {
+            name: e.target.name.value,
+            permissions: selectedPermissions
+        };
+        handleFormSubmit(editRoleForm, `${API_BASE_URL}/roles/${roleId}`, 'PATCH', data, closeEditRoleModal, 'Cập nhật vai trò thành công!');
+    });
+
+
+    // --- Logic Xoá Chung (Event Delegation) ---
+    document.getElementById('detail-view')?.addEventListener('click', (e) => {
+        const deleteButton = e.target.closest('.delete-item-btn');
+        if (deleteButton) {
+            const id = deleteButton.dataset.id;
+            const type = deleteButton.dataset.type;
+            const name = deleteButton.dataset.name;
+            let url = '';
+            let itemName = '';
+
+            switch (type) {
+                case 'qrcode':
+                    url = `${API_BASE_URL}/qrcodes/${id}`;
+                    itemName = `mã QR "${name}"`;
+                    break;
+                case 'member':
+                    // NOTE: This assumes deleting the User from the tenant, as per NestJS service logic.
+                    url = `${API_BASE_URL}/members/${id}`;
+                    itemName = `thành viên "${name}"`;
+                    break;
+                case 'role':
+                    url = `${API_BASE_URL}/roles/${id}`;
+                    itemName = `vai trò "${name}"`;
+                    break;
+                default:
+                    return;
+            }
+
+            showDeleteConfirm(itemName, () => fetchWithAuth(url, { method: 'DELETE' }));
+        }
+    });
+  });
+</script>
+
+</body>
+</html>

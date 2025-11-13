@@ -1,3 +1,5 @@
+// src/role/role.controller.ts
+
 import {
   Controller,
   Get,
@@ -24,27 +26,25 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post()
-  @Permissions(Permission.CREATE_ROLE, Permission.MANAGE_ROLE)
+  @Permissions(Permission.CREATE_ROLE)
   async create(
     @Body() createRoleDto: CreateRoleDto,
     @Request() req: RequestWithUser,
-  ): Promise<any> {
-    const tenantId = req.user.tenantId;
-
-    return this.roleService.create(createRoleDto, tenantId);
+  ) {
+    const { tenantId, userId } = req.user;
+    return this.roleService.create(createRoleDto, tenantId, userId);
   }
 
   @Get()
-  @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  async findAll(@Request() req: RequestWithUser): Promise<any> {
-    const tenantId = req.user.tenantId;
-
+  @Permissions(Permission.READ_ROLE)
+  async findAll(@Request() req: RequestWithUser) {
+    const { tenantId } = req.user;
     return this.roleService.findAll(tenantId);
   }
 
   @Get('permissions/list')
-  @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  getAvailablePermissions(): any {
+  @Permissions(Permission.READ_ROLE)
+  getAvailablePermissions() {
     return {
       permissions: Object.values(Permission),
       description: 'List of all available permissions in the system',
@@ -52,47 +52,48 @@ export class RoleController {
   }
 
   @Get('my-permissions')
-  async getMyPermissions(@Request() req: RequestWithUser): Promise<any> {
-    const userId = req.user.userId;
+  async getMyPermissions(@Request() req: RequestWithUser) {
+    const { userId, isSuperAdmin } = req.user;
     const permissions = await this.roleService.getUserPermissions(userId);
     return {
-      userId: userId,
-      permissions: permissions,
-      isSuperAdmin: req.user.isSuperAdmin,
+      userId,
+      permissions,
+      isSuperAdmin,
     };
   }
 
   @Get(':id')
-  @Permissions(Permission.READ_ROLE, Permission.MANAGE_ROLE)
-  async findOne(
-    @Param('id') id: string,
-    @Request() req: RequestWithUser,
-  ): Promise<any> {
-    const tenantId = req.user.tenantId;
-
+  @Permissions(Permission.READ_ROLE)
+  async findOne(@Param('id') id: string, @Request() req: RequestWithUser) {
+    const { tenantId } = req.user;
     return this.roleService.findOne(id, tenantId);
   }
 
+  @Get(':id/members')
+  @Permissions(Permission.READ_ROLE)
+  async findMembersByRole(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ) {
+    const { tenantId } = req.user;
+    return this.roleService.findMembersByRole(id, tenantId);
+  }
+
   @Put(':id')
-  @Permissions(Permission.UPDATE_ROLE, Permission.MANAGE_ROLE)
+  @Permissions(Permission.UPDATE_ROLE)
   async update(
     @Param('id') id: string,
     @Body() updateRoleDto: UpdateRoleDto,
     @Request() req: RequestWithUser,
-  ): Promise<any> {
-    const tenantId = req.user.tenantId;
-
-    return this.roleService.update(id, updateRoleDto, tenantId);
+  ) {
+    const { tenantId, userId } = req.user;
+    return this.roleService.update(id, updateRoleDto, tenantId, userId);
   }
 
   @Delete(':id')
-  @Permissions(Permission.DELETE_ROLE, Permission.MANAGE_ROLE)
-  async delete(
-    @Param('id') id: string,
-    @Request() req: RequestWithUser,
-  ): Promise<any> {
-    const tenantId = req.user.tenantId;
-
-    return this.roleService.delete(id, tenantId);
+  @Permissions(Permission.DELETE_ROLE)
+  async delete(@Param('id') id: string, @Request() req: RequestWithUser) {
+    const { tenantId, userId } = req.user;
+    return this.roleService.delete(id, tenantId, userId);
   }
 }

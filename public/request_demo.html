@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yêu Cầu Demo - AEGISM</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Sử dụng font Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'aegism-blue': '#2563EB',
+                        'aegism-dark': '#1F2937',
+                        'aegism-light-bg': '#F9FAFB',
+                        'aegism-card-bg': '#FFFFFF',
+                        'aegism-input-bg': '#F3F4F6',
+                        'aegism-border': '#E5E7EB',
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-aegism-light-bg text-aegism-dark">
+
+    <!-- Header -->
+    <header class="bg-white sticky top-0 z-50 shadow-sm" x-data="{ open: false }">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <svg class="h-8 w-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.666 22.6667L8 27.3334H3.33301L7.99967 22.6667H12.666Z" fill="#2563EB"/>
+                        <path d="M19.3337 22.6667L24.0003 27.3334H28.667L24.0003 22.6667H19.3337Z" fill="#2563EB"/>
+                        <path d="M16.0013 16L20.668 20.6667H11.3346L16.0013 16Z" fill="#2563EB"/>
+                        <path d="M12.666 9.33333L8 -1.52588e-05L3.33301 4.66665L7.99967 9.33333H12.666Z" fill="#2563EB" fill-opacity="0.6"/>
+                        <path d="M19.3337 9.33333L24.0003 4.66665L28.667 9.33333H24.0003L19.3337 9.33333Z" fill="#2563EB" fill-opacity="0.6"/>
+                        <path d="M16.0013 16L20.668 11.3333H11.3346L16.0013 16Z" fill="#2563EB" fill-opacity="0.6"/>
+                    </svg>
+                    <span class="font-bold text-2xl text-aegism-dark ml-2">AEGISM</span>
+                </div>
+                <!-- Navigation -->
+                <nav class="hidden md:flex md:items-center md:space-x-10">
+                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Sản phẩm</a>
+                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Giải pháp</a>
+                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Giá cả</a>
+                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Về chúng tôi</a>
+                    <a href="aegism_login_page.html" class="font-medium text-gray-600 hover:text-aegism-blue">Đăng nhập</a>
+                </nav>
+                <!-- CTA Button -->
+                <div class="flex items-center">
+                    <a href="aegism_demo_page.html" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                        Yêu Cầu Demo
+                    </a>
+                    <!-- Mobile menu button -->
+                    <button @click="open = !open" type="button" class="ml-2 md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aegism-blue" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Mở menu</span>
+                        <svg x-show="!open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                        <svg x-show="open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile menu, show/hide based on menu state. -->
+            <div x-show="open" class="md:hidden" id="mobile-menu">
+                <div class="pt-2 pb-3 space-y-1">
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Sản phẩm</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giải pháp</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giá cả</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Về chúng tôi</a>
+                    <a href="aegism_login_page.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Đăng nhập</a>
+                    <a href="aegism_demo_page.html" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                        Yêu Cầu Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-16 md:py-24">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <!-- Header Text -->
+            <div class="text-left mb-16 max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-aegism-dark tracking-tight">
+                    Yêu cầu Demo AEGISM
+                </h1>
+                <p class="mt-6 text-lg text-gray-600">
+                    Điền thông tin bên dưới để đặt lịch demo trực tiếp 1-1 với chuyên gia của chúng tôi và khám phá cách AEGISM tối ưu hóa vận hành và tăng cường an ninh cho doanh nghiệp của bạn.
+                </p>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column: Contact Form -->
+                <div class="lg:col-span-2 bg-white p-8 md:p-10 rounded-lg shadow-lg">
+                    <form action="#" method="POST" x-data="calendar()">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Họ và Tên -->
+                            <div>
+                                <label for="ho-va-ten" class="block text-sm font-medium text-gray-700 mb-2">Họ và Tên</label>
+                                <input type="text" name="ho-va-ten" id="ho-va-ten" placeholder="Nhập họ và tên của bạn" class="block w-full px-4 py-3 bg-aegism-input-bg border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                            </div>
+                            <!-- Tên Công Ty -->
+                            <div>
+                                <label for="ten-cong-ty" class="block text-sm font-medium text-gray-700 mb-2">Tên Công Ty</label>
+                                <input type="text" name="ten-cong-ty" id="ten-cong-ty" placeholder="Nhập tên công ty của bạn" class="block w-full px-4 py-3 bg-aegism-input-bg border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                            </div>
+                            <!-- Vị trí/Chức vụ -->
+                            <div>
+                                <label for="chuc-vu" class="block text-sm font-medium text-gray-700 mb-2">Vị trí/Chức vụ</label>
+                                <input type="text" name="chuc-vu" id="chuc-vu" placeholder="Nhập vị trí của bạn" class="block w-full px-4 py-3 bg-aegism-input-bg border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                            </div>
+                            <!-- Email công việc -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email công việc</label>
+                                <input type="email" name="email" id="email" placeholder="Nhập email công việc" class="block w-full px-4 py-3 bg-aegism-input-bg border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <!-- Số Điện Thoại -->
+                        <div class="mt-6">
+                            <label for="so-dien-thoai" class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
+                            <input type="tel" name="so-dien-thoai" id="so-dien-thoai" placeholder="Nhập số điện thoại của bạn" class="block w-full px-4 py-3 bg-aegism-input-bg border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                        </div>
+
+                        <!-- Lịch -->
+                        <div class="mt-8">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Chọn ngày và giờ phù hợp với bạn</label>
+                            <div class="bg-white border border-aegism-border rounded-lg p-4">
+                                <!-- Calendar Header -->
+                                <div class="flex justify-between items-center mb-4">
+                                    <button @click.prevent="prevMonth()" class="p-2 rounded-full hover:bg-gray-100">
+                                        <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                    </button>
+                                    <h3 class="font-semibold text-gray-800" x-text="`${monthNames[month]} ${year}`"></h3>
+                                    <button @click.prevent="nextMonth()" class="p-2 rounded-full hover:bg-gray-100">
+                                        <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                    </button>
+                                </div>
+                                <!-- Calendar Days (Grid) -->
+                                <div class="grid grid-cols-7 gap-1 text-center">
+                                    <!-- Day Headers -->
+                                    <template x-for="day in dayNames" :key="day">
+                                        <div class="text-xs font-semibold text-gray-500 uppercase py-2" x-text="day"></div>
+                                    </template>
+                                    <!-- Blank Days -->
+                                    <template x-for="blankday in blankDays">
+                                        <div class="p-2"></div>
+                                    </template>
+                                    <!-- Date Days -->
+                                    <template x-for="day in daysInMonth" :key="day">
+                                        <button @click.prevent="selectDate(day)"
+                                                :class="{
+                                                    'bg-aegism-blue text-white': isSelected(day),
+                                                    'text-gray-700 hover:bg-blue-100': !isSelected(day) && !isToday(day),
+                                                    'text-aegism-blue font-bold': isToday(day) && !isSelected(day)
+                                                }"
+                                                class="relative w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-200 cursor-pointer"
+                                                x-text="day">
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Submit Button -->
+                        <div class="mt-8">
+                            <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-aegism-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aegism-blue">
+                                Hoàn tất & Gửi Yêu Cầu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Info Card -->
+                <div class="space-y-8">
+                    <div class="bg-white p-8 rounded-lg shadow-lg">
+                        <div class="flex justify-center mb-6">
+                            <span class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-aegism-blue">
+                                <!-- Icon (lá chắn) -->
+                                <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.016h-.008v-.016z" />
+                                </svg>
+                            </span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-aegism-dark mb-8 text-center">Tại sao nên chọn AEGISM?</h3>
+                        <div class="space-y-6">
+                            <!-- Feature 1 -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-6 w-6 text-aegism-blue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-base font-semibold text-aegism-dark">Giám sát an ninh toàn diện 24/7</p>
+                                    <p class="text-sm text-gray-600">Hệ thống giám sát liên tục, đảm bảo an toàn tuyệt đối cho cơ sở của bạn.</p>
+                                </div>
+                            </div>
+                            <!-- Feature 2 -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-6 w-6 text-aegism-blue">
+                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-base font-semibold text-aegism-dark">Tối ưu hóa hiệu suất vận hành</p>
+                                    <p class="text-sm text-gray-600">Phân tích dữ liệu thông minh để cải thiện quy trình và giảm chi phí.</p>
+                                </div>
+                            </div>
+                            <!-- Feature 3 -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-6 w-6 text-aegism-blue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 01-5.714 0" /></svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-base font-semibold text-aegism-dark">Báo cáo trực quan và cảnh báo tức thì</p>
+                                    <p class="text-sm text-gray-600">Nhận thông tin quan trọng ngay lập tức qua hệ thống cảnh báo và báo cáo dễ hiểu.</p>
+                                </div>
+                            </div>
+                             <!-- Feature 4 -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-6 w-6 text-aegism-blue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17.11l2.42-2.42m2.13-2.13l-4.55-4.55M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-base font-semibold text-aegism-dark">Giao diện thân thiện, dễ dàng tích hợp</p>
+                                    <p class="text-sm text-gray-600">Thiết kế tập trung vào người dùng và khả năng kết nối linh hoạt với các hệ thống khác.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial -->
+                        <div class="mt-10 pt-6 border-t border-aegism-border">
+                            <blockquote class="text-base text-gray-700 italic">
+                                "AEGISM đã thay đổi hoàn toàn cách chúng tôi quản lý an ninh. Hiệu quả và đáng tin cậy."
+                            </blockquote>
+                            <p class="mt-4 font-semibold text-aegism-dark">Trưởng phòng An ninh</p>
+                            <p class="text-sm text-gray-500">Tập đoàn TechCorp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex justify-between items-center flex-col md:flex-row">
+                <!-- Left Side -->
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg class="h-6 w-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.666 22.6667L8 27.3334H3.33301L7.99967 22.6667H12.666Z" fill="#2563EB"/><path d="M19.3337 22.6667L24.0003 27.3334H28.667L24.0003 22.6667H19.3337Z" fill="#2563EB"/><path d="M16.0013 16L20.668 20.6667H11.3346L16.0013 16Z" fill="#2563EB"/><path d="M12.666 9.33333L8 -1.52588e-05L3.33301 4.66665L7.99967 9.33333H12.666Z" fill="#2563EB" fill-opacity="0.6"/><path d="M19.3337 9.33333L24.0003 4.66665L28.667 9.33333H24.0003L19.3337 9.33333Z" fill="#2563EB" fill-opacity="0.6"/><path d="M16.0013 16L20.668 11.3333H11.3346L16.0013 16Z" fill="#2563EB" fill-opacity="0.6"/>
+                    </svg>
+                    <span>© 2024 AEGISM. All rights reserved.</span>
+                </div>
+                <!-- Right Side: Links -->
+                <div class="flex space-x-6 mt-4 md:mt-0 text-sm">
+                    <a href="#" class="text-gray-500 hover:text-gray-900">Điều khoản</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900">Chính sách</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Alpine.js Calendar Logic -->
+    <script>
+        function calendar() {
+            return {
+                month: 11, // 11 = Tháng 12 (vì 0-11)
+                year: 2024,
+                selectedDate: 11, // Ngày 11 được chọn như trong hình
+                today: new Date(2024, 11, 13).getDate(), // Giả sử hôm nay là ngày 13/12/2024
+                monthNames: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
+                dayNames: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+                daysInMonth: [],
+                blankDays: [],
+
+                init() {
+                    this.getDaysInMonth();
+                },
+
+                getDaysInMonth() {
+                    const days = new Date(this.year, this.month + 1, 0).getDate();
+                    let startDay = new Date(this.year, this.month, 1).getDay(); // 0 = CN, 1 = T2
+                    
+                    // Điều chỉnh startDay (để tuần bắt đầu từ T2)
+                    startDay = (startDay === 0) ? 6 : startDay - 1;
+
+                    this.blankDays = Array.from({ length: startDay }, (_, i) => i + 1);
+                    this.daysInMonth = Array.from({ length: days }, (_, i) => i + 1);
+                },
+
+                prevMonth() {
+                    if (this.month === 0) {
+                        this.year--;
+                        this.month = 11;
+                    } else {
+                        this.month--;
+                    }
+                    this.getDaysInMonth();
+                },
+
+                nextMonth() {
+                    if (this.month === 11) {
+                        this.year++;
+                        this.month = 0;
+                    } else {
+                        this.month++;
+                    }
+                    this.getDaysInMonth();
+                },
+
+                selectDate(day) {
+                    this.selectedDate = day;
+                },
+
+                isSelected(day) {
+                    return this.selectedDate === day;
+                },
+                
+                isToday(day) {
+                    const todayDate = new Date();
+                    const simulatedToday = new Date(2024, 11, 13);
+                    
+                    return this.year === simulatedToday.getFullYear() &&
+                           this.month === simulatedToday.getMonth() &&
+                           day === simulatedToday.getDate();
+                }
+            };
+        }
+    </script>
+
+</body>
+</html>

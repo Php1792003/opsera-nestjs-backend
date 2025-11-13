@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateMemberDto {
   @IsEmail()
@@ -6,10 +12,14 @@ export class CreateMemberDto {
   email: string;
 
   @IsString()
-  @IsNotEmpty()
-  fullName: string;
+  @IsOptional()
+  fullName?: string;
 
   @IsUUID()
   @IsNotEmpty()
   roleId: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  projectId: string;
 }

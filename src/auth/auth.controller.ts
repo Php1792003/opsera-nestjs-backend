@@ -7,13 +7,14 @@ import {
   UseGuards,
   Get,
   Request,
+  Res,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-
-// Import interface mới của chúng ta
 import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 @Controller('auth')
@@ -25,10 +26,39 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
+  // ✅ FIX: Route chính cho API JSON (dùng cho frontend AJAX)
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async apiLogin(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
+  }
+
+  // ✅ FIX: Route riêng cho form HTML submit (nếu cần)
+  @Post('login-form')
+  async loginFromForm(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    try {
+      const { accessToken } = await this.authService.login(loginDto);
+
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      });
+
+      return res.redirect('/dashboard');
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        const errorMessage = encodeURIComponent(
+          'Email hoặc mật khẩu không đúng.',
+        );
+        return res.redirect(`/login?error=${errorMessage}`);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(JwtAuthGuard)

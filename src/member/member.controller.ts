@@ -29,13 +29,13 @@ export class MemberController {
     @Body() createMemberDto: CreateMemberDto,
     @Request() req: RequestWithUser,
   ) {
-    return this.memberService.create(createMemberDto, req.user.tenantId);
+    const { tenantId, userId } = req.user;
+    return this.memberService.create(createMemberDto, tenantId, userId);
   }
 
   @Get()
   @Permissions(Permission.READ_USER)
   findAll(@Request() req: RequestWithUser) {
-    // ✅ ĐÃ SỬA: RequestWith-user -> RequestWithUser
     return this.memberService.findAll(req.user.tenantId);
   }
 
@@ -46,12 +46,16 @@ export class MemberController {
     @Body() updateMemberDto: UpdateMemberDto,
     @Request() req: RequestWithUser,
   ) {
-    return this.memberService.update(id, updateMemberDto, req.user.tenantId);
+    const { tenantId, userId } = req.user;
+    // NOTE: This endpoint uses PUT but performs a partial update based on UpdateMemberDto.
+    // The UpdateMemberDto structure is assumed to allow changing fullName and roleId.
+    return this.memberService.update(id, updateMemberDto, tenantId, userId);
   }
 
   @Delete(':id')
   @Permissions(Permission.DELETE_USER)
   remove(@Param('id') id: string, @Request() req: RequestWithUser) {
-    return this.memberService.remove(id, req.user.tenantId);
+    const { tenantId, userId } = req.user;
+    return this.memberService.remove(id, tenantId, userId);
   }
 }

@@ -5,6 +5,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import {
@@ -17,11 +18,16 @@ import { RoleResponseDto } from './dto/role-response.dto';
 
 @Injectable()
 export class RoleService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditService: AuditService,
+  ) {}
 
-  async create(dto: CreateRoleDto, tenantId: string): Promise<RoleResponseDto> {
-    // Kiểm tra tên role đã tồn tại chưa trong tenant
-
+  async create(
+    dto: CreateRoleDto,
+    tenantId: string,
+    creatorId: string,
+  ): Promise<RoleResponseDto> {
     const existingRole = await this.prisma.role.findFirst({
       where: {
         name: dto.name,
@@ -35,7 +41,6 @@ export class RoleService {
       );
     }
 
-    // Convert permissions array thành string
     const permissionsStr = permissionsToString(dto.permissions);
 
     const newRole = await this.prisma.role.create({
@@ -45,6 +50,19 @@ export class RoleService {
         tenantId: tenantId,
       },
     });
+
+    await this.auditService.logActivity(
+      creatorId,
+      tenantId,
+      'CREATE_ROLE',
+      {
+        roleId: newRole.id,
+        roleName: newRole.name,
+        permissions: dto.permissions,
+      },
+      'ROLE',
+      newRole.id,
+    );
 
     return this.formatRoleResponse(newRole);
   }
@@ -97,13 +115,43 @@ export class RoleService {
     return this.formatRoleResponse(role);
   }
 
+  async findMembersByRole(roleId: string, tenantId: string) {
+    const role = await this.prisma.role.findFirst({
+      where: {
+        id: roleId,
+        tenantId: tenantId,
+      },
+    });
+
+    if (!role) {
+      throw new NotFoundException('Role not found or access denied.');
+    }
+
+    return this.prisma.user.findMany({
+      where: {
+        roleId: roleId,
+        tenantId: tenantId,
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        isTenantAdmin: true,
+        createdAt: true,
+        role: { select: { id: true, name: true } },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async update(
     id: string,
     dto: UpdateRoleDto,
     tenantId: string,
+    actorId: string,
   ): Promise<RoleResponseDto> {
-    // Kiểm tra role có tồn tại và thuộc tenant không
-
     const existingRole = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -114,8 +162,6 @@ export class RoleService {
     if (!existingRole) {
       throw new NotFoundException('Role not found or access denied.');
     }
-
-    // Nếu đổi tên, kiểm tra tên mới đã tồn tại chưa
 
     if (dto.name && dto.name !== existingRole.name) {
       const duplicateRole = await this.prisma.role.findFirst({
@@ -133,7 +179,6 @@ export class RoleService {
       }
     }
 
-    // Prepare update data
     const updateData: { name?: string; permissions?: string } = {};
     if (dto.name) {
       updateData.name = dto.name;
@@ -154,15 +199,23 @@ export class RoleService {
       },
     });
 
+    await this.auditService.logActivity(
+      actorId,
+      tenantId,
+      'UPDATE_ROLE',
+      { roleId: updatedRole.id, changes: dto },
+      'ROLE',
+      updatedRole.id,
+    );
+
     return this.formatRoleResponse(updatedRole);
   }
 
   async delete(
     id: string,
     tenantId: string,
+    actorId: string,
   ): Promise<{ message: string; id: string }> {
-    // Kiểm tra role có tồn tại và thuộc tenant không
-
     const existingRole = await this.prisma.role.findFirst({
       where: {
         id: id,
@@ -181,8 +234,6 @@ export class RoleService {
       throw new NotFoundException('Role not found or access denied.');
     }
 
-    // Kiểm tra role có users không
-
     if (existingRole._count.users > 0) {
       throw new ForbiddenException(
         `Cannot delete role. It has ${existingRole._count.users} user(s). Please reassign users first.`,
@@ -193,10 +244,18 @@ export class RoleService {
       where: { id: id },
     });
 
+    await this.auditService.logActivity(
+      actorId,
+      tenantId,
+      'DELETE_ROLE',
+      { roleId: existingRole.id, roleName: existingRole.name },
+      'ROLE',
+      existingRole.id,
+    );
+
     return { message: 'Role deleted successfully', id: id };
   }
 
-  // Helper method để format response với permissions array
   private formatRoleResponse(
     role: Role & {
       _count?: { users: number };
@@ -216,11 +275,11 @@ export class RoleService {
     dto.createdAt = role.createdAt;
     dto.updatedAt = role.updatedAt;
     dto._count = role._count || { users: 0 };
-    dto.permissionsStr = role.permissions; // Giữ lại để có thể exclude
+    dto.users = role.users;
+    dto.permissionsStr = role.permissions;
     return dto;
   }
 
-  // Method để kiểm tra user có permission không
   async checkUserPermission(
     userId: string,
     requiredPermission: Permission,
@@ -236,19 +295,13 @@ export class RoleService {
       return false;
     }
 
-    // Super admin có tất cả quyền
-
     if (user.isSuperAdmin) {
       return true;
     }
 
-    // Tenant admin có tất cả quyền trong tenant
-
     if (user.isTenantAdmin) {
       return true;
     }
-
-    // Kiểm tra permissions trong role
 
     if (user.role) {
       const permissions = stringToPermissions(user.role.permissions);
@@ -258,7 +311,6 @@ export class RoleService {
     return false;
   }
 
-  // Method để lấy tất cả permissions của user
   async getUserPermissions(userId: string): Promise<Permission[]> {
     const user = (await this.prisma.user.findUnique({
       where: { id: userId },
@@ -271,19 +323,13 @@ export class RoleService {
       return [];
     }
 
-    // Super admin có tất cả quyền
-
     if (user.isSuperAdmin) {
       return Object.values(Permission);
     }
 
-    // Tenant admin có tất cả quyền trong tenant
-
     if (user.isTenantAdmin) {
       return Object.values(Permission);
     }
-
-    // Lấy permissions từ role
 
     if (user.role) {
       return stringToPermissions(user.role.permissions);
