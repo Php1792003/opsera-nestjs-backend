@@ -22,7 +22,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'aegism-blue': '#4F46E5', // Một màu xanh dương tương tự
+                        'aegism-blue': '#4F46E5',
                         'aegism-dark': '#111827',
                         'aegism-light-bg': '#F9FAFB',
                         'aegism-card-bg': '#FFFFFF',
@@ -40,31 +40,29 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center">
-                    <span class="font-bold text-xl text-aegism-dark">AEGISM</span>
+                    <a href="index.html"><img src="img/aegism_logo.png" alt="Logo AEGISM" class="h-[210px] w-auto"/></a>
                 </div>
                 <!-- Navigation -->
-                <nav class="hidden md:flex md:items-center md:space-x-8">
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Trang chủ</a>
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Vận hành</a>
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Giám sát</a>
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">An toàn</a>
+                <nav class="hidden md:flex md:items-center md:space-x-10">
+                    <a href="index.html" class="font-semibold text-aegism-blue border-b-2 border-aegism-blue pb-1">Trang chủ</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-aegism-blue">Giới thiệu</a>
+                    <a href="pricing.html" class="font-medium text-gray-600 hover:text-aegism-blue">Bảng giá</a>
+                    <a href="features.html" class="font-medium text-gray-600 hover:text-aegism-blue">Tính năng</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-aegism-blue">Liên hệ</a>
                 </nav>
-                <!-- CTA Button & Mobile Menu Button -->
-                <div class="flex items-center">
-                    <a href="#" class="hidden sm:inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-indigo-700">
-                        Đăng ký dùng thử
+                <!-- CTA Button -->
+                <div class="flex items-center flex-gap-2">
+                    <a href="request_demo.html" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                         <span class="truncate">Dùng thử miễn phí</span>
+                    </a>
+                    <a href="login.html"class="hidden h-10 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-neutral-100 px-4 text-sm font-bold leading-normal tracking-[0.015em] text-neutral-700 transition-colors hover:bg-neutral-200 sm:flex">
+                        <span class="truncate">Đăng nhập</span>
                     </a>
                     <!-- Mobile menu button -->
                     <button @click="open = !open" type="button" class="ml-2 md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aegism-blue" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Mở menu</span>
-                        <!-- Icon when menu is closed. -->
-                        <svg x-show="!open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
-                        </svg>
-                        <!-- Icon when menu is open. -->
-                        <svg x-show="open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <svg x-show="!open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                        <svg x-show="open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
             </div>
@@ -72,18 +70,19 @@
             <!-- Mobile menu, show/hide based on menu state. -->
             <div x-show="open" class="md:hidden" id="mobile-menu">
                 <div class="pt-2 pb-3 space-y-1">
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Trang chủ</a>
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Vận hành</a>
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giám sát</a>
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">An toàn</a>
-                    <a href="#" class="sm:hidden block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-indigo-700">
-                        Đăng ký dùng thử
-                    </a>
+                     <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Trang chủ</a>
+                    <a href="about.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giới thiệu</a>
+                    <a href="pricing.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Bảng giá</a>
+                    <a href="features.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Tính năng</a>
+                    <a href="contact.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Liên hệ</a>
+                    <a href="login.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Đăng nhập</a>
+                    <a href="request_demo.html" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                        Dùng thử miễn phí
+                    </a>
                 </div>
             </div>
         </div>
     </header>
-
     <!-- Main Content -->
     <main>
         <!-- Hero Section -->
@@ -387,7 +386,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <!-- Column 1: Logo & Info -->
                 <div>
-                    <span class="font-bold text-xl text-aegism-dark">AEGISM</span>
+                    <a href="index.html"><img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
                     <p class="mt-2 text-sm text-gray-500">
                         Giải pháp toàn diện cho vận hành và giám sát an ninh.
                     </p>

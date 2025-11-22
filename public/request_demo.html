@@ -42,28 +42,23 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center">
-                    <svg class="h-8 w-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12.666 22.6667L8 27.3334H3.33301L7.99967 22.6667H12.666Z" fill="#2563EB"/>
-                        <path d="M19.3337 22.6667L24.0003 27.3334H28.667L24.0003 22.6667H19.3337Z" fill="#2563EB"/>
-                        <path d="M16.0013 16L20.668 20.6667H11.3346L16.0013 16Z" fill="#2563EB"/>
-                        <path d="M12.666 9.33333L8 -1.52588e-05L3.33301 4.66665L7.99967 9.33333H12.666Z" fill="#2563EB" fill-opacity="0.6"/>
-                        <path d="M19.3337 9.33333L24.0003 4.66665L28.667 9.33333H24.0003L19.3337 9.33333Z" fill="#2563EB" fill-opacity="0.6"/>
-                        <path d="M16.0013 16L20.668 11.3333H11.3346L16.0013 16Z" fill="#2563EB" fill-opacity="0.6"/>
-                    </svg>
-                    <span class="font-bold text-2xl text-aegism-dark ml-2">AEGISM</span>
+                    <a href="index.html"><img src="img/aegism_logo.png" alt="Logo AEGISM" class="h-[210px] w-auto"/></a>
                 </div>
                 <!-- Navigation -->
                 <nav class="hidden md:flex md:items-center md:space-x-10">
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Sản phẩm</a>
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Giải pháp</a>
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Giá cả</a>
-                    <a href="#" class="font-medium text-gray-600 hover:text-aegism-blue">Về chúng tôi</a>
-                    <a href="aegism_login_page.html" class="font-medium text-gray-600 hover:text-aegism-blue">Đăng nhập</a>
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-aegism-blue">Trang chủ</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-aegism-blue">Giới thiệu</a>
+                    <a href="pricing.html" class="font-medium text-gray-600 hover:text-aegism-blue">Bảng giá</a>
+                    <a href="features.html" class="font-medium text-gray-600 hover:text-aegism-blue">Tính năng</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-aegism-blue">Liên hệ</a>
                 </nav>
                 <!-- CTA Button -->
-                <div class="flex items-center">
-                    <a href="aegism_demo_page.html" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
-                        Yêu Cầu Demo
+                <div class="flex items-center flex-gap-2">
+                    <a href="request_demo.html" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                         <span class="truncate">Dùng thử miễn phí</span>
+                    </a>
+                    <a href="login.html"class="hidden h-10 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-neutral-100 px-4 text-sm font-bold leading-normal tracking-[0.015em] text-neutral-700 transition-colors hover:bg-neutral-200 sm:flex">
+                        <span class="truncate">Đăng nhập</span>
                     </a>
                     <!-- Mobile menu button -->
                     <button @click="open = !open" type="button" class="ml-2 md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aegism-blue" aria-controls="mobile-menu" aria-expanded="false">
@@ -77,14 +72,15 @@
             <!-- Mobile menu, show/hide based on menu state. -->
             <div x-show="open" class="md:hidden" id="mobile-menu">
                 <div class="pt-2 pb-3 space-y-1">
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Sản phẩm</a>
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giải pháp</a>
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giá cả</a>
-                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Về chúng tôi</a>
-                    <a href="aegism_login_page.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Đăng nhập</a>
-                    <a href="aegism_demo_page.html" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-blue-700">
-                        Yêu Cầu Demo
-                    </a>
+                     <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Trang chủ</a>
+                    <a href="about.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giới thiệu</a>
+                    <a href="pricing.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Bảng giá</a>
+                    <a href="features.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Tính năng</a>
+                    <a href="contact.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Liên hệ</a>
+                    <a href="login.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Đăng nhập</a>
+                    <a href="request_demo.html" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                        Dùng thử miễn phí
+                    </a>
                 </div>
             </div>
         </div>
@@ -257,21 +253,47 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white border-t border-gray-200">
-        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-            <div class="flex justify-between items-center flex-col md:flex-row">
-                <!-- Left Side -->
-                <div class="flex items-center space-x-2 text-sm text-gray-500">
-                    <svg class="h-6 w-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12.666 22.6667L8 27.3334H3.33301L7.99967 22.6667H12.666Z" fill="#2563EB"/><path d="M19.3337 22.6667L24.0003 27.3334H28.667L24.0003 22.6667H19.3337Z" fill="#2563EB"/><path d="M16.0013 16L20.668 20.6667H11.3346L16.0013 16Z" fill="#2563EB"/><path d="M12.666 9.33333L8 -1.52588e-05L3.33301 4.66665L7.99967 9.33333H12.666Z" fill="#2563EB" fill-opacity="0.6"/><path d="M19.3337 9.33333L24.0003 4.66665L28.667 9.33333H24.0003L19.3337 9.33333Z" fill="#2563EB" fill-opacity="0.6"/><path d="M16.0013 16L20.668 11.3333H11.3346L16.0013 16Z" fill="#2563EB" fill-opacity="0.6"/>
-                    </svg>
-                    <span>© 2024 AEGISM. All rights reserved.</span>
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1: Logo & Info -->
+                <div>
+                    <a href="index.html"><img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Giải pháp toàn diện cho vận hành và giám sát an ninh.
+                    </p>
+                    <p class="mt-4 text-sm text-gray-500">
+                        &copy; 2024 AEGISM. Đã đăng ký bản quyền.
+                    </p>
                 </div>
-                <!-- Right Side: Links -->
-                <div class="flex space-x-6 mt-4 md:mt-0 text-sm">
-                    <a href="#" class="text-gray-500 hover:text-gray-900">Điều khoản</a>
-                    <a href="#" class="text-gray-500 hover:text-gray-900">Chính sách</a>
+                <!-- Column 2: Nền tảng -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Nền tảng</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Vận hành</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Giám sát</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">An ninh</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bảng giá</a></li>
+                    </ul>
+                </div>
+                <!-- Column 3: Công ty -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Công ty</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Tuyển dụng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Blog</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Đối tác</a></li>
+                    </ul>
+                </div>
+                <!-- Column 4: Liên hệ -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Liên hệ</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Hỗ trợ</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bán hàng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Liên hệ báo chí</a></li>
+                    </ul>
                 </div>
             </div>
         </div>

@@ -4,148 +4,177 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập - AEGISM</title>
-    <!-- Tải Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tải Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Sử dụng font Nunito -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-        }
-    </style>
+    <style> body { font-family: 'Nunito', sans-serif; } [x-cloak] { display: none !important; } </style>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'aegism-blue': '#2563EB', // Màu xanh dương từ hình
+                        'aegism-blue': '#2563EB',
                         'aegism-dark': '#1F2937',
-                        'aegism-dark-blue': '#111827', // Màu nền cột trái
+                        'aegism-dark-blue': '#111827',
                     },
                 },
             },
         }
     </script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<!-- Sử dụng x-data để quản lý logic đăng nhập -->
+<body class="bg-gray-100 flex items-center justify-center min-h-screen" x-data="loginApp()">
 
     <div class="m-4 w-full max-w-5xl bg-white rounded-2xl shadow-xl grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
         
-        <!-- Cột bên trái: Thông tin & Hình ảnh -->
+        <!-- Cột trái: Hình ảnh -->
         <div class="hidden lg:block relative p-12 bg-aegism-dark-blue text-white">
-            <!-- Background Image Placeholder (gradient) -->
-            <div class="absolute inset-0 w-full h-full object-cover opacity-30" 
-                 style="background-image: linear-gradient(to bottom right, #6D28D9, #2563EB, #10B981); 
+            <div class="absolute inset-0 w-full h-full object-cover opacity-100" 
+                 style="background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
                         background-size: cover; 
                         background-position: center;
                         mask-image: linear-gradient(to bottom, white 60%, transparent 100%);">
             </div>
-            
-            <!-- Content -->
             <div class="relative z-10 flex flex-col justify-between h-full">
                 <div>
-                    <!-- Logo (đơn giản) -->
-                    <span class="font-extrabold text-3xl">AEGISM</span>
+                    <!-- Logo Placeholder -->
+                    <a href="/index.html">
+                        <img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[29px] w-auto">
+                    </a>
                 </div>
                 <div class="mt-auto">
-                    <h2 class="text-3xl font-bold">
-                        AEGISM
-                    </h2>
+                    <h2 class="text-3xl font-bold">An ninh Thông minh</h2>
                     <p class="mt-3 text-lg text-gray-300 max-w-lg">
-                        Nền tảng giám sát an ninh và tối ưu hóa vận hành thông minh.
+                        Nền tảng giám sát an ninh và tối ưu hóa vận hành hàng đầu dành cho doanh nghiệp.
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Cột bên phải: Form đăng nhập -->
+        <!-- Cột phải: Form -->
         <div class="flex flex-col justify-center py-12 px-4 sm:px-12 lg:px-16">
             <div class="mx-auto w-full max-w-md">
-                
-                <!-- Tiêu đề -->
-                <h1 class="text-3xl font-extrabold text-aegism-dark">Đăng nhập vào AEGISM</h1>
-                <p class="mt-2 text-base text-gray-600">
-                    Tối ưu hóa vận hành, bảo mật tuyệt đối.
-                </p>
+                <h1 class="text-3xl font-extrabold text-aegism-dark">Đăng nhập</h1>
+                <p class="mt-2 text-base text-gray-600">Chào mừng quay trở lại hệ thống AEGISM.</p>
 
-                <!-- Form -->
-                <form class="mt-8 space-y-6" action="#" method="POST" x-data="{ showPassword: false }">
-                    <!-- Email hoặc Tên người dùng -->
+                <!-- Hiển thị lỗi nếu có -->
+                <div x-show="errorMessage" x-cloak class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded relative" role="alert">
+                    <span class="block sm:inline" x-text="errorMessage"></span>
+                </div>
+
+                <form class="mt-8 space-y-6" @submit.prevent="submitLogin">
                     <div>
-                        <label for="email-username" class="block text-sm font-medium text-gray-700 mb-2">Email hoặc Tên người dùng</label>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <!-- Icon user -->
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                                 </svg>
                             </div>
-                            <input id="email-username" name="email-username" type="text" required
-                                   placeholder="Nhập email hoặc tên người dùng"
-                                   class="block w-full pl-10 px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
+                            <input x-model="email" id="email" name="email" type="email" required 
+                                   class="block w-full pl-10 px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent" 
+                                   placeholder="name@company.com">
                         </div>
                     </div>
 
-                    <!-- Mật khẩu -->
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label for="password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
-                            <a href="#" class="text-sm font-medium text-aegism-blue hover:text-blue-700">
-                                Quên mật khẩu?
-                            </a>
-                        </div>
+                    <div x-data="{ showPass: false }">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
                         <div class="relative">
-                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <!-- Icon khóa -->
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                  <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                                 </svg>
                             </div>
-                            <input id="password" name="password" :type="showPassword ? 'text' : 'password'" required
-                                   placeholder="Nhập mật khẩu của bạn"
-                                   class="block w-full pl-10 px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
-                            
-                            <!-- Nút JS để hiện/ẩn mật khẩu -->
-                            <button type="button" @click="showPassword = !showPassword"
-                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 hover:text-aegism-dark focus:outline-none">
-                                <!-- Icon mắt (đang đóng) -->
-                                <svg x-show="!showPassword" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <!-- Icon mắt (đang mở) -->
-                                <svg x-show="showPassword" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="display: none;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.996 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.575M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                            <input x-model="password" id="password" name="password" :type="showPass ? 'text' : 'password'" required 
+                                   class="block w-full pl-10 px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent" 
+                                   placeholder="••••••••">
+                            <button type="button" @click="showPass = !showPass" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <svg x-show="!showPass" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                <svg x-show="showPass" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.054 10.054 0 01-3.77 4.58l3.057 3.057 3-3" /></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Nút Submit -->
                     <div>
-                        <button type="submit"
-                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-aegism-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aegism-blue">
-                            Đăng nhập
+                        <button type="submit" :disabled="loading" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-aegism-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aegism-blue disabled:opacity-50 transition-colors">
+                            <svg x-show="loading" x-cloak class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <span x-text="loading ? 'Đang xử lý...' : 'Đăng nhập'"></span>
                         </button>
                     </div>
                 </form>
-
-                <!-- Link Đăng ký -->
+                
                 <p class="mt-10 text-center text-sm text-gray-600">
-                    Bạn mới biết đến AEGISM?
-                    <a href="aegism_signup_page.html" class="font-medium text-aegism-blue hover:text-blue-700">
-                        Tạo tài khoản
-                    </a>
+                    Bạn chưa có tài khoản? <a href="register.html" class="font-medium text-aegism-blue hover:text-blue-700">Đăng ký ngay</a>
                 </p>
             </div>
         </div>
-
     </div>
 
+    <script>
+        function loginApp() {
+            return {
+                email: '',
+                password: '',
+                loading: false,
+                errorMessage: '',
+                async submitLogin() {
+                    this.loading = true;
+                    this.errorMessage = '';
+                    
+                    try {
+                        // Gọi API Login (giả sử chạy ở localhost:3000)
+                        // Lưu ý: Trong thực tế bạn cần thay URL này bằng URL thật của server
+                        const response = await fetch('http://localhost:3000/api/auth/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: this.email,
+                                password: this.password
+                            })
+                        });
+
+                        if (!response.ok) {
+                            // Xử lý lỗi từ server trả về
+                            if (response.status === 401) throw new Error('Email hoặc mật khẩu không chính xác.');
+                            throw new Error('Có lỗi xảy ra, vui lòng thử lại.');
+                        }
+
+                        const data = await response.json();
+                        
+                        // 1. Lưu Token
+                        localStorage.setItem('accessToken', data.accessToken);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+
+                        // 2. Xử lý logic gói dịch vụ (dành cho Customer Dashboard)
+                        if (data.user.tenant && data.user.tenant.subscriptionPlan) {
+                            // Chuẩn hóa về dạng chữ thường để khớp với logic frontend (starter/professional/enterprise)
+                            const plan = data.user.tenant.subscriptionPlan.toLowerCase();
+                            localStorage.setItem('userPlan', plan);
+                        } else {
+                            // Mặc định nếu không có data
+                            localStorage.setItem('userPlan', 'starter');
+                        }
+
+                        // 3. Chuyển hướng
+                        if (data.user.isSuperAdmin) {
+                            // Đường dẫn cho Master Admin
+                            window.location.href = '/admin/dashboard.html'; 
+                        } else {
+                            window.location.href = '/ternants/dashboard.html'; 
+                        }
+
+                    } catch (error) {
+                        this.errorMessage = error.message;
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,488 @@
+<!doctype html>
+
+<html class="light" lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Chính sách Bảo mật - AEGISM</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        font-size: 20px;
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#135bec',
+              'background-light': '#f6f6f8',
+              'background-dark': '#101622',
+              'content-light': '#ffffff',
+              'content-dark': '#182131',
+              'text-light-primary': '#0d121b',
+              'text-dark-primary': '#f8f9fc',
+              'text-light-secondary': '#4c669a',
+              'text-dark-secondary': '#a9b8d4',
+              'border-light': '#e7ebf3',
+              'border-dark': '#2e3a51',
+              'active-light': '#e7ebf3',
+              'active-dark': '#2e3a51',
+            },
+            fontFamily: {
+              display: ['Public Sans', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: '0.25rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              full: '9999px',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="font-display bg-background-light dark:bg-background-dark">
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- TopNavBar Component -->
+      <header
+        class="sticky top-0 z-10 w-full bg-content-light/80 dark:bg-content-dark/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark"
+      >
+        <div class="container mx-auto px-4">
+          <div class="flex h-16 items-center justify-between whitespace-nowrap">
+            <div
+              class="flex items-center gap-4 text-text-light-primary dark:text-text-dark-primary"
+            >
+              <div class="size-6 text-primary">
+                <svg
+                  fill="none"
+                  viewbox="0 0 48 48"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clip-path="url(#clip0_6_330)">
+                    <path
+                      clip-rule="evenodd"
+                      d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z"
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                    ></path>
+                  </g>
+                  <defs>
+                    <clippath id="clip0_6_330">
+                      <rect fill="white" height="48" width="48"></rect>
+                    </clippath>
+                  </defs>
+                </svg>
+              </div>
+              <h2 class="text-lg font-bold tracking-[-0.015em]">AEGISM</h2>
+            </div>
+            <nav class="hidden items-center gap-9 md:flex">
+              <a
+                class="text-sm font-medium text-text-light-secondary dark:text-text-dark-secondary hover:text-primary dark:hover:text-primary"
+                href="#"
+                >Trang chủ</a
+              >
+              <a
+                class="text-sm font-medium text-text-light-secondary dark:text-text-dark-secondary hover:text-primary dark:hover:text-primary"
+                href="#"
+                >Tính năng</a
+              >
+              <a
+                class="text-sm font-medium text-text-light-secondary dark:text-text-dark-secondary hover:text-primary dark:hover:text-primary"
+                href="#"
+                >Giải pháp</a
+              >
+              <a
+                class="text-sm font-medium text-primary dark:text-primary"
+                href="#"
+                >Chính sách Bảo mật</a
+              >
+            </nav>
+          </div>
+        </div>
+      </header>
+      <!-- Main Content Area -->
+      <main
+        class="container mx-auto flex flex-1 flex-col px-4 py-8 md:flex-row md:gap-8 md:py-12"
+      >
+        <!-- SideNavBar Component -->
+        <aside
+          class="mb-8 w-full shrink-0 md:sticky md:top-28 md:mb-0 md:h-fit md:w-64"
+        >
+          <div
+            class="flex flex-col gap-4 rounded-xl border border-border-light dark:border-border-dark bg-content-light dark:bg-content-dark p-4"
+          >
+            <div class="flex flex-col">
+              <h3
+                class="text-base font-medium text-text-light-primary dark:text-text-dark-primary"
+              >
+                Mục lục
+              </h3>
+              <p
+                class="text-sm font-normal text-text-light-secondary dark:text-text-dark-secondary"
+              >
+                Chính sách Bảo mật
+              </p>
+            </div>
+            <div class="flex flex-col gap-1">
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 bg-active-light dark:bg-active-dark"
+                href="#section-1"
+              >
+                <span class="material-symbols-outlined text-primary"
+                  >database</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  1. Dữ liệu chúng tôi thu thập
+                </p>
+              </a>
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-active-light dark:hover:bg-active-dark"
+                href="#section-2"
+              >
+                <span
+                  class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary group-hover:text-primary"
+                  >settings</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  2. Cách chúng tôi sử dụng dữ liệu
+                </p>
+              </a>
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-active-light dark:hover:bg-active-dark"
+                href="#section-3"
+              >
+                <span
+                  class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary group-hover:text-primary"
+                  >share</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  3. Chia sẻ và Tiết lộ thông tin
+                </p>
+              </a>
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-active-light dark:hover:bg-active-dark"
+                href="#section-4"
+              >
+                <span
+                  class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary group-hover:text-primary"
+                  >shield</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  4. Bảo mật dữ liệu
+                </p>
+              </a>
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-active-light dark:hover:bg-active-dark"
+                href="#section-5"
+              >
+                <span
+                  class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary group-hover:text-primary"
+                  >person</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  5. Quyền của bạn
+                </p>
+              </a>
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-active-light dark:hover:bg-active-dark"
+                href="#section-6"
+              >
+                <span
+                  class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary group-hover:text-primary"
+                  >cookie</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  6. Sử dụng Cookies
+                </p>
+              </a>
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-active-light dark:hover:bg-active-dark"
+                href="#section-7"
+              >
+                <span
+                  class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary group-hover:text-primary"
+                  >update</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  7. Thay đổi đối với Chính sách này
+                </p>
+              </a>
+              <a
+                class="group flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-active-light dark:hover:bg-active-dark"
+                href="#section-8"
+              >
+                <span
+                  class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary group-hover:text-primary"
+                  >mail</span
+                >
+                <p
+                  class="text-sm font-medium text-text-light-primary dark:text-text-dark-primary"
+                >
+                  8. Thông tin liên hệ
+                </p>
+              </a>
+            </div>
+          </div>
+        </aside>
+        <!-- Content Column -->
+        <article class="w-full min-w-0 flex-1">
+          <div
+            class="space-y-8 rounded-xl border border-border-light dark:border-border-dark bg-content-light dark:bg-content-dark p-6 md:p-8"
+          >
+            <!-- PageHeading Component -->
+            <div
+              class="flex flex-col gap-3 border-b border-border-light dark:border-border-dark pb-6"
+            >
+              <h1
+                class="text-4xl font-black tracking-[-0.033em] text-text-light-primary dark:text-text-dark-primary"
+              >
+                Chính sách Bảo mật
+              </h1>
+              <p
+                class="text-base font-normal text-text-light-secondary dark:text-text-dark-secondary"
+              >
+                Cập nhật lần cuối: 24 tháng 10 năm 2024
+              </p>
+            </div>
+            <!-- BodyText Component -->
+            <p
+              class="text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+            >
+              Chào mừng bạn đến với AEGISM. Chúng tôi cam kết bảo vệ quyền riêng
+              tư của bạn. Chính sách Bảo mật này giải thích cách chúng tôi thu
+              thập, sử dụng, tiết lộ và bảo vệ thông tin của bạn khi bạn truy
+              cập trang web của chúng tôi và sử dụng các dịch vụ của chúng tôi.
+              Vui lòng đọc kỹ chính sách bảo mật này.
+            </p>
+            <!-- Section 1 -->
+            <section class="scroll-mt-20 space-y-4" id="section-1">
+              <h2
+                class="text-2xl font-bold tracking-[-0.015em] text-text-light-primary dark:text-text-dark-primary"
+              >
+                1. Thông tin chúng tôi thu thập
+              </h2>
+              <p
+                class="text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                Chúng tôi có thể thu thập thông tin về bạn theo nhiều cách khác
+                nhau. Thông tin chúng tôi có thể thu thập trên Trang web bao
+                gồm:
+              </p>
+              <ul
+                class="list-disc space-y-2 pl-5 text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                <li>
+                  <strong>Dữ liệu Cá nhân:</strong> Thông tin nhận dạng cá nhân,
+                  chẳng hạn như tên, địa chỉ email, và số điện thoại mà bạn tự
+                  nguyện cung cấp cho chúng tôi khi đăng ký với Trang web hoặc
+                  khi bạn chọn tham gia vào các hoạt động liên quan đến Trang
+                  web.
+                </li>
+                <li>
+                  <strong>Dữ liệu Vận hành:</strong> Thông tin về hoạt động hệ
+                  thống, nhật ký sự kiện, và các chỉ số hiệu suất được thu thập
+                  tự động khi bạn sử dụng nền tảng của chúng tôi để giám sát và
+                  tối ưu hóa.
+                </li>
+                <li>
+                  <strong>Dữ liệu Kỹ thuật:</strong> Thông tin mà trình duyệt
+                  của bạn gửi tự động bất cứ khi nào bạn truy cập Trang web,
+                  chẳng hạn như địa chỉ IP, loại trình duyệt, hệ điều hành, thời
+                  gian truy cập và các trang bạn đã xem.
+                </li>
+              </ul>
+            </section>
+            <!-- Section 2 -->
+            <section class="scroll-mt-20 space-y-4" id="section-2">
+              <h2
+                class="text-2xl font-bold tracking-[-0.015em] text-text-light-primary dark:text-text-dark-primary"
+              >
+                2. Cách chúng tôi sử dụng dữ liệu
+              </h2>
+              <p
+                class="text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                Việc có thông tin chính xác về bạn cho phép chúng tôi cung cấp
+                cho bạn một trải nghiệm mượt mà, hiệu quả và tùy chỉnh. Cụ thể,
+                chúng tôi có thể sử dụng thông tin thu thập được về bạn qua
+                Trang web để:
+              </p>
+              <ul
+                class="list-disc space-y-2 pl-5 text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                <li>Tạo và quản lý tài khoản của bạn.</li>
+                <li>
+                  Cải thiện dịch vụ, phân tích xu hướng sử dụng để nâng cao trải
+                  nghiệm của bạn.
+                </li>
+                <li>
+                  Cung cấp dịch vụ giám sát an ninh và gửi các cảnh báo liên
+                  quan.
+                </li>
+                <li>
+                  Gửi email cho bạn về tài khoản hoặc đơn đặt hàng của bạn.
+                </li>
+              </ul>
+            </section>
+            <!-- Section 3 -->
+            <section class="scroll-mt-20 space-y-4" id="section-3">
+              <h2
+                class="text-2xl font-bold tracking-[-0.015em] text-text-light-primary dark:text-text-dark-primary"
+              >
+                3. Chia sẻ và Tiết lộ thông tin
+              </h2>
+              <p
+                class="text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                Chúng tôi có thể chia sẻ thông tin chúng tôi đã thu thập về bạn
+                trong một số trường hợp nhất định. Thông tin của bạn có thể được
+                tiết lộ như sau:
+              </p>
+              <ul
+                class="list-disc space-y-2 pl-5 text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                <li>
+                  <strong>Theo luật pháp hoặc để bảo vệ quyền lợi:</strong> Nếu
+                  chúng tôi tin rằng việc công bố thông tin về bạn là cần thiết
+                  để đáp ứng quy trình pháp lý, để điều tra hoặc khắc phục các
+                  vi phạm tiềm ẩn chính sách của chúng tôi, hoặc để bảo vệ
+                  quyền, tài sản và sự an toàn của người khác.
+                </li>
+                <li>
+                  <strong>Nhà cung cấp dịch vụ bên thứ ba:</strong> Chúng tôi có
+                  thể chia sẻ thông tin của bạn với các bên thứ ba thực hiện
+                  dịch vụ cho chúng tôi hoặc thay mặt chúng tôi, bao gồm xử lý
+                  thanh toán, phân tích dữ liệu, lưu trữ đám mây.
+                </li>
+              </ul>
+            </section>
+            <!-- Section 4 -->
+            <section class="scroll-mt-20 space-y-4" id="section-4">
+              <h2
+                class="text-2xl font-bold tracking-[-0.015em] text-text-light-primary dark:text-text-dark-primary"
+              >
+                4. Bảo mật dữ liệu
+              </h2>
+              <p
+                class="text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                Chúng tôi sử dụng các biện pháp bảo mật hành chính, kỹ thuật và
+                vật lý để giúp bảo vệ thông tin cá nhân của bạn. Mặc dù chúng
+                tôi đã thực hiện các bước hợp lý để bảo mật thông tin cá nhân
+                bạn cung cấp cho chúng tôi, xin lưu ý rằng không có biện pháp
+                bảo mật nào là hoàn hảo hoặc không thể xuyên thủng, và không có
+                phương pháp truyền dữ liệu nào có thể được đảm bảo chống lại bất
+                kỳ sự chặn hoặc lạm dụng nào khác.
+              </p>
+            </section>
+            <!-- Section 8 -->
+            <section
+              class="scroll-mt-20 space-y-4 border-t border-border-light dark:border-border-dark pt-6"
+              id="section-8"
+            >
+              <h2
+                class="text-2xl font-bold tracking-[-0.015em] text-text-light-primary dark:text-text-dark-primary"
+              >
+                8. Thông tin liên hệ
+              </h2>
+              <p
+                class="text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                Nếu bạn có câu hỏi hoặc nhận xét về Chính sách Bảo mật này, vui
+                lòng liên hệ với chúng tôi tại:
+              </p>
+              <p
+                class="text-base font-normal leading-relaxed text-text-light-primary dark:text-text-dark-primary"
+              >
+                AEGISM Security<br />
+                Email:
+                <a
+                  class="text-primary hover:underline"
+                  href="mailto:privacy@aegism.com"
+                  >privacy@aegism.com</a
+                >
+              </p>
+            </section>
+          </div>
+        </article>
+      </main>
+      <!-- Footer -->
+      <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1: Logo & Info -->
+                <div>
+                    <a href="index.html"><img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Giải pháp toàn diện cho vận hành và giám sát an ninh.
+                    </p>
+                    <p class="mt-4 text-sm text-gray-500">
+                        &copy; 2024 AEGISM. Đã đăng ký bản quyền.
+                    </p>
+                </div>
+                <!-- Column 2: Nền tảng -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Nền tảng</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Vận hành</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Giám sát</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">An ninh</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bảng giá</a></li>
+                    </ul>
+                </div>
+                <!-- Column 3: Công ty -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Công ty</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Tuyển dụng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Blog</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Đối tác</a></li>
+                    </ul>
+                </div>
+                <!-- Column 4: Liên hệ -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Liên hệ</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Hỗ trợ</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bán hàng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Liên hệ báo chí</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </div>
+  </body>
+</html>

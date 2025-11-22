@@ -1,120 +1,305 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Giới Thiệu Opsera | Sứ Mệnh & Đối Tác Chiến Lược</title>
-  <meta name="description" content="Tìm hiểu về Opsera - Giải pháp số hoá quản lý công việc và tuần tra QR code. Khám phá sứ mệnh và sự hợp tác chiến lược của chúng tôi cùng Công ty Đại Sơn Long.">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Về Chúng Tôi - AEGISM</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Sử dụng font Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'aegism-blue': '#2563EB',
+                        'aegism-dark': '#1F2937',
+                        'aegism-light-bg': '#F9FAFB',
+                        'aegism-card-bg': '#FFFFFF',
+                        'aegism-border': '#E5E7EB',
+                    },
+                },
+            },
+        }
+    </script>
 </head>
-<body>
+<body class="bg-white text-aegism-dark">
 
-<div id="navbar-placeholder"></div>
-
-<main id="swup" class="transition-main">
-  <div class="page-wrapper">
-
-    <div class="page-container bg-about">
-
-      <div class="features-detailed-section">
-
-        <h2 class="contact-title">
-          VỀ OPSERA
-        </h2>
-        <p class="hero-description" style="animation: none; font-size: 1.25rem; max-width: 800px; margin-top: -1.5rem; margin-bottom: 4rem;">
-          Chúng tôi không chỉ cung cấp phần mềm. Chúng tôi mang đến giải pháp toàn diện để số hoá và tối ưu hóa mọi quy trình vận hành của doanh nghiệp bạn.
-        </p>
-
-        <div class="feature-detailed-block">
-          <div class="feature-detailed-content">
-            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <h3 class="feature-detailed-title">SỨ MỆNH CỦA CHÚNG TÔI</h3>
-            <p class="feature-detailed-subtitle">
-              Giải phóng doanh nghiệp khỏi các quy trình thủ công.
-            </p>
-            <p class="feature-detailed-text">
-              Opsera ra đời từ thực tế: Quá nhiều thời gian và nguồn lực đang bị lãng phí vào các quy trình giấy tờ, báo cáo rườm rà và thiếu minh bạch. Sứ mệnh của chúng tôi là cung cấp một nền tảng **quản lý công việc** và **tuần tra giám sát** thông minh, ứng dụng công nghệ QR code và tự động hóa để mọi thao tác đều được ghi nhận tức thì, mọi báo cáo đều được tạo ra trong chớp mắt.
-            </p>
-          </div>
-          <div class="feature-detailed-image">
-            <img src="img/opsera_content_1.png" alt="Sứ mệnh Opsera" class="rounded-xl shadow-lg w-full h-full object-cover">
-          </div>
-        </div>
-
-        <div class="feature-detailed-block">
-          <div class="feature-detailed-content">
-            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-1.657-1.343-3-3-3s-3 1.343-3 3v2m6 0H9m12-9a3 3 0 100-6 3 3 0 000 6zM3 20c0-1.657 1.343-3 3-3s3 1.343 3 3v2H3v-2zM9 4a3 3 0 100-6 3 3 0 000 6z"></path>
-            </svg>
-            <h3 class="feature-detailed-title">HỢP TÁC CHIẾN LƯỢC</h3>
-            <p class="feature-detailed-subtitle">
-              Phát triển bền vững cùng Công ty Đại Sơn Long.
-            </p>
-            <p class="feature-detailed-text">
-              Để mang đến một giải pháp không chỉ mạnh về công nghệ mà còn sâu về nghiệp vụ, Opsera tự hào **hợp tác và phát triển** cùng đối tác chiến lược: **Công ty Đại Sơn Long**.
-            </p>
-            <p class="feature-detailed-text" style="margin-top: 1rem;">
-              Sức mạnh cộng hưởng này cho phép chúng tôi thấu hiểu "nỗi đau" thực sự của thị trường, từ đó xây dựng các **tính năng** chuyên biệt (như <a href="features.html" class="link-styled" data-transition="slide-right">tuần tra QR code</a>) và quy trình vận hành bám sát thực tiễn, mang lại giá trị tức thì cho khách hàng.
-            </p>
-          </div>
-          <div class="feature-detailed-image">
-            <img src="img/opsera_content_2.png" alt="Sứ mệnh Opsera" class="rounded-xl shadow-lg w-full h-full object-cover">
-          </div>
-        </div>
-
-        <div class="section-spacer">
-          <h2 class="contact-title" style="margin-bottom: 2.5rem;">
-            GIÁ TRỊ CỐT LÕI
-          </h2>
-
-          <div class="features-container" style="animation: none;">
-
-            <div class="feature-card">
-              <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-              <h3 class="feature-title">ĐỔI MỚI</h3>
-              <p class="feature-description">
-                Chúng tôi không ngừng nghiên cứu và áp dụng công nghệ mới (AI, IoT...) để giải quyết các bài toán vận hành ngày càng phức tạp.
-              </p>
+    <!-- Header -->
+     <header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html"><img src="img/aegism_logo.png" alt="Logo AEGISM" class="h-[210px] w-auto"/></a>
+                </div>
+                <!-- Navigation -->
+                <nav class="hidden md:flex md:items-center md:space-x-10">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-aegism-blue">Trang chủ</a>
+                    <a href="about.html" class="font-semibold text-aegism-blue border-b-2 border-aegism-blue pb-1">Giới thiệu</a>
+                    <a href="pricing.html" class="font-medium text-gray-600 hover:text-aegism-blue">Bảng giá</a>
+                    <a href="features.html" class="font-medium text-gray-600 hover:text-aegism-blue">Tính năng</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-aegism-blue">Liên hệ</a>
+                </nav>
+                <!-- CTA Button -->
+                <div class="flex items-center flex-gap-2">
+                    <a href="request_demo.html" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                         <span class="truncate">Dùng thử miễn phí</span>
+                    </a>
+                    <a href="login.html"class="hidden h-10 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-neutral-100 px-4 text-sm font-bold leading-normal tracking-[0.015em] text-neutral-700 transition-colors hover:bg-neutral-200 sm:flex">
+                        <span class="truncate">Đăng nhập</span>
+                    </a>
+                    <!-- Mobile menu button -->
+                    <button @click="open = !open" type="button" class="ml-2 md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aegism-blue" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Mở menu</span>
+                        <svg x-show="!open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                        <svg x-show="open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
             </div>
 
-            <div class="feature-card">
-              <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-              <h3 class="feature-title">TIN CẬY</h3>
-              <p class="feature-description">
-                Hệ thống của bạn phải hoạt động 24/7. Chúng tôi cam kết hạ tầng ổn định, bảo mật dữ liệu tuyệt đối và hỗ trợ kỹ thuật tức thì.
-              </p>
+            <!-- Mobile menu, show/hide based on menu state. -->
+            <div x-show="open" class="md:hidden" id="mobile-menu">
+                <div class="pt-2 pb-3 space-y-1">
+                     <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Trang chủ</a>
+                    <a href="about.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giới thiệu</a>
+                    <a href="pricing.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Bảng giá</a>
+                    <a href="features.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Tính năng</a>
+                    <a href="contact.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Liên hệ</a>
+                    <a href="login.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Đăng nhập</a>
+                    <a href="request_demo.html" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                        Dùng thử miễn phí
+                    </a>
+                </div>
             </div>
+        </div>
+    </header>
 
-            <div class="feature-card">
-              <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              <h3 class="feature-title">HIỆU QUẢ</h3>
-              <p class="feature-description">
-                Giao diện trực quan, dễ sử dụng. Nhân viên của bạn có thể bắt đầu làm việc ngay lập tức mà không cần đào tạo phức tạp.
-              </p>
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="py-24 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
+            <div class="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+                <div class="relative bg-gradient-to-r from-blue-700 via-purple-600 to-indigo-700 p-12 md:p-16 rounded-2xl shadow-xl overflow-hidden">
+                    <!-- Background pattern -->
+                    <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%221%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm-12 2v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 6v-4H4v4H0v2h4v4h2V8h4V6H6zM18 6v-4h-2v4h-4v2h4v4h2V8h4V6h-4zM30 6v-4h-2v4h-4v2h4v4h2V8h4V6h-4zM18 18v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM30 18v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 18v-4H4v4H0v2h4v4h2v-4h4v-2H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                    
+                    <div class="relative">
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+                            Câu chuyện về AEGISM
+                        </h1>
+                        <p class="mt-6 text-lg text-blue-100 max-w-2xl mx-auto">
+                            Hành trình và cam kết của chúng tôi trong việc định hình tương lai của tối ưu hóa vận hành và giám sát an ninh.
+                        </p>
+                        <a href="#timeline" class="mt-8 inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-aegism-blue bg-white hover:bg-blue-50">
+                            Tìm hiểu thêm
+                        </a>
+                    </div>
+                </div>
             </div>
+        </section>
 
-          </div>
+        <!-- Timeline Section -->
+        <section id="timeline" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-aegism-dark mb-12">Hành trình của chúng tôi</h2>
+                <div class="relative">
+                    <!-- Vertical line -->
+                    <div class="absolute left-4 md:left-1/2 w-0.5 h-full bg-aegism-border -translate-x-1/2"></div>
+                    
+                    <!-- Item 1: Thành lập -->
+                    <div class="mb-12 flex items-center md:justify-normal md:w-1/2 md:pr-8">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-aegism-blue text-white flex items-center justify-center z-10">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0V6a3 3 0 013-3h7.5a3 3 0 013 3v8.25m-13.5 0L12 18l6.75-3.75m-13.5 0V21a3 3 0 003 3h7.5a3 3 0 003-3v-6.75" /></svg>
+                        </div>
+                        <div class="ml-6 md:ml-0 md:pl-8 md:text-right bg-white pr-4">
+                            <p class="text-lg font-semibold text-aegism-dark">Thành lập công ty</p>
+                            <p class="text-gray-500">2020</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 2: Ra mắt (align right on md) -->
+                    <div class="mb-12 flex items-center md:justify-end md:w-1/2 md:self-end md:ml-auto">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-aegism-blue text-white flex items-center justify-center z-10 md:order-2">
+                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.82m5.84-2.56a14.96 14.96 0 00-.98-2.58m-4.86 5.14A14.96 14.96 0 011.63 8.28m12.48-3.64A14.96 14.96 0 007.86 1.64m7.6 4A14.96 14.96 0 0121.36 8.28" /></svg>
+                        </div>
+                        <div class="ml-6 md:ml-0 md:mr-14 bg-white pl-4 md:pl-0 md:pr-4">
+                            <p class="text-lg font-semibold text-aegism-dark">Ra mắt phiên bản Beta</p>
+                            <p class="text-gray-500">2021</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 3: Mốc 100 khách -->
+                    <div class="mb-12 flex items-center md:justify-normal md:w-1/2 md:pr-8">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-aegism-blue text-white flex items-center justify-center z-10">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 14.818l4.403 4.402m-4.402-4.402a5.25 5.25 0 11-7.424-7.424 5.25 5.25 0 017.424 7.424zM10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" /></svg>
+                        </div>
+                        <div class="ml-6 md:ml-0 md:pl-8 md:text-right bg-white pr-4">
+                            <p class="text-lg font-semibold text-aegism-dark">Đạt mốc 100 khách hàng đầu tiên</p>
+                            <p class="text-gray-500">2022</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Item 4: Mở rộng (align right on md) -->
+                    <div class="flex items-center md:justify-end md:w-1/2 md:self-end md:ml-auto">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-aegism-blue text-white flex items-center justify-center z-10 md:order-2">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.99 0-5.717-.99-7.843-2.67M19.843 7.582A11.953 11.953 0 0012 10.5a11.953 11.953 0 00-7.843-2.918" /></svg>
+                        </div>
+                        <div class="ml-6 md:ml-0 md:mr-14 bg-white pl-4 md:pl-0 md:pr-4">
+                            <p class="text-lg font-semibold text-aegism-dark">Mở rộng ra thị trường quốc tế</p>
+                            <p class="text-gray-500">2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission/Vision Section -->
+        <section class="py-16 md:py-24 bg-aegism-light-bg">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-left max-w-2xl">
+                    <h2 class="text-3xl font-extrabold text-aegism-dark">
+                        Sứ mệnh, Tầm nhìn & Giá trị cốt lõi
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600">
+                        Tại AEGISM, chúng tôi được dẫn dắt bởi một sứ mệnh rõ ràng, một tầm nhìn tạo bạc và những giá trị không thể lay chuyển, định hình mọi thứ chúng tôi làm.
+                    </p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Sứ mệnh -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-aegism-blue">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v16.5h16.5V3H3.75zm8.25 9.75h-6.75V9.75h6.75v3zm6.75 0h-6.75V9.75h6.75v3zm0-4.5h-6.75V5.25h6.75v3zm-6.75 0H5.25V5.25h6.75v3z" /></svg>
+                        </div>
+                        <h3 class="mt-5 text-xl font-bold text-aegism-dark">Sứ mệnh của chúng tôi</h3>
+                        <p class="mt-2 text-base text-gray-600">Cung cấp giải pháp công nghệ thông minh, giúp doanh nghiệp tối ưu vận hành và bảo vệ tài sản một cách tuyệt đối.</p>
+                    </div>
+                    <!-- Tầm nhìn -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-aegism-blue">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </div>
+                        <h3 class="mt-5 text-xl font-bold text-aegism-dark">Tầm nhìn của chúng tôi</h3>
+                        <p class="mt-2 text-base text-gray-600">Trở thành nền tảng hàng đầu về giải pháp vận hành và giám sát an ninh thông minh tại Châu Á.</p>
+                    </div>
+                    <!-- Giá trị cốt lõi -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-aegism-blue">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+                        </div>
+                        <h3 class="mt-5 text-xl font-bold text-aegism-dark">Giá trị cốt lõi</h3>
+                        <p class="mt-2 text-base text-gray-600">Đổi mới, tin cậy, lấy khách hàng làm trung tâm, và cam kết chất lượng.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-aegism-dark">
+                        Gặp gỡ đội ngũ chuyên gia
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+                        Những người đứng sau sự thành công và đổi mới của AEGISM.
+                    </p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Team Member 1 -->
+                    <div class="bg-aegism-light-bg p-8 rounded-lg text-center shadow-sm">
+                        <img class="w-24 h-24 rounded-full mx-auto" src="https://placehold.co/96x96/E0E7FF/4F46E5?text=NA" alt="Nguyễn Văn An">
+                        <h3 class="mt-5 text-xl font-bold text-aegism-dark">Nguyễn Văn An</h3>
+                        <p class="mt-1 text-base text-aegism-blue font-medium">Giám đốc Điều hành (CEO)</p>
+                    </div>
+                    <!-- Team Member 2 -->
+                    <div class="bg-aegism-light-bg p-8 rounded-lg text-center shadow-sm">
+                        <img class="w-24 h-24 rounded-full mx-auto" src="https://placehold.co/96x96/E0E7FF/4F46E5?text=TB" alt="Trần Thị Bích">
+                        <h3 class="mt-5 text-xl font-bold text-aegism-dark">Trần Thị Bích</h3>
+                        <p class="mt-1 text-base text-aegism-blue font-medium">Giám đốc Công nghệ (CTO)</p>
+                    </div>
+                    <!-- Team Member 3 -->
+                    <div class="bg-aegism-light-bg p-8 rounded-lg text-center shadow-sm">
+                        <img class="w-24 h-24 rounded-full mx-auto" src="https://placehold.co/96x96/E0E7FF/4F46E5?text=LC" alt="Lê Minh Cường">
+                        <h3 class="mt-5 text-xl font-bold text-aegism-dark">Lê Minh Cường</h3>
+                        <p class="mt-1 text-base text-aegism-blue font-medium">Giám đốc Sản phẩm (CPO)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="bg-aegism-blue">
+            <div class="container mx-auto max-w-5xl py-16 px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-extrabold text-white">
+                    Cùng AEGISM nâng tầm doanh nghiệp của bạn
+                </h2>
+                <p class="mt-4 text-lg text-blue-100 max-w-3xl mx-auto">
+                    Khám phá cách các giải pháp của chúng tôi có thể giúp bạn tối ưu hóa vận hành, tăng cường an ninh và thúc đẩy tăng trưởng.
+                </p>
+                <a href="aegism_demo_page.html" class="mt-8 inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-aegism-blue bg-white hover:bg-blue-50">
+                    Tìm hiểu thêm về giải pháp
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1: Logo & Info -->
+                <div>
+                    <a href="index.html"><img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Giải pháp toàn diện cho vận hành và giám sát an ninh.
+                    </p>
+                    <p class="mt-4 text-sm text-gray-500">
+                        &copy; 2024 AEGISM. Đã đăng ký bản quyền.
+                    </p>
+                </div>
+                <!-- Column 2: Nền tảng -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Nền tảng</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Vận hành</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Giám sát</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">An ninh</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bảng giá</a></li>
+                    </ul>
+                </div>
+                <!-- Column 3: Công ty -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Công ty</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Tuyển dụng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Blog</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Đối tác</a></li>
+                    </ul>
+                </div>
+                <!-- Column 4: Liên hệ -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Liên hệ</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Hỗ trợ</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bán hàng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Liên hệ báo chí</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-
-        <div class="about-cta-block">
-          <h3 class="about-cta-title">SẴN SÀNG NÂNG TẦM QUẢN LÝ?</h3>
-          <p class="hero-description" style="animation: none; font-size: 1.1rem; max-width: 600px;">
-            Khám phá cách Opsera có thể thay đổi cách bạn vận hành. Hãy để lại thông tin, chúng tôi sẽ tư vấn giải pháp phù hợp nhất.
-          </p>
-          <a href="contact.html" class="btn-cta" data-transition="slide-right" style="animation: none; margin-top: 1.5rem;">
-            Liên Hệ Tư Vấn
-          </a>
-        </div>
-
-      </div> </div>
-  </div>
-</main>
-<script src="https://unpkg.com/swup@4"></script>
-<script src="js/main.js"></script>
+    </footer>
 
 </body>
 </html>

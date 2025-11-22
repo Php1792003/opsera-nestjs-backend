@@ -1,5 +1,3 @@
-// src/project/project.controller.ts
-
 import {
   Body,
   Controller,
@@ -12,33 +10,29 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto } from '../auth/dto/create-project.dto';
-import { UpdateProjectDto } from '../auth/dto/update-project.dto';
+// Import đúng đường dẫn DTO mới tạo
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
-import { Project } from '@prisma/client';
-import {
-  ProjectWithCounts,
-  ProjectWithDetails,
-  DeleteResult,
-} from './project.types';
+import { ProjectResponse, DeleteResult } from './project.types';
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard)
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
 
   @Post()
   async create(
     @Body() createProjectDto: CreateProjectDto,
     @Request() req: RequestWithUser,
-  ): Promise<Project> {
+  ): Promise<ProjectResponse> {
     const { tenantId, userId } = req.user;
     return this.projectService.create(createProjectDto, tenantId, userId);
   }
 
   @Get()
-  async findAll(@Request() req: RequestWithUser): Promise<ProjectWithCounts[]> {
+  async findAll(@Request() req: RequestWithUser): Promise<ProjectResponse[]> {
     const { tenantId } = req.user;
     return this.projectService.findAll(tenantId);
   }
@@ -47,11 +41,9 @@ export class ProjectController {
   async findOne(
     @Param('id') id: string,
     @Request() req: RequestWithUser,
-  ): Promise<ProjectWithDetails> {
+  ): Promise<ProjectResponse> {
     const { tenantId } = req.user;
-    // === SỬA LỖI Ở ĐÂY ===
-    // Gọi đúng hàm `findOne` đã có trong service
-    return this.projectService.findOne(id, tenantId); 
+    return this.projectService.findOne(id, tenantId);
   }
 
   @Put(':id')
@@ -59,7 +51,7 @@ export class ProjectController {
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
     @Request() req: RequestWithUser,
-  ): Promise<ProjectWithCounts> {
+  ): Promise<ProjectResponse> {
     const { tenantId, userId } = req.user;
     return this.projectService.update(id, updateProjectDto, tenantId, userId);
   }

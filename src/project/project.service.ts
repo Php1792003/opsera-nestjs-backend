@@ -1,14 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProjectDto } from '../auth/dto/create-project.dto';
-import { UpdateProjectDto } from '../auth/dto/update-project.dto';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 import { AuditService } from '../audit/audit.service';
-import { Project } from '@prisma/client';
 import {
   projectWithDetailsArgs,
   projectWithCountsArgs,
-  ProjectWithDetails,
-  ProjectWithCounts,
+  ProjectResponse,
   DeleteResult,
 } from './project.types';
 
@@ -17,19 +15,45 @@ export class ProjectService {
   constructor(
     private prisma: PrismaService,
     private auditService: AuditService,
-  ) {}
+  ) { }
+
+  // Hàm helper để format dữ liệu trả về đúng ý Frontend
+  private mapToResponse(project: any): ProjectResponse {
+    return {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      address: project.address,
+      status: project.status,
+      image: project.image,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      tenantId: project.tenantId,
+      qrCount: project._count?.qrcodes || 0,
+      taskCount: project._count?.tasks || 0,
+      staffCount: project._count?.members || 0,
+      qrcodes: project.qrcodes,
+      tasks: project.tasks
+    };
+  }
 
   async create(
     dto: CreateProjectDto,
     tenantId: string,
     creatorId: string,
-  ): Promise<Project> {
+  ): Promise<ProjectResponse> {
     const newProject = await this.prisma.project.create({
       data: {
         name: dto.name,
         description: dto.description,
+        address: dto.address,
+        status: dto.status || 'active',
+        image: dto.image,
         tenantId: tenantId,
       },
+      include: {
+        _count: { select: { qrcodes: true, tasks: true, members: true } }
+      }
     });
 
     await this.auditService.logActivity(
@@ -41,20 +65,22 @@ export class ProjectService {
       newProject.id,
     );
 
-    return newProject;
+    return this.mapToResponse(newProject);
   }
 
-  async findAll(tenantId: string): Promise<ProjectWithCounts[]> {
-    return this.prisma.project.findMany({
+  async findAll(tenantId: string): Promise<ProjectResponse[]> {
+    const projects = await this.prisma.project.findMany({
       where: { tenantId: tenantId },
       ...projectWithCountsArgs,
       orderBy: {
         createdAt: 'desc',
       },
     });
+
+    return projects.map(p => this.mapToResponse(p));
   }
 
-  async findOne(id: string, tenantId: string): Promise<ProjectWithDetails> {
+  async findOne(id: string, tenantId: string): Promise<ProjectResponse> {
     const project = await this.prisma.project.findFirst({
       where: {
         id: id,
@@ -67,7 +93,7 @@ export class ProjectService {
       throw new NotFoundException('Project not found or access denied.');
     }
 
-    return project;
+    return this.mapToResponse(project);
   }
 
   async update(
@@ -75,10 +101,11 @@ export class ProjectService {
     dto: UpdateProjectDto,
     tenantId: string,
     actorId: string,
-  ): Promise<ProjectWithCounts> {
+  ): Promise<ProjectResponse> {
     const existingProject = await this.prisma.project.findFirst({
       where: { id: id, tenantId: tenantId },
     });
+
     if (!existingProject) {
       throw new NotFoundException('Project not found or access denied.');
     }
@@ -86,10 +113,15 @@ export class ProjectService {
     const updatedProject = await this.prisma.project.update({
       where: { id: id },
       data: {
-        ...(dto.name && { name: dto.name }),
-        ...(dto.description !== undefined && { description: dto.description }),
+        name: dto.name,
+        description: dto.description,
+        address: dto.address,
+        status: dto.status,
+        image: dto.image,
       },
-      ...projectWithCountsArgs,
+      include: {
+        _count: { select: { qrcodes: true, tasks: true, members: true } }
+      }
     });
 
     await this.auditService.logActivity(
@@ -101,7 +133,7 @@ export class ProjectService {
       updatedProject.id,
     );
 
-    return updatedProject;
+    return this.mapToResponse(updatedProject);
   }
 
   async delete(
@@ -111,7 +143,9 @@ export class ProjectService {
   ): Promise<DeleteResult> {
     const existingProject = await this.prisma.project.findFirst({
       where: { id: id, tenantId: tenantId },
-      include: { _count: { select: { qrcodes: true, tasks: true, members: true } } },
+      include: {
+        _count: { select: { qrcodes: true, tasks: true, members: true } },
+      },
     });
 
     if (!existingProject) {
@@ -120,12 +154,8 @@ export class ProjectService {
 
     if (
       existingProject._count.qrcodes > 0 ||
-      existingProject._count.tasks > 0 ||
-      existingProject._count.members > 0
+      existingProject._count.tasks > 0
     ) {
-      throw new NotFoundException(
-        `Cannot delete project. It has related items (QR: ${existingProject._count.qrcodes}, Tasks: ${existingProject._count.tasks}, Members: ${existingProject._count.members}). Please remove them first.`,
-      );
     }
 
     await this.prisma.project.delete({

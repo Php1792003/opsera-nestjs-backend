@@ -26,14 +26,12 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
-  // ✅ FIX: Route chính cho API JSON (dùng cho frontend AJAX)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async apiLogin(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  // ✅ FIX: Route riêng cho form HTML submit (nếu cần)
   @Post('login-form')
   async loginFromForm(
     @Body() loginDto: LoginDto,

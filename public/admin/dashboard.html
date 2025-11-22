@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Dashboard - AEGISM Admin</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js (Cho tương tác UI) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <!-- Chart.js (Cho biểu đồ) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Nunito', sans-serif; }
+        [x-cloak] { display: none !important; }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'aegism-blue': '#2563EB',
+                        'aegism-dark': '#1F2937',
+                        'aegism-sidebar': '#111827',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800" x-data="{ sidebarOpen: false }">
+
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-aegism-sidebar text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-xl">
+            <!-- Logo -->
+            <div class="flex items-center justify-center h-20 border-b border-gray-700">
+                 <div class="flex items-center space-x-2">
+                    <svg class="h-8 w-auto" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.666 22.6667L8 27.3334H3.33301L7.99967 22.6667H12.666Z" fill="#2563EB"/>
+                        <path d="M19.3337 22.6667L24.0003 27.3334H28.667L24.0003 22.6667H19.3337Z" fill="#2563EB"/>
+                        <path d="M16.0013 16L20.668 20.6667H11.3346L16.0013 16Z" fill="#2563EB"/>
+                        <path d="M12.666 9.33333L8 -1.52588e-05L3.33301 4.66665L7.99967 9.33333H12.666Z" fill="#2563EB" fill-opacity="0.6"/>
+                        <path d="M19.3337 9.33333L24.0003 4.66665L28.667 9.33333H24.0003L19.3337 9.33333Z" fill="#2563EB" fill-opacity="0.6"/>
+                        <path d="M16.0013 16L20.668 11.3333H11.3346L16.0013 16Z" fill="#2563EB" fill-opacity="0.6"/>
+                    </svg>
+                    <span class="text-2xl font-bold tracking-wider">AEGISM</span>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <nav class="mt-6 px-4 space-y-2">
+                <a href="#" class="flex items-center px-4 py-3 bg-aegism-blue text-white rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Dashboard
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Khách hàng
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0h6"></path></svg>
+                    Doanh thu
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                    Hệ thống Server
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Cài đặt
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- Top Header -->
+            <header class="flex justify-between items-center py-4 px-6 bg-white border-b border-gray-200">
+                <div class="flex items-center">
+                    <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <!-- Search -->
+                    <div class="relative mx-4 lg:mx-0">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none"><path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </span>
+                        <input class="w-32 sm:w-64 pl-10 pr-4 py-2 rounded-md form-input sm:text-sm border border-gray-300 focus:border-aegism-blue focus:outline-none focus:shadow-outline-blue" type="text" placeholder="Tìm kiếm dữ liệu...">
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <button class="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">3</span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </button>
+                    <!-- Profile -->
+                    <div class="flex items-center">
+                        <img class="h-8 w-8 rounded-full object-cover border border-gray-300" src="https://ui-avatars.com/api/?name=Admin+Master&background=2563EB&color=fff" alt="Admin Avatar">
+                        <span class="ml-3 font-semibold text-gray-700 hidden sm:block">Quản trị viên</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h3 class="text-3xl font-bold text-aegism-dark">Tổng quan Hệ thống</h3>
+                        <p class="text-gray-500 mt-1">Dữ liệu cập nhật thời gian thực: <span class="font-medium text-gray-800">20/11/2024</span></p>
+                    </div>
+                    <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded shadow-sm hover:bg-gray-50 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Xuất báo cáo
+                    </button>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Card 1: Doanh thu -->
+                    <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Tổng Doanh Thu (Tháng)</p>
+                                <h4 class="text-2xl font-bold text-aegism-dark mt-2">2.450 Tỷ VND</h4>
+                            </div>
+                            <div class="p-2 bg-green-100 rounded-md text-green-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-500 flex items-center font-semibold">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                12.5%
+                            </span>
+                            <span class="text-gray-400 ml-2">so với tháng trước</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Tổng Khách hàng -->
+                    <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Tổng Khách hàng</p>
+                                <h4 class="text-2xl font-bold text-aegism-dark mt-2">15,402</h4>
+                            </div>
+                            <div class="p-2 bg-blue-100 rounded-md text-aegism-blue">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            </div>
+                        </div>
+                         <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-500 flex items-center font-semibold">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                                8.2%
+                            </span>
+                            <span class="text-gray-400 ml-2">so với tháng trước</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Người dùng Active -->
+                    <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Đang hoạt động (Online)</p>
+                                <h4 class="text-2xl font-bold text-aegism-dark mt-2">1,204</h4>
+                            </div>
+                            <div class="p-2 bg-purple-100 rounded-md text-purple-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-purple-600 h-1.5 rounded-full" style="width: 65%"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">65% dung lượng băng thông hiện tại</p>
+                    </div>
+
+                    <!-- Card 4: Server Load -->
+                    <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Tải hệ thống (CPU)</p>
+                                <h4 class="text-2xl font-bold text-aegism-dark mt-2">42%</h4>
+                            </div>
+                            <div class="p-2 bg-yellow-100 rounded-md text-yellow-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 42%"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Hệ thống ổn định</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <!-- Main Chart -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 lg:col-span-2 border border-gray-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-bold text-gray-800">Biểu đồ Doanh Thu & Traffic</h4>
+                            <select class="border-gray-300 border rounded-md text-sm text-gray-600 p-1 focus:outline-none">
+                                <option>7 ngày qua</option>
+                                <option>30 ngày qua</option>
+                                <option>Năm nay</option>
+                            </select>
+                        </div>
+                        <div class="relative h-80 w-full">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Pie Chart -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+                        <h4 class="text-lg font-bold text-gray-800 mb-4">Phân bổ gói dịch vụ</h4>
+                        <div class="relative h-64 w-full flex justify-center">
+                            <canvas id="packageChart"></canvas>
+                        </div>
+                        <div class="mt-4 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-600 mr-2"></span>Doanh nghiệp</span>
+                                <span class="font-bold">45%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-400 mr-2"></span>Cá nhân</span>
+                                <span class="font-bold">30%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-gray-300 mr-2"></span>Dùng thử</span>
+                                <span class="font-bold">25%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Recent Customers -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                            <h4 class="font-bold text-gray-800">Khách hàng đăng ký mới</h4>
+                            <a href="#" class="text-sm text-aegism-blue hover:underline">Xem tất cả</a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 text-xs font-semibold text-gray-600 uppercase bg-gray-50">Tên</th>
+                                        <th class="px-6 py-3 text-xs font-semibold text-gray-600 uppercase bg-gray-50">Gói</th>
+                                        <th class="px-6 py-3 text-xs font-semibold text-gray-600 uppercase bg-gray-50">Trạng thái</th>
+                                        <th class="px-6 py-3 text-xs font-semibold text-gray-600 uppercase bg-gray-50">Ngày</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700 mr-3">NT</div>
+                                            <span class="text-sm font-medium text-gray-700">Nguyễn Thành</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Doanh nghiệp</td>
+                                        <td class="px-6 py-4"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span></td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">20/11</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-purple-200 flex items-center justify-center text-xs font-bold text-purple-700 mr-3">LH</div>
+                                            <span class="text-sm font-medium text-gray-700">Lê Hoàng</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Cá nhân</td>
+                                        <td class="px-6 py-4"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span></td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">19/11</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 flex items-center">
+                                            <div class="h-8 w-8 rounded-full bg-pink-200 flex items-center justify-center text-xs font-bold text-pink-700 mr-3">TM</div>
+                                            <span class="text-sm font-medium text-gray-700">Trần Minh</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">Doanh nghiệp</td>
+                                        <td class="px-6 py-4"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span></td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">19/11</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- System Logs / Top Revenue -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                            <h4 class="font-bold text-gray-800">Hiệu suất Server (Logs)</h4>
+                             <span class="text-xs text-green-600 font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span> All Systems Operational</span>
+                        </div>
+                         <div class="p-4 space-y-4">
+                            <!-- Log Item -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-blue-100">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900">Tự động sao lưu dữ liệu hoàn tất</p>
+                                    <p class="text-sm text-gray-500">Database chính đã được backup an toàn.</p>
+                                    <span class="text-xs text-gray-400">2 phút trước</span>
+                                </div>
+                            </div>
+                            <!-- Log Item -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-yellow-100">
+                                        <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900">Cảnh báo: Tải CPU tăng cao</p>
+                                    <p class="text-sm text-gray-500">Server cụm Asia-South-1 đạt mức 85%.</p>
+                                    <span class="text-xs text-gray-400">15 phút trước</span>
+                                </div>
+                            </div>
+                            <!-- Log Item -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
+                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900">Cập nhật bảo mật</p>
+                                    <p class="text-sm text-gray-500">Patch v2.4.1 đã được triển khai thành công.</p>
+                                    <span class="text-xs text-gray-400">1 giờ trước</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Chart Configuration Script -->
+    <script>
+        // Line Chart - Revenue & Traffic
+        const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                datasets: [
+                    {
+                        label: 'Doanh thu (Triệu VND)',
+                        data: [150, 230, 180, 320, 290, 450, 410],
+                        borderColor: '#2563EB', // Aegism Blue
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#2563EB',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Traffic (x100)',
+                        data: [80, 120, 140, 200, 180, 250, 220],
+                        borderColor: '#9CA3AF',
+                        backgroundColor: 'transparent',
+                        tension: 0.4,
+                        borderDash: [5, 5],
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: { usePointStyle: true, boxWidth: 8 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [2, 2], color: '#f3f4f6' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Doughnut Chart - Package Distribution
+        const ctxPackage = document.getElementById('packageChart').getContext('2d');
+        const packageChart = new Chart(ctxPackage, {
+            type: 'doughnut',
+            data: {
+                labels: ['Doanh nghiệp', 'Cá nhân', 'Dùng thử'],
+                datasets: [{
+                    data: [45, 30, 25],
+                    backgroundColor: [
+                        '#2563EB', // Blue
+                        '#60A5FA', // Lighter Blue
+                        '#D1D5DB'  // Gray
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

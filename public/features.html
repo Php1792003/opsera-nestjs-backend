@@ -1,104 +1,376 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Khám phá các tính năng của Opsera - Quản lý công việc và tuần tra QR code">
-  <title>Tính Năng - Opsera</title>
-
-  <link rel="stylesheet" href="css/style.css">
-
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Năng - AEGISM</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Sử dụng font Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'aegism-blue': '#2563EB',
+                        'aegism-dark': '#1F2937',
+                        'aegism-light-bg': '#F9FAFB',
+                        'aegism-card-bg': '#FFFFFF',
+                        'aegism-border': '#E5E7EB',
+                    },
+                },
+            },
+        }
+    </script>
 </head>
-<body>
+<body class="bg-white text-aegism-dark">
 
-<div id="navbar-placeholder"></div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ open: false }">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html"><img src="img/aegism_logo.png" alt="Logo AEGISM" class="h-[210px] w-auto"/></a>
+                </div>
+                <!-- Navigation -->
+                <nav class="hidden md:flex md:items-center md:space-x-10">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-aegism-blue">Trang chủ</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-aegism-blue">Giới thiệu</a>
+                    <a href="pricing.html" class="font-medium text-gray-600 hover:text-aegism-blue">Bảng giá</a>
+                    <a href="features.html" class="font-semibold text-aegism-blue border-b-2 border-aegism-blue pb-1">Tính năng</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-aegism-blue">Liên hệ</a>
+                </nav>
+                <!-- CTA Button -->
+                <div class="flex items-center flex-gap-2">
+                    <a href="request_demo.html" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                         <span class="truncate">Dùng thử miễn phí</span>
+                    </a>
+                    <a href="login.html"class="hidden h-10 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-neutral-100 px-4 text-sm font-bold leading-normal tracking-[0.015em] text-neutral-700 transition-colors hover:bg-neutral-200 sm:flex">
+                        <span class="truncate">Đăng nhập</span>
+                    </a>
+                    <!-- Mobile menu button -->
+                    <button @click="open = !open" type="button" class="ml-2 md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aegism-blue" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Mở menu</span>
+                        <svg x-show="!open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                        <svg x-show="open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
 
-<main id="swup" class="transition-main">
-  <div class="page-wrapper">
-
-    <div class="page-container bg-features">
-
-      <div class="features-detailed-section">
-
-        <h2 class="contact-title" style="margin-bottom: 4rem;">
-          GIẢI PHÁP TOÀN DIỆN TỪ OPSERA
-        </h2>
-
-        <div class="feature-detailed-block">
-          <div class="feature-detailed-content">
-            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-            </svg>
-            <h3 class="feature-detailed-title">QUẢN LÝ CÔNG VIỆC THÔNG MINH</h3>
-            <p class="feature-detailed-subtitle">
-              Giao việc, theo dõi, và hoàn thành. Tất cả trên một nền tảng.
-            </p>
-            <p class="feature-detailed-text">
-              Opsera đơn giản hóa quy trình quản lý dự án. Bạn có thể dễ dàng tạo công việc, gán cho nhân viên, đặt thời hạn và theo dõi tiến độ theo thời gian thực. Hệ thống checklist lồng nhau cho phép chia nhỏ các tác vụ phức tạp, đảm bảo không bỏ sót bất kỳ chi tiết nào.
-            </p>
-            <ul class="feature-detailed-list">
-              <li>Giao diện kéo-thả trực quan (Kanban board).</li>
-              <li>Thông báo tự động khi có cập nhật hoặc trễ hạn.</li>
-              <li>Phân quyền chi tiết cho quản lý và nhân viên.</li>
-            </ul>
-          </div>
-          <div class="feature-detailed-image">
-            <img src="img/background_features_1.png" alt="Quản lý công việc Opsera" class="rounded-xl shadow-lg w-full h-full object-cover">
-          </div>
+            <!-- Mobile menu, show/hide based on menu state. -->
+            <div x-show="open" class="md:hidden" id="mobile-menu">
+                <div class="pt-2 pb-3 space-y-1">
+                     <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Trang chủ</a>
+                    <a href="about.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giới thiệu</a>
+                    <a href="pricing.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Bảng giá</a>
+                    <a href="features.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Tính năng</a>
+                    <a href="contact.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Liên hệ</a>
+                    <a href="login.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Đăng nhập</a>
+                    <a href="request_demo.html" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                        Dùng thử miễn phí
+                    </a>
+                </div>
+            </div>
         </div>
+    </header>
 
-        <div class="feature-detailed-block">
-          <div class="feature-detailed-content">
-            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
-            </svg>
-            <h3 class="feature-detailed-title">TUẦN TRA GIÁM SÁT BẰNG QR</h3>
-            <p class="feature-detailed-subtitle">
-              Chính xác, minh bạch và chống gian lận.
-            </p>
-            <p class="feature-detailed-text">
-              Loại bỏ sổ sách giấy tờ và các phương pháp check-in lỗi thời. Với Opsera, nhân viên chỉ cần dùng điện thoại quét mã QR tại các điểm được chỉ định. Hệ thống ngay lập tức ghi nhận **thời gian**, **vị trí** và **danh tính** người quét, đính kèm checklist công việc tại điểm đó.
-            </p>
-            <ul class="feature-detailed-list">
-              <li>Check-in GPS và nhận diện khuôn mặt (Tùy chọn).</li>
-              <li>Tạo lịch tuần tra linh hoạt: hàng giờ, hàng ngày, hàng tuần.</li>
-              <li>Cảnh báo tức thì nếu bỏ lỡ một điểm tuần tra.</li>
-            </ul>
-          </div>
-          <div class="feature-detailed-image">
-            <img src="img/background_features_2.png" alt="Tuần tra QR Code Opsera" class="rounded-xl shadow-lg w-full h-full object-cover">
-          </div>
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-gray-50 pt-24 pb-20">
+            <!-- Background Image -->
+            <div class="absolute inset-0">
+                <img class="w-full h-full object-cover opacity-10" src="https://placehold.co/1920x1080/E0E7FF/000000?text=+" alt="Abstract background">
+                <div class="absolute inset-0 bg-gradient-to-b from-gray-50 via-gray-50 to-white"></div>
+            </div>
+
+            <div class="relative container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-aegism-dark tracking-tight">
+                    Khám Phá Các Tính Năng Vượt Trội Của AEGISM
+                </h1>
+                <p class="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
+                    Đi sâu vào từng công cụ mạnh mẽ đã làm nên giải pháp của AEGISM - được thiết kế để tối ưu hóa vận hành và tăng cường an ninh cho doanh nghiệp của bạn.
+                </p>
+                <!-- Anchor Links -->
+                <div class="mt-10 flex justify-center flex-wrap gap-3">
+                    <a href="#feature-management" class="px-5 py-2.5 rounded-lg bg-white shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-200">Hệ thống quản lý</a>
+                    <a href="#feature-qr" class="px-5 py-2.5 rounded-lg bg-white shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-200">Tuần tra QR</a>
+                    <a href="#feature-analytics" class="px-5 py-2.5 rounded-lg bg-white shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-200">Báo cáo & Phân tích</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature 1: Management -->
+        <section id="feature-management" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+                    <!-- Text Content -->
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-aegism-dark">Hệ Thống Quản Lý Công Việc & Sự Cố Thông Minh</h2>
+                        <p class="mt-4 text-lg text-gray-600">
+                            Hệ thống tự động hóa, theo dõi và báo cáo công việc hàng ngày, đơn giản hóa quy trình và đảm bảo mọi nhiệm vụ được hoàn thành đúng hạn.
+                        </p>
+                        <div class="mt-10 space-y-8">
+                            <!-- Sub-feature 1 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.5 9.5l-3.5 3.5-3.5-3.5m-5 5l3.5-3.5 3.5 3.5m-7-7l3.5 3.5 3.5-3.5" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Tự động hóa quy trình</h4>
+                                    <p class="mt-1 text-gray-600">Thiết lập các quy trình công việc tự động, giảm thiểu thao tác thủ công và sai sót.</p>
+                                </div>
+                            </div>
+                            <!-- Sub-feature 2 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A2.25 2.25 0 0115 21H9a2.25 2.25 0 01-2.25-1.765z" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Tối ưu hóa nguồn lực</h4>
+                                    <p class="mt-1 text-gray-600">Phân công công việc hiệu quả, theo dõi tiến độ nhân viên và phân phối tải công việc.</p>
+                                </div>
+                            </div>
+                            <!-- Sub-feature 3 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c.06.002.121.002.182.002h.116a.75.75 0 00.621-.431l1.5-3.002a.75.75 0 01.621-.431H15a.75.75 0 01.75.75v3.002a.75.75 0 00.75.75h.116c.061 0 .121 0 .182-.002a10.485 10.485 0 005.15-5.149c.283-.56.452-1.156.51-1.766A10.5 10.5 0 0012 2.25a10.5 10.5 0 00-10.418 9.086c.058.61.227 1.206.51 1.766a10.485 10.485 0 005.15 5.149z" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Tương tác cộng tác</h4>
+                                    <p class="mt-1 text-gray-600">Giao tiếp, chia sẻ tài liệu và cập nhật trạng thái công việc ngay trên một nền tảng.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Image Placeholder -->
+                    <div class="flex items-center justify-center bg-aegism-light-bg p-8 rounded-2xl shadow-lg">
+                        <div class="w-full bg-white rounded-lg shadow-xl border border-gray-200 p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold">Danh Sách Công Việc</h3>
+                                <button class="px-3 py-1.5 text-xs font-medium text-white bg-aegism-blue rounded-md hover:bg-blue-700">Tạo Mới</imgc>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between p-3 bg-gray-50 rounded-md">
+                                    <span class="text-sm text-gray-700">Kiểm tra hệ thống PCCC khu A</span>
+                                    <span class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">Hoàn thành</span>
+                                </div>
+                                <div class="flex justify-between p-3 bg-gray-50 rounded-md">
+                                    <span class="text-sm text-gray-700">Bảo trì thang máy Tòa 2</span>
+                                    <span class="text-xs font-semibold text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded-full">Đang xử lý</span>
+                                </div>
+                                <div class="flex justify-between p-3 bg-gray-50 rounded-md">
+                                    <span class="text-sm text-gray-700">Sự cố camera sảnh B</span>
+                                    <span class="text-xs font-semibold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">Khẩn cấp</span>
+                                </div>
+                                <div class="flex justify-between p-3 bg-gray-50 rounded-md">
+                                    <span class="text-sm text-gray-700">Kiểm tra điều hòa tầng 10</span>
+                                    <span class="text-xs font-semibold text-gray-600 bg-gray-200 px-2 py-0.5 rounded-full">Mới</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature 2: QR Scan -->
+        <section id="feature-qr" class="py-16 md:py-24 bg-aegism-light-bg">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+                    <!-- Image Placeholder -->
+                    <div class="flex items-center justify-center p-8">
+                        <img src="./img/ae_qr_log.png" class="rounded-2xl shadow-xl" alt="Phone scanning QR code">
+                    </div>
+                    <!-- Text Content -->
+                    <div class="lg:order-first">
+                        <h2 class="text-3xl font-extrabold text-aegism-dark">Tuần Tra Giám Sát Bằng Mã QR Code</h2>
+                        <p class="mt-4 text-lg text-gray-600">
+                            Hệ thống tuần tra thông minh sử dụng QR code cho phép nhân viên check-in tại các điểm, ghi nhận thời gian và gửi báo cáo sự cố kèm hình ảnh/video.
+                        </p>
+                        <div class="mt-10 space-y-8">
+                            <!-- Sub-feature 1 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Minh bạch & Chính xác</h4>
+                                    <p class="mt-1 text-gray-600">Ghi lại chính xác thời gian và địa điểm của nhân viên tuần tra, không thể gian lận.</p>
+                                </div>
+                            </div>
+                            <!-- Sub-feature 2 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a8.955 8.955 0 01-1.586 5.093l-1.414 1.414M12 6A8.955 8.955 0 007.5 1.586m4.5 4.414V1.586m0 4.414a8.955 8.955 0 014.5 0M12 6A8.955 8.955 0 007.5 1.586M1.586 7.5A8.955 8.955 0 006 12m4.5 0a8.955 8.955 0 014.5 0m0 0a8.955 8.955 0 014.5 0M12 6a8.955 8.955 0 014.5 0" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Giám sát thời gian thực</h4>
+                                    <p class="mt-1 text-gray-600">Quản lý có thể theo dõi tiến độ tuần tra ngay lập tức trên bản đồ hệ thống.</p>
+                                </div>
+                            </div>
+                            <!-- Sub-feature 3 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H5.25A2.25 2.25 0 003 3.75v16.5a2.25 2.25 0 002.25 2.25h13.5A2.25 2.25 0 0021 20.25V10.5M10.5 1.5L15 6h-4.5V1.5z" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Thông báo/Báo cáo sự cố</h4>
+                                    <p class="mt-1 text-gray-600">Dễ dàng tạo báo cáo sự cố tại chỗ, đính kèm hình ảnh và gửi về trung tâm.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature 3: Analytics -->
+        <section id="feature-analytics" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+                    <!-- Text Content -->
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-aegism-dark">Báo Cáo & Phân Tích Thông Minh</h2>
+                        <p class="mt-4 text-lg text-gray-600">
+                            Hệ thống báo cáo mạnh mẽ cung cấp cho bạn cái nhìn toàn diện về hiệu suất vận hành, từ đó đưa ra các quyết định dựa trên dữ liệu.
+                        </p>
+                        <div class="mt-10 space-y-8">
+                            <!-- Sub-feature 1 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V5.75A2.25 2.25 0 0018 3.5H6A2.25 2.25 0 003.75 5.75v12.5A2.25 2.25 0 006 20.25z" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Giao diện trực quan</h4>
+                                    <p class="mt-1 text-gray-600">Biểu đồ, đồ thị và dashboard rõ ràng, giúp bạn nắm bắt thông tin nhanh chóng.</p>
+                                </div>
+                            </div>
+                            <!-- Sub-feature 2 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12a.75.75 0 01.75-.75h15a.75.75 0 010 1.5h-15a.75.75 0 01-.75-.75zM3.75 6a.75.75 0 01.75-.75h15a.75.75 0 010 1.5h-15a.75.75 0 01-.75-.75zM3.75 18a.75.75 0 01.75-.75h15a.75.75 0 010 1.5h-15a.75.75 0 01-.75-.75z" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Phân tích đa chiều</h4>
+                                    <p class="mt-1 text-gray-600">Lọc, so sánh và phân tích dữ liệu theo thời gian, địa điểm, nhân viên, v.v.</p>
+                                </div>
+                            </div>
+                            <!-- Sub-feature 3 -->
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <span class="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-aegism-blue">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-lg font-bold text-aegism-dark">Báo cáo tự động (Excel, PDF)</h4>
+                                    <p class="mt-1 text-gray-600">Tự động tạo và gửi báo cáo định kỳ (ngày, tuần, tháng) qua email cho quản lý.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Image Placeholder -->
+                    <div class="flex items-center justify-center p-8">
+                        <img src="./img/ana_rp.png" class="rounded-2xl shadow-xl" alt="Phone scanning QR code">
+                    </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="bg-aegism-blue">
+            <div class="container mx-auto max-w-5xl py-16 px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-extrabold text-white">
+                    Sẵn sàng nâng cao hiệu quả hoạt động?
+                </h2>
+                <p class="mt-4 text-lg text-blue-100 max-w-3xl mx-auto">
+                    Khám phá cách AEGISM có thể chuyển đổi doanh nghiệp của bạn. Đặt lịch demo ngay hôm nay.
+                </p>
+                <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="aegism_demo_page.html" class="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-aegism-blue bg-white hover:bg-blue-50">
+                        Dùng thử ngay
+                    </a>
+                    <a href="aegism_contact_page.html" class="inline-flex items-center justify-center px-6 py-3 border border-white rounded-lg shadow-sm text-base font-medium text-white bg-aegism-blue hover:bg-blue-800">
+                        Tìm Hiểu Thêm
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1: Logo & Info -->
+                <div>
+                    <a href="index.html"><img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Giải pháp toàn diện cho vận hành và giám sát an ninh.
+                    </p>
+                    <p class="mt-4 text-sm text-gray-500">
+                        &copy; 2024 AEGISM. Đã đăng ký bản quyền.
+                    </p>
+                </div>
+                <!-- Column 2: Nền tảng -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Nền tảng</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Vận hành</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Giám sát</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">An ninh</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bảng giá</a></li>
+                    </ul>
+                </div>
+                <!-- Column 3: Công ty -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Công ty</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Tuyển dụng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Blog</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Đối tác</a></li>
+                    </ul>
+                </div>
+                <!-- Column 4: Liên hệ -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Liên hệ</h4>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Hỗ trợ</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Bán hàng</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-gray-900">Liên hệ báo chí</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-
-        <div class="feature-detailed-block">
-          <div class="feature-detailed-content">
-            <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            <h3 class="feature-detailed-title">BÁO CÁO TRỰC QUAN</h3>
-            <p class="feature-detailed-subtitle">
-              Nắm bắt hiệu suất công việc qua các con số biết nói.
-            </p>
-            <p class="feature-detailed-text">
-              Đừng chỉ làm việc, hãy làm việc thông minh hơn. Hệ thống báo cáo của Opsera tự động tổng hợp dữ liệu và trực quan hóa dưới dạng biểu đồ, đồ thị. Bạn sẽ biết ngay nhân viên nào làm việc hiệu quả, khu vực nào thường xuyên có vấn đề, và thời gian trung bình để hoàn thành một tác vụ.
-            </p>
-            <ul class="feature-detailed-list">
-              <li>Biểu đồ tiến độ dự án, tỷ lệ hoàn thành công việc.</li>
-              <li>Bản đồ nhiệt các điểm tuần tra (heatmap).</li>
-              <li>Xuất báo cáo ra file PDF, Excel chỉ với một cú nhấp chuột.</li>
-            </ul>
-          </div>
-          <div class="feature-detailed-image">
-            <img src="img/background_features_3.png" alt="Báo cáo trực quan Opsera" class="rounded-xl shadow-lg w-full h-full object-cover">
-          </div>
-        </div>
-
-      </div> </div>
-  </div>
-</main>
-<script src="https://unpkg.com/swup@4"></script>
-<script src="js/main.js"></script>
+    </footer>
 
 </body>
 </html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhật ký Hoạt động - Opsera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Nunito', sans-serif; } 
+        [x-cloak] { display: none !important; } 
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'opsera-primary': '#2563EB',
+                        'opsera-dark': '#1F2937',
+                        'opsera-light': '#F3F4F6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-800" x-data="auditApp()" x-init="init()">
+
+    <div class="flex h-screen overflow-hidden" x-cloak>
+        <!-- Sidebar -->
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-center h-20 border-b border-gray-100">
+                    <div class="flex items-center space-x-2">
+                        <a href="/index.html"><img src="../img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
+                    </div>
+                </div>
+
+                <nav class="mt-6 px-4 space-y-2">
+                    <a href="../ternants/dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        Tổng quan (Dashboard)
+                    </a>
+                    
+                    <a href="../ternants/project.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        Quản lý Dự án
+                    </a>
+
+                    <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                        Mã QR & Điểm quét
+                    </a>
+
+                    <a href="../ternants/staff.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        Nhân sự & Phân quyền
+                    </a>
+
+                    <a href="../ternants/task.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        Công việc & Task
+                    </a>
+
+                    <template x-if="['professional', 'enterprise'].includes(currentPlan)">
+                        <div class="pt-2 mt-2 border-t border-gray-100">
+                            <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nâng cao</p>
+                            <a href="../ternants/report.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-purple-600 rounded-lg transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0h6"></path></svg>
+                                Báo cáo Thống kê
+                            </a>
+                            <a href="../ternants/audit_log.html" class="flex items-center px-4 py-3 bg-purple-50 text-purple-600 rounded-lg font-semibold transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Nhật ký Hoạt động
+                            </a>
+                        </div>
+                    </template>
+
+                    <template x-if="currentPlan === 'enterprise'">
+                        <div class="pt-2 mt-2 border-t border-gray-100">
+                            <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doanh nghiệp</p>
+                            <a href="../ternants/api_integration.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-indigo-600 rounded-lg transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Tích hợp API
+                            </a>
+                            <a href="../ternants/branding.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-indigo-600 rounded-lg transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                                Tùy chỉnh Thương hiệu
+                            </a>
+                        </div>
+                    </template>
+                </nav>
+            </div>
+            
+            <div class="p-4 border-t border-gray-200">
+                <button @click="logout" class="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Đăng xuất
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            
+            <header class="flex justify-between items-center py-4 px-6 bg-white border-b border-gray-200 shadow-sm">
+                <div class="flex items-center">
+                    <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-bold text-gray-800 hidden sm:block">Danh sách lịch sử hoạt động</h2>
+                </div>
+
+                <div class="flex items-center space-x-6">
+                     <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                        <span class="text-xs font-medium text-gray-500 px-2">Gói hiện tại:</span>
+                        <span class="text-sm font-bold text-blue-600 uppercase px-2" x-text="currentPlan"></span>
+                     </div>
+
+                     <button class="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">3</span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </button>
+
+                    <div class="flex items-center cursor-pointer">
+                        <div class="text-right mr-3 hidden sm:block">
+                            <div class="text-sm font-semibold text-gray-800" x-text="user.name"></div>
+                            <div class="text-xs text-gray-500 uppercase" x-text="user.role"></div>
+                        </div>
+                        <img class="h-9 w-9 rounded-full object-cover border border-gray-200" :src="user.avatar" alt="User Avatar">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                
+                <!-- Project Filters -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center w-full md:w-auto">
+                        <span class="text-gray-600 font-medium mr-3 whitespace-nowrap">Lọc theo Dự án:</span>
+                        <select x-model="selectedProjectId" class="w-full md:w-64 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-opsera-primary text-gray-700">
+                            <option value="all">Tất cả dự án</option>
+                            <template x-for="project in projects" :key="project.id">
+                                <option :value="project.id" x-text="project.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" x-model="searchQuery" placeholder="Tìm theo tên nhân viên, hành động..." class="w-full md:w-64 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-opsera-primary text-sm">
+                    </div>
+                </div>
+
+                <!-- Audit Log Table -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-xs text-gray-500 uppercase font-semibold border-b border-gray-200">
+                                    <th class="px-6 py-4">Nhân sự</th>
+                                    <th class="px-6 py-4">Hành động</th>
+                                    <th class="px-6 py-4 w-1/3">Nội dung chi tiết</th>
+                                    <th class="px-6 py-4 text-right">Thời gian</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-sm">
+                                <template x-for="log in filteredLogs" :key="log.id">
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <!-- User Column -->
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600 mr-3 flex-shrink-0" x-text="getInitials(log.userName)"></div>
+                                                <div>
+                                                    <div class="font-medium text-gray-900" x-text="log.userName"></div>
+                                                    <div class="text-xs text-gray-400" x-text="log.userRole"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Action Column -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 rounded-full text-xs font-bold border flex items-center w-fit gap-1" 
+                                                  :class="getActionStyle(log.action).class">
+                                                <span x-html="getActionStyle(log.action).icon"></span>
+                                                <span x-text="getActionStyle(log.action).label"></span>
+                                            </span>
+                                        </td>
+
+                                        <!-- Description Column (Human Readable) -->
+                                        <td class="px-6 py-4 text-gray-600">
+                                            <p class="line-clamp-2" x-text="formatDescription(log)"></p>
+                                            <span class="text-xs text-gray-400 italic" x-show="log.projectName" x-text="'Dự án: ' + log.projectName"></span>
+                                        </td>
+
+                                        <!-- Time Column -->
+                                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                                            <div class="text-gray-900 font-medium" x-text="formatTime(log.createdAt)"></div>
+                                            <div class="text-xs text-gray-400" x-text="formatDate(log.createdAt)"></div>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr x-show="filteredLogs.length === 0">
+                                    <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            <p>Không có hoạt động nào được ghi nhận.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+                        <span class="text-sm text-gray-500">Hiển thị <span class="font-bold text-gray-800" x-text="filteredLogs.length"></span> hoạt động</span>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-600 hover:bg-gray-50 text-sm disabled:opacity-50" disabled>Trước</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded bg-white text-gray-600 hover:bg-gray-50 text-sm">Sau</button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function auditApp() {
+            return {
+                sidebarOpen: false,
+                currentPlan: 'starter',
+                user: { name: 'Loading...', avatar: '', role: 'User' },
+                
+                selectedProjectId: 'all',
+                searchQuery: '',
+
+                // Mock Projects
+                projects: [
+                    { id: 'p1', name: 'Tòa nhà Bitexco Financial' },
+                    { id: 'p2', name: 'Kho vận Tân Bình' }
+                ],
+
+                // Mock Data: Readable Audit Logs
+                logs: [
+                    { 
+                        id: 1, 
+                        userName: 'Nguyễn Văn B', 
+                        userRole: 'Nhân viên', 
+                        action: 'SCAN_QR', 
+                        details: { point: 'Cổng chính' }, 
+                        projectName: 'Tòa nhà Bitexco Financial', 
+                        projectId: 'p1',
+                        createdAt: '2025-11-21T10:30:00' 
+                    },
+                    { 
+                        id: 2, 
+                        userName: 'Trần Văn Quản Lý', 
+                        userRole: 'Quản lý', 
+                        action: 'CREATE_TASK', 
+                        details: { title: 'Kiểm tra PCCC Khu A' }, 
+                        projectName: 'Kho vận Tân Bình', 
+                        projectId: 'p2',
+                        createdAt: '2025-11-21T09:15:00' 
+                    },
+                    { 
+                        id: 3, 
+                        userName: 'Lê Thị C', 
+                        userRole: 'Giám sát', 
+                        action: 'REPORT_ISSUE', 
+                        details: { issue: 'Đèn hành lang hỏng' }, 
+                        projectName: 'Tòa nhà Bitexco Financial', 
+                        projectId: 'p1',
+                        createdAt: '2025-11-21T08:45:00' 
+                    },
+                    { 
+                        id: 4, 
+                        userName: 'Nguyễn Văn B', 
+                        userRole: 'Nhân viên', 
+                        action: 'LOGIN', 
+                        details: { ip: '192.168.1.15' }, 
+                        projectName: null, 
+                        projectId: null,
+                        createdAt: '2025-11-21T08:00:00' 
+                    },
+                    { 
+                        id: 5, 
+                        userName: 'Admin System', 
+                        userRole: 'Quản trị viên', 
+                        action: 'UPDATE_SETTINGS', 
+                        details: { setting: 'Cập nhật cấu hình ca trực' }, 
+                        projectName: 'Kho vận Tân Bình', 
+                        projectId: 'p2',
+                        createdAt: '2025-11-20T16:20:00' 
+                    }
+                ],
+
+                init() {
+                    const token = localStorage.getItem('accessToken');
+                    if (!token) window.location.href = '/login.html';
+
+                    const userStr = localStorage.getItem('user');
+                    const planStr = localStorage.getItem('userPlan');
+
+                    if (userStr) {
+                        const userData = JSON.parse(userStr);
+                        this.user.name = userData.fullName || 'Khách hàng';
+                        this.user.role = userData.isTenantAdmin ? 'Quản trị viên' : 'Thành viên';
+                        this.user.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name)}&background=2563EB&color=fff`;
+                    }
+                    if (planStr) this.currentPlan = planStr;
+                },
+
+                get filteredLogs() {
+                    return this.logs.filter(log => {
+                        const matchesProject = this.selectedProjectId === 'all' || log.projectId === this.selectedProjectId;
+                        const matchesSearch = !this.searchQuery || 
+                            log.userName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                            log.action.toLowerCase().includes(this.searchQuery.toLowerCase());
+                        return matchesProject && matchesSearch;
+                    });
+                },
+
+                // Helpers Formatter
+                getInitials(name) {
+                    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                },
+
+                formatTime(dateStr) {
+                    return new Date(dateStr).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                },
+
+                formatDate(dateStr) {
+                    return new Date(dateStr).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                },
+
+                // Content Generator based on Action Type
+                formatDescription(log) {
+                    switch(log.action) {
+                        case 'SCAN_QR':
+                            return `Đã quét mã QR tại điểm: ${log.details.point}`;
+                        case 'CREATE_TASK':
+                            return `Đã tạo công việc mới: "${log.details.title}"`;
+                        case 'REPORT_ISSUE':
+                            return `Báo cáo sự cố: ${log.details.issue}`;
+                        case 'LOGIN':
+                            return `Đăng nhập vào hệ thống (IP: ${log.details.ip})`;
+                        case 'UPDATE_SETTINGS':
+                            return `Thay đổi cấu hình: ${log.details.setting}`;
+                        default:
+                            return 'Hoạt động không xác định';
+                    }
+                },
+
+                // Styling based on Action Type
+                getActionStyle(action) {
+                    switch(action) {
+                        case 'CREATE_TASK':
+                            return { 
+                                class: 'bg-blue-50 text-blue-700 border-blue-200', 
+                                label: 'Tạo việc',
+                                icon: '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>'
+                            };
+                        case 'SCAN_QR':
+                            return { 
+                                class: 'bg-purple-50 text-purple-700 border-purple-200', 
+                                label: 'Quét QR',
+                                icon: '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>'
+                            };
+                        case 'REPORT_ISSUE':
+                            return { 
+                                class: 'bg-red-50 text-red-700 border-red-200', 
+                                label: 'Sự cố',
+                                icon: '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                            };
+                        case 'LOGIN':
+                            return { 
+                                class: 'bg-green-50 text-green-700 border-green-200', 
+                                label: 'Đăng nhập',
+                                icon: '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>'
+                            };
+                        default:
+                            return { class: 'bg-gray-100 text-gray-700 border-gray-200', label: 'Khác', icon: '' };
+                    }
+                },
+
+                logout() {
+                    localStorage.clear();
+                    window.location.href = '/login.html';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -35,7 +35,7 @@ export class MemberService {
       throw new NotFoundException('Role not found or access denied.');
     }
 
-    let user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { email },
     });
 
@@ -50,7 +50,7 @@ export class MemberService {
           'This user is already a member of the project.',
         );
       }
-      
+
       // OPTIONAL: Update existing user's role to the new roleId from DTO
       await this.prisma.user.update({
         where: { id: user.id },
@@ -215,7 +215,7 @@ export class MemberService {
       'USER',
       updatedMember.id,
     );
-    
+
     return updatedMember;
   }
 

@@ -90,10 +90,8 @@ model Role {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   tenantId    String
-  projectId   String? // Added optional projectId for relation
 
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Updated referential actions
-  project     Project? @relation("ProjectToRoles", fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Updated referential actions
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction)
   users       User[]
 
   @@index([tenantId])
@@ -104,13 +102,15 @@ model Project {
   id          String   @id @default(uuid())
   name        String
   description String?  @db.NVarChar(Max)
+  address     String?  @db.NVarChar(Max)
+  status      String   @default("active")
+  image       String?  @db.NVarChar(Max)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   tenantId    String
 
   members     ProjectMember[] @relation("ProjectToProjectMembers")
-  roles       Role[]          @relation("ProjectToRoles") // Added relation to roles
-  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: NoAction)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction)
   qrcodes     QRCode[]
   tasks       Task[]
 

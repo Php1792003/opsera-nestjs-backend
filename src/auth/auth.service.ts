@@ -122,6 +122,11 @@ export class AuthService {
 
     const accessToken = await this.jwtService.signAsync(payload);
 
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { subscriptionPlan: true, name: true },
+    });
+
     return {
       accessToken,
       user: {
@@ -130,6 +135,7 @@ export class AuthService {
         fullName: fullName,
         tenantId: tenantId,
         isSuperAdmin: isSuperAdmin,
+        tenant: tenant,
       },
     };
   }
