@@ -1,5 +1,3 @@
-// src/qrcode/qrcode.controller.ts
-
 import {
   Controller,
   Get,
@@ -13,14 +11,14 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { QrCodeService } from './qrcode.service';
-import { CreateQrCodeDto } from '../auth/dto/create-qrcode.dto';
-import { UpdateQrCodeDto } from '../auth/dto/update-qrcode.dto';
+import { CreateQrCodeDto } from './dto/create-qrcode.dto';
+import { UpdateQrCodeDto } from './dto/update-qrcode.dto';
 import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 
 @Controller('qrcodes')
 @UseGuards(JwtAuthGuard)
 export class QrCodeController {
-  constructor(private readonly qrCodeService: QrCodeService) {}
+  constructor(private readonly qrCodeService: QrCodeService) { }
 
   @Post()
   async create(
@@ -37,9 +35,11 @@ export class QrCodeController {
     return this.qrCodeService.findAll(tenantId);
   }
 
-  @Get('test/:tenantId')
-  async findAllTest(@Param('tenantId') tenantId: string) {
-    return this.qrCodeService.findAll(tenantId);
+  // MỚI: API lấy nhật ký quét
+  @Get('logs')
+  async getLogs(@Request() req: RequestWithUser) {
+    const { tenantId } = req.user;
+    return this.qrCodeService.getRecentScanLogs(tenantId);
   }
 
   @Get(':id')

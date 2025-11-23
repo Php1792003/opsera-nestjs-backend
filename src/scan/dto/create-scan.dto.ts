@@ -1,22 +1,22 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateScanDto {
-  @IsString()
   @IsNotEmpty()
-  qrCodeData: string;
-
   @IsString()
+  qrCodeData: string; // Dữ liệu quét được từ QR
+
   @IsOptional()
+  @IsString()
   notes?: string;
 
-  @IsArray()
-  @IsUrl({}, { each: true })
   @IsOptional()
-  attachments?: string[];
+  @IsString()
+  location?: string; // "10.123, 106.456" hoặc địa chỉ text
+
+  @IsOptional()
+  @IsString()
+  status?: string; // VALID, INVALID
+
+  @IsOptional()
+  attachments?: any;
 }

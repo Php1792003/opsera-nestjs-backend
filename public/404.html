@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Không tìm thấy trang | Opsera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Nunito', sans-serif; }
+        .animation-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'opsera-primary': '#2563EB',
+                        'opsera-dark': '#1F2937',
+                        'opsera-light': '#F3F4F6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 h-screen flex items-center justify-center overflow-hidden">
+
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col lg:flex-row items-center justify-center gap-12">
+            
+            <!-- Illustration Side -->
+            <div class="w-full lg:w-1/2 flex justify-center animation-float">
+                <!-- SVG 404 Illustration -->
+                <svg class="w-full max-w-md h-auto" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="200" cy="150" r="120" fill="#DBEAFE" />
+                    <path d="M200 50C117.157 50 50 117.157 50 200H350C350 117.157 282.843 50 200 50Z" fill="#BFDBFE"/>
+                    
+                    <!-- 404 Text styled as elements -->
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="120" font-weight="900" fill="#2563EB" style="filter: drop-shadow(4px 4px 0px rgba(30, 64, 175, 0.2));">404</text>
+                    
+                    <!-- Elements floating around -->
+                    <circle cx="80" cy="80" r="10" fill="#93C5FD" class="opacity-50"/>
+                    <circle cx="320" cy="220" r="15" fill="#60A5FA" class="opacity-50"/>
+                    <rect x="300" y="60" width="20" height="20" rx="4" fill="#3B82F6" transform="rotate(15)" class="opacity-40"/>
+                    <rect x="60" y="200" width="15" height="15" rx="2" fill="#2563EB" transform="rotate(-15)" class="opacity-40"/>
+                    
+                    <!-- Disconnected Cable Icon -->
+                    <path d="M140 240 L180 240" stroke="#4B5563" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M220 240 L260 240" stroke="#4B5563" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M180 230 V250 M220 230 V250" stroke="#EF4444" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M190 235 L210 245 M190 245 L210 235" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <!-- Text Content Side -->
+            <div class="w-full lg:w-1/2 text-center lg:text-left space-y-6">
+                <div class="inline-block px-3 py-1 text-xs font-semibold tracking-wider text-blue-600 uppercase bg-blue-100 rounded-full">
+                    Lỗi hệ thống
+                </div>
+                
+                <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight">
+                    Oops! Trang này<br>
+                    <span class="text-opsera-primary">không tồn tại.</span>
+                </h1>
+                
+                <p class="text-gray-500 text-lg max-w-lg mx-auto lg:mx-0">
+                    Có vẻ như đường dẫn bạn truy cập đã bị hỏng hoặc trang này đã được di chuyển. Hãy kiểm tra lại URL hoặc quay về trang chủ.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                    <button onclick="goBack()" class="w-full sm:w-auto px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Quay lại
+                    </button>
+                    
+                    <a href="../ternants/dashboard.html" class="w-full sm:w-auto px-8 py-3 bg-opsera-primary text-white rounded-lg font-semibold hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center transform hover:-translate-y-0.5">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        Về Trang chủ
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

@@ -1,13 +1,11 @@
-// src/qrcode/qrcode.service.ts
-
 import {
   Injectable,
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateQrCodeDto } from '../auth/dto/create-qrcode.dto';
-import { UpdateQrCodeDto } from '../auth/dto/update-qrcode.dto';
+import { CreateQrCodeDto } from './dto/create-qrcode.dto';
+import { UpdateQrCodeDto } from './dto/update-qrcode.dto';
 import { AuditService } from '../audit/audit.service';
 
 type SubscriptionPlan = 'STARTER' | 'PRO' | 'ENTERPRISE';
@@ -23,7 +21,7 @@ export class QrCodeService {
   constructor(
     private prisma: PrismaService,
     private auditService: AuditService,
-  ) {}
+  ) { }
 
   async create(dto: CreateQrCodeDto, tenantId: string, creatorId: string) {
     const tenant = await this.prisma.tenant.findUnique({
@@ -37,8 +35,9 @@ export class QrCodeService {
     const currentQrCount = await this.prisma.qRCode.count({
       where: { tenantId: tenantId },
     });
-    const plan = tenant.subscriptionPlan as SubscriptionPlan;
-    const limit = PLAN_LIMITS[plan] ?? 0;
+    const plan = (tenant.subscriptionPlan as SubscriptionPlan) || 'STARTER';
+    const limit = PLAN_LIMITS[plan] ?? 100;
+
     if (currentQrCount >= limit) {
       throw new ForbiddenException(
         `QR code limit reached for your plan (${limit}). Please upgrade.`,
@@ -52,6 +51,7 @@ export class QrCodeService {
       throw new ForbiddenException('Project not found or access denied.');
     }
 
+    // Prisma sẽ tự động sinh trường 'data' bằng cuid() theo schema
     const newQrCode = await this.prisma.qRCode.create({
       data: {
         name: dto.name,
@@ -86,6 +86,19 @@ export class QrCodeService {
         },
       },
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  // MỚI: Hàm lấy nhật ký quét (Scan Logs)
+  async getRecentScanLogs(tenantId: string) {
+    return this.prisma.scanLog.findMany({
+      where: { tenantId: tenantId },
+      take: 50, // Lấy 50 log mới nhất
+      orderBy: { scannedAt: 'desc' },
+      include: {
+        qrCode: { select: { name: true, location: true, projectId: true } },
+        user: { select: { fullName: true } }
+      }
     });
   }
 
