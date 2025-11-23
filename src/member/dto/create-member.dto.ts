@@ -28,5 +28,5 @@ export class CreateMemberDto {
 
   @IsString()
   @IsOptional()
-  status?: string; // 'active' | 'inactive'
+  status?: string;
 }
