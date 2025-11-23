@@ -10,6 +10,9 @@
     <style> 
         body { font-family: 'Nunito', sans-serif; } 
         [x-cloak] { display: none !important; } 
+        .modal-scroll::-webkit-scrollbar { width: 6px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     </style>
     <script>
         tailwind.config = {
@@ -43,27 +46,23 @@
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                         Tổng quan (Dashboard)
                     </a>
-                    
                     <a href="../ternants/project.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         Quản lý Dự án
                     </a>
-
                     <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                         Mã QR & Điểm quét
                     </a>
-
                     <a href="../ternants/staff.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         Nhân sự & Phân quyền
                     </a>
-
                     <a href="../ternants/task.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                         Công việc & Task
                     </a>
-
+                    
                     <template x-if="['professional', 'enterprise'].includes(currentPlan)">
                         <div class="pt-2 mt-2 border-t border-gray-100">
                             <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nâng cao</p>
@@ -77,7 +76,6 @@
                             </a>
                         </div>
                     </template>
-
                     <template x-if="currentPlan === 'enterprise'">
                         <div class="pt-2 mt-2 border-t border-gray-100">
                             <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doanh nghiệp</p>
@@ -120,11 +118,6 @@
                         <span class="text-sm font-bold text-blue-600 uppercase px-2" x-text="currentPlan"></span>
                      </div>
 
-                     <button class="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
-                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">3</span>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                    </button>
-
                     <div class="flex items-center cursor-pointer">
                         <div class="text-right mr-3 hidden sm:block">
                             <div class="text-sm font-semibold text-gray-800" x-text="user.name"></div>
@@ -142,7 +135,7 @@
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center w-full sm:w-auto">
                         <span class="text-gray-600 font-medium mr-3 whitespace-nowrap">Chọn Dự án:</span>
-                        <select x-model="selectedProjectId" @change="changeProject()" class="w-full sm:w-64 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-opsera-primary text-gray-700 font-semibold">
+                        <select x-model="selectedProjectId" @change="changeProject()" class="w-full sm:w-64 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-opsera-primary text-gray-700 font-semibold bg-white">
                             <template x-for="project in projects" :key="project.id">
                                 <option :value="project.id" x-text="project.name"></option>
                             </template>
@@ -155,27 +148,32 @@
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                         <button @click="activeTab = 'staff'" 
                                 :class="activeTab === 'staff' ? 'border-opsera-primary text-opsera-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                             Danh sách Nhân sự
                         </button>
                         <button @click="activeTab = 'roles'" 
                                 :class="activeTab === 'roles' ? 'border-opsera-primary text-opsera-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 14l-1 1-1 1H6v-1l4-4.257A6 6 0 1121 9z"></path></svg>
                             Quản lý Vai trò & Quyền hạn
                         </button>
                     </nav>
                 </div>
 
+                <!-- Loading Spinner -->
+                <div x-show="isLoading" class="flex justify-center items-center py-10">
+                    <svg class="animate-spin h-8 w-8 text-opsera-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </div>
+
                 <!-- TAB 1: STAFF LIST -->
-                <div x-show="activeTab === 'staff' && selectedProjectId">
+                <div x-show="activeTab === 'staff' && selectedProjectId && !isLoading">
                     <!-- Action Bar -->
                     <div class="flex justify-between items-center mb-4">
                         <div class="text-sm text-gray-500">
-                            Nhân sự: <span class="font-bold text-gray-800" x-text="currentProjectStaff.length"></span> / <span x-text="getLimitText('users')"></span>
+                            Nhân sự: <span class="font-bold text-gray-800" x-text="allStaff.length"></span> / <span x-text="getLimitText('users')"></span>
                         </div>
-                        <button @click="openInviteModal" 
+                        <button @click="openAddStaffModal" 
                                 :disabled="!canAddUser"
                                 :class="canAddUser ? 'bg-opsera-primary hover:bg-blue-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'"
                                 class="flex items-center px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
@@ -191,42 +189,47 @@
                                     <tr class="bg-gray-50 text-xs text-gray-500 uppercase font-semibold">
                                         <th class="px-6 py-4">Họ và Tên</th>
                                         <th class="px-6 py-4">Vai trò</th>
+                                        <th class="px-6 py-4">Quản trị viên</th>
                                         <th class="px-6 py-4">Trạng thái</th>
-                                        <th class="px-6 py-4">Hoạt động cuối</th>
                                         <th class="px-6 py-4 text-right">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 text-sm">
-                                    <template x-for="staff in filteredStaff" :key="staff.id">
-                                        <tr class="hover:bg-gray-50 transition-colors group">
+                                    <template x-for="staff in allStaff" :key="staff.id">
+                                        <tr class="hover:bg-gray-50 transition-colors group cursor-pointer" @click="openDetailModal(staff)">
                                             <td class="px-6 py-4">
                                                 <div class="flex items-center">
                                                     <div class="h-10 w-10 flex-shrink-0">
-                                                        <img class="h-10 w-10 rounded-full object-cover" :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent(staff.name) + '&background=random'" alt="">
+                                                        <img class="h-10 w-10 rounded-full object-cover" :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent(staff.fullName) + '&background=random'" alt="">
                                                     </div>
                                                     <div class="ml-4">
-                                                        <div class="font-medium text-gray-900" x-text="staff.name"></div>
+                                                        <div class="font-medium text-gray-900" x-text="staff.fullName"></div>
                                                         <div class="text-gray-500 text-xs" x-text="staff.email"></div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <span class="px-2 py-1 text-xs font-semibold rounded-full border bg-gray-50 text-gray-700 border-gray-200" x-text="getRoleName(staff.roleId)"></span>
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full border bg-blue-50 text-blue-700 border-blue-100" x-text="getRoleName(staff.role)"></span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <span x-show="staff.isTenantAdmin" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                    Admin
+                                                </span>
+                                                <span x-show="!staff.isTenantAdmin" class="text-gray-400 text-xs">-</span>
                                             </td>
                                             <td class="px-6 py-4">
                                                 <span class="flex items-center">
                                                     <span class="h-2.5 w-2.5 rounded-full mr-2" :class="staff.status === 'active' ? 'bg-green-500' : 'bg-gray-300'"></span>
-                                                    <span x-text="staff.status === 'active' ? 'Hoạt động' : 'Tạm khóa'"></span>
+                                                    <span x-text="staff.status === 'active' ? 'Hoạt động' : 'Tạm dừng'"></span>
                                                 </span>
                                             </td>
-                                            <td class="px-6 py-4 text-gray-500" x-text="staff.lastActive"></td>
-                                            <td class="px-6 py-4 text-right">
-                                                <button class="text-opsera-primary hover:text-blue-700 font-medium text-sm mr-3">Sửa</button>
-                                                <button class="text-red-500 hover:text-red-700 font-medium text-sm">Xóa</button>
+                                            <td class="px-6 py-4 text-right space-x-2">
+                                                <button @click.stop="openEditStaffModal(staff)" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Sửa</button>
+                                                <button @click.stop="deleteStaff(staff.id)" class="text-red-500 hover:text-red-700 font-medium text-sm">Xóa</button>
                                             </td>
                                         </tr>
                                     </template>
-                                    <tr x-show="filteredStaff.length === 0">
+                                    <tr x-show="allStaff.length === 0">
                                         <td colspan="5" class="px-6 py-8 text-center text-gray-500">Chưa có nhân sự nào trong dự án này.</td>
                                     </tr>
                                 </tbody>
@@ -236,11 +239,11 @@
                 </div>
 
                 <!-- TAB 2: ROLE MANAGEMENT -->
-                <div x-show="activeTab === 'roles' && selectedProjectId">
+                <div x-show="activeTab === 'roles' && selectedProjectId && !isLoading">
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h3 class="text-lg font-bold text-opsera-dark">Vai trò & Quyền hạn</h3>
-                            <p class="text-sm text-gray-500">Định nghĩa các nhóm quyền để gán cho nhân viên.</p>
+                            <p class="text-sm text-gray-500">Định nghĩa các nhóm quyền để gán cho nhân viên trong dự án này.</p>
                         </div>
                         <button @click="openRoleModal" class="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium shadow-sm transition-colors">
                             <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -250,103 +253,141 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <template x-for="role in roles" :key="role.id">
-                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 hover:border-opsera-primary transition-colors">
+                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 hover:border-opsera-primary transition-colors group">
                                 <div class="flex justify-between items-start mb-3">
                                     <h4 class="text-lg font-bold text-gray-800" x-text="role.name"></h4>
-                                    <div class="flex space-x-1">
-                                        <button @click="editRole(role)" class="p-1 text-gray-400 hover:text-opsera-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                        <button class="p-1 text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                    <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button @click="openEditRoleModal(role)" class="p-1 text-gray-400 hover:text-blue-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                                        <button @click="deleteRole(role.id)" class="p-1 text-gray-400 hover:text-red-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-500 mb-4 h-10 overflow-hidden" x-text="role.description"></p>
                                 
-                                <div class="bg-gray-50 rounded p-3">
+                                <div class="bg-gray-50 rounded p-3 h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
                                     <p class="text-xs font-bold text-gray-400 uppercase mb-2">Quyền hạn:</p>
                                     <div class="flex flex-wrap gap-2">
-                                        <template x-for="perm in role.permissions.slice(0, 3)" :key="perm">
-                                            <span class="px-2 py-1 bg-white border border-gray-200 rounded text-xs text-gray-600" x-text="getPermissionLabel(perm)"></span>
+                                        <template x-for="perm in role.permissions" :key="perm">
+                                            <span class="px-2 py-1 bg-white border border-gray-200 rounded text-xs text-gray-600" x-text="perm"></span>
                                         </template>
-                                        <span x-show="role.permissions.length > 3" class="px-2 py-1 bg-gray-200 rounded text-xs text-gray-600" x-text="'+' + (role.permissions.length - 3)"></span>
                                     </div>
                                 </div>
+                                <div class="mt-3 text-xs text-gray-400 text-right" x-text="'ID: ' + role.id.substring(0,8) + '...'"></div>
                             </div>
                         </template>
+                        <div x-show="roles.length === 0" class="col-span-full text-center py-10 text-gray-400">Chưa có vai trò nào trong dự án này.</div>
                     </div>
+                </div>
+                
+                <!-- State chưa chọn dự án -->
+                <div x-show="!selectedProjectId" class="text-center py-20">
+                    <h3 class="text-lg font-medium text-gray-900">Vui lòng chọn một dự án</h3>
                 </div>
 
             </main>
         </div>
 
-        <!-- MODAL: Create/Edit Role -->
-        <div x-show="showRoleModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showRoleModal = false"></div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title" x-text="isEditingRole ? 'Chỉnh sửa Vai trò' : 'Tạo Vai trò Mới'"></h3>
-                                <div class="mt-4 space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Tên Vai trò</label>
-                                        <input type="text" x-model="roleForm.name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-opsera-primary focus:border-opsera-primary sm:text-sm">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Mô tả</label>
-                                        <textarea x-model="roleForm.description" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-opsera-primary focus:border-opsera-primary sm:text-sm"></textarea>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Phân quyền Chức năng</label>
-                                        <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-md p-2">
-                                            <template x-for="(label, key) in permissionsList" :key="key">
-                                                <label class="inline-flex items-center">
-                                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-opsera-primary rounded border-gray-300" :value="key" x-model="roleForm.permissions">
-                                                    <span class="ml-2 text-sm text-gray-600" x-text="label"></span>
-                                                </label>
-                                            </template>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <!-- MODAL: Role (Add/Edit) -->
+        <div x-show="showRoleModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showRoleModal = false"></div>
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg relative z-10 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4" x-text="isEditingRole ? 'Chỉnh sửa Vai trò' : 'Tạo Vai trò Mới'"></h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tên Vai trò <span class="text-red-500">*</span></label>
+                        <input type="text" x-model="roleForm.name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Ví dụ: Giám sát viên">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phân quyền</label>
+                        <div class="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-3 modal-scroll">
+                            <template x-for="perm in availablePermissions" :key="perm">
+                                <label class="inline-flex items-center p-1 hover:bg-gray-50 rounded cursor-pointer">
+                                    <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" :value="perm" x-model="roleForm.permissions">
+                                    <span class="ml-2 text-sm text-gray-700" x-text="perm"></span>
+                                </label>
+                            </template>
                         </div>
+                        <p class="text-xs text-gray-500 mt-1">Đã chọn: <span class="font-bold" x-text="roleForm.permissions.length"></span> quyền</p>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button @click="saveRole" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-opsera-primary text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">Lưu</button>
-                        <button @click="showRoleModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Hủy</button>
-                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button @click="showRoleModal = false" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Hủy</button>
+                    <button @click="saveRole" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium text-sm">
+                        <span x-text="isEditingRole ? 'Lưu thay đổi' : 'Tạo mới'"></span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- MODAL: Invite Staff (Simple Mockup) -->
-        <div x-show="showInviteModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showInviteModal = false"></div>
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Thêm Nhân sự vào Dự án</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Email nhân viên</label>
-                                <input type="email" placeholder="email@example.com" class="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Gán Vai trò</label>
-                                <select class="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3">
-                                    <template x-for="role in roles" :key="role.id">
-                                        <option :value="role.id" x-text="role.name"></option>
-                                    </template>
-                                </select>
-                            </div>
-                        </div>
+        <!-- MODAL: Staff (Add/Edit) -->
+        <div x-show="showStaffModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showStaffModal = false"></div>
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg relative z-10 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4" x-text="isEditingStaff ? 'Cập nhật Nhân sự' : 'Thêm Nhân sự Mới'"></h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Họ và Tên</label>
+                        <input type="text" x-model="staffForm.fullName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Nguyễn Văn A">
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
-                        <button @click="showInviteModal = false" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-opsera-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">Gửi Lời mời</button>
-                        <button @click="showInviteModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Hủy</button>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" x-model="staffForm.email" :disabled="isEditingStaff" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100" placeholder="email@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Mật khẩu <span x-show="!isEditingStaff" class="text-red-500">*</span>
+                            <span x-show="isEditingStaff" class="text-gray-400 text-xs italic">(Để trống nếu không đổi)</span>
+                        </label>
+                        <input type="password" x-model="staffForm.password" placeholder="********" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Vai trò</label>
+                        <select x-model="staffForm.roleId" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
+                            <option value="" disabled selected>-- Chọn vai trò --</option>
+                            <template x-for="role in roles" :key="role.id">
+                                <option :value="role.id" x-text="role.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+                        <select x-model="staffForm.status" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white">
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Tạm dừng</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <input id="isTenantAdmin" type="checkbox" x-model="staffForm.isTenantAdmin" class="h-4 w-4 text-opsera-primary focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="isTenantAdmin" class="ml-2 block text-sm text-gray-900 font-medium select-none">Là Quản trị viên dự án</label>
                     </div>
                 </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button @click="showStaffModal = false; tempPassword = null;" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Hủy</button>
+                    <button x-show="!tempPassword" @click="saveStaff" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium text-sm">
+                        <span x-text="isEditingStaff ? 'Cập nhật' : 'Tạo mới'"></span>
+                    </button>
+                </div>
+                <div x-show="tempPassword" class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                     <p class="text-sm text-green-800 font-bold">Tạo thành công!</p>
+                     <p class="text-sm text-gray-600">Mật khẩu: <code class="font-mono text-lg text-blue-600" x-text="tempPassword"></code></p>
+                </div>
             </div>
+        </div>
+        
+        <!-- MODAL: Detail -->
+        <div x-show="showDetailModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
+             <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showDetailModal = false"></div>
+             <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative z-10 p-6">
+                 <h3 class="text-xl font-bold mb-2" x-text="selectedStaff.fullName"></h3>
+                 <p class="text-gray-600 mb-4" x-text="selectedStaff.email"></p>
+                 <div class="grid grid-cols-2 gap-4 text-sm">
+                     <div><strong>Vai trò:</strong> <span x-text="getRoleName(selectedStaff.role)"></span></div>
+                     <div><strong>Admin:</strong> <span x-text="selectedStaff.isTenantAdmin ? 'Có' : 'Không'"></span></div>
+                     <div><strong>Ngày tạo:</strong> <span x-text="new Date(selectedStaff.createdAt).toLocaleDateString('vi-VN')"></span></div>
+                 </div>
+                 <div class="mt-6 text-right"><button @click="showDetailModal = false" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Đóng</button></div>
+             </div>
         </div>
 
     </div>
@@ -357,165 +398,221 @@
                 sidebarOpen: false,
                 currentPlan: 'starter',
                 user: { name: 'Loading...', avatar: '', role: 'User' },
-                
-                // Tab State
-                activeTab: 'staff', // 'staff' or 'roles'
+                activeTab: 'staff',
                 selectedProjectId: null,
-                searchQuery: '',
-                totalUsersUsed: 0,
-
-                // Modal State
+                isLoading: false,
+                projects: [],
+                allStaff: [],
+                roles: [],
+                showStaffModal: false,
+                isEditingStaff: false,
+                staffForm: { id: null, fullName: '', email: '', password: '', roleId: '', isTenantAdmin: false, status: 'active', projectId: '' },
+                
+                // Role Modal
                 showRoleModal: false,
                 isEditingRole: false,
-                roleForm: { id: null, name: '', description: '', permissions: [] },
-                showInviteModal: false,
+                roleForm: { id: null, name: '', permissions: [] },
+                availablePermissions: ['CREATE_USER', 'READ_USER', 'UPDATE_USER', 'DELETE_USER', 'CREATE_PROJECT', 'READ_PROJECT', 'UPDATE_PROJECT', 'CREATE_QR', 'SCAN_QR', 'VIEW_REPORTS'], // Danh sách quyền mẫu
+                
+                showDetailModal: false,
+                selectedStaff: {},
+                tempPassword: null,
+                plans: { starter: { limits: { users: 5 } }, professional: { limits: { users: 50 } }, enterprise: { limits: { users: 'unlimited' } } },
 
-                // Mock Data: Projects
-                projects: [
-                    { id: 1, name: 'Tòa nhà Bitexco Financial' },
-                    { id: 2, name: 'Kho vận Tân Bình' },
-                    { id: 3, name: 'Chung cư River Side' }
-                ],
-
-                // Mock Data: Permissions Definition
-                permissionsList: {
-                    'view_dashboard': 'Xem Dashboard',
-                    'manage_projects': 'Quản lý Dự án (Sửa/Xóa)',
-                    'manage_staff': 'Quản lý Nhân sự (Thêm/Bớt)',
-                    'manage_qr': 'Quản lý Mã QR',
-                    'create_task': 'Tạo & Giao việc',
-                    'view_reports': 'Xem Báo cáo',
-                    'scan_qr': 'Quét mã QR (App Mobile)',
-                    'audit_log': 'Xem Nhật ký hoạt động'
-                },
-
-                // Mock Data: Roles
-                roles: [
-                    { id: 'r1', name: 'Quản lý Dự án', description: 'Toàn quyền quản lý trong dự án được phân công.', permissions: ['view_dashboard', 'manage_projects', 'manage_staff', 'manage_qr', 'create_task', 'view_reports', 'audit_log'] },
-                    { id: 'r2', name: 'Giám sát An ninh', description: 'Giám sát hoạt động, xem báo cáo và xử lý sự cố.', permissions: ['view_dashboard', 'view_reports', 'create_task'] },
-                    { id: 'r3', name: 'Nhân viên Tuần tra', description: 'Chỉ thực hiện nhiệm vụ đi tuần và quét mã.', permissions: ['scan_qr'] }
-                ],
-
-                // Mock Data: Staff
-                allStaff: [
-                    { id: 1, projectId: 1, name: 'Nguyễn Văn B', email: 'b.nguyen@example.com', roleId: 'r1', status: 'active', lastActive: 'Vừa xong' },
-                    { id: 2, projectId: 1, name: 'Trần Thị C', email: 'c.tran@example.com', roleId: 'r2', status: 'active', lastActive: '1 giờ trước' },
-                    { id: 3, projectId: 1, name: 'Lê Hoàng D', email: 'd.le@example.com', roleId: 'r3', status: 'active', lastActive: '2 giờ trước' },
-                    { id: 4, projectId: 1, name: 'Phạm Văn E', email: 'e.pham@example.com', roleId: 'r3', status: 'inactive', lastActive: '3 ngày trước' },
-                    { id: 5, projectId: 2, name: 'Hoàng Văn F', email: 'f.hoang@example.com', roleId: 'r1', status: 'active', lastActive: '10 phút trước' },
-                    { id: 6, projectId: 2, name: 'Đặng Thị G', email: 'g.dang@example.com', roleId: 'r3', status: 'active', lastActive: '30 phút trước' }
-                ],
-
-                currentProjectStaff: [],
-
-                plans: {
-                    starter: { limits: { users: 5 } },
-                    professional: { limits: { users: 50 } },
-                    enterprise: { limits: { users: 'unlimited' } }
-                },
-
-                init() {
+                async init() {
                     const token = localStorage.getItem('accessToken');
-                    if (!token) window.location.href = '/login.html';
-
+                    if (!token) { window.location.href = '/login.html'; return; }
                     const userStr = localStorage.getItem('user');
-                    const planStr = localStorage.getItem('userPlan');
-
                     if (userStr) {
-                        const userData = JSON.parse(userStr);
-                        this.user.name = userData.fullName || 'Khách hàng';
-                        this.user.role = userData.isTenantAdmin ? 'Quản trị viên' : 'Thành viên';
-                        this.user.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name)}&background=2563EB&color=fff`;
+                        const u = JSON.parse(userStr);
+                        this.user = { ...u, avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName)}&background=2563EB&color=fff` };
+                        this.currentPlan = u.tenant?.subscriptionPlan?.toLowerCase() || 'starter';
                     }
-                    if (planStr) this.currentPlan = planStr;
-
-                    this.totalUsersUsed = this.allStaff.length;
-
-                    if (this.projects.length > 0) {
-                        this.selectedProjectId = this.projects[0].id;
-                        this.changeProject();
-                    }
+                    await this.fetchProjects();
                 },
 
+                async fetchProjects() {
+                    try {
+                        const res = await fetch('http://localhost:3000/api/projects', { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if (res.ok) {
+                            this.projects = await res.json();
+                            if (this.projects.length > 0) {
+                                this.selectedProjectId = this.projects[0].id;
+                                this.changeProject(); // Load data ngay khi có project
+                            }
+                        }
+                    } catch(e) { console.error(e); }
+                },
+
+                // Gọi khi đổi dự án: Load lại Staff và Role theo ProjectId
                 changeProject() {
-                    this.currentProjectStaff = this.allStaff.filter(s => s.projectId == this.selectedProjectId);
+                    this.fetchStaff();
+                    this.fetchRoles();
                 },
 
-                get filteredStaff() {
-                    if (!this.searchQuery) return this.currentProjectStaff;
-                    const lowerQuery = this.searchQuery.toLowerCase();
-                    return this.currentProjectStaff.filter(staff => 
-                        staff.name.toLowerCase().includes(lowerQuery) || 
-                        staff.email.toLowerCase().includes(lowerQuery)
-                    );
+                async fetchRoles() {
+                    if (!this.selectedProjectId) return;
+                    try {
+                         const res = await fetch(`http://localhost:3000/api/roles?projectId=${this.selectedProjectId}`, { 
+                             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } 
+                         });
+                         if(res.ok) this.roles = await res.json();
+                    } catch(e) { console.error(e); }
                 },
 
-                get canAddUser() {
-                    const limit = this.plans[this.currentPlan].limits.users;
-                    if (limit === 'unlimited') return true;
-                    return this.totalUsersUsed < limit;
+                async fetchStaff() {
+                    if (!this.selectedProjectId) return;
+                    this.isLoading = true;
+                    try {
+                        const res = await fetch(`http://localhost:3000/api/members?projectId=${this.selectedProjectId}`, {
+                            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+                        });
+                        if (res.ok) {
+                            this.allStaff = await res.json();
+                        }
+                    } catch(e) { console.error(e); }
+                    finally { this.isLoading = false; }
                 },
 
-                getLimitText(type) {
-                    let limit = this.plans[this.currentPlan].limits[type];
-                    return limit === 'unlimited' ? '∞' : limit;
-                },
-
-                // Helper: Get Role Name by ID
-                getRoleName(roleId) {
-                    const role = this.roles.find(r => r.id === roleId);
-                    return role ? role.name : 'Không xác định';
-                },
-
-                // Helper: Get Permission Label
-                getPermissionLabel(key) {
-                    return this.permissionsList[key] || key;
-                },
-
-                // --- ROLE MODAL LOGIC ---
+                // === ROLE LOGIC ===
                 openRoleModal() {
                     this.isEditingRole = false;
-                    this.roleForm = { id: null, name: '', description: '', permissions: [] };
+                    this.roleForm = { name: '', permissions: [] };
                     this.showRoleModal = true;
-                },
-
-                editRole(role) {
-                    this.isEditingRole = true;
-                    // Clone data to avoid direct mutation before save
-                    this.roleForm = { ...role, permissions: [...role.permissions] };
-                    this.showRoleModal = true;
-                },
-
-                saveRole() {
-                    if (this.isEditingRole) {
-                        // Update existing logic (Mock)
-                        const index = this.roles.findIndex(r => r.id === this.roleForm.id);
-                        if (index !== -1) this.roles[index] = { ...this.roleForm };
-                    } else {
-                        // Create new logic (Mock)
-                        const newRole = { ...this.roleForm, id: 'r' + (this.roles.length + 1) };
-                        this.roles.push(newRole);
-                    }
-                    this.showRoleModal = false;
-                },
-
-                // --- STAFF MODAL LOGIC ---
-                openInviteModal() {
-                    this.showInviteModal = true;
                 },
                 
-                inviteStaff() {
-                    if (this.canAddUser) {
-                       this.openInviteModal();
-                    } else {
-                        alert(`Bạn đã đạt giới hạn ${this.getLimitText('users')} nhân sự của gói ${this.currentPlan.toUpperCase()}. Vui lòng nâng cấp.`);
-                    }
+                openEditRoleModal(role) {
+                    this.isEditingRole = true;
+                    this.roleForm = { id: role.id, name: role.name, permissions: role.permissions || [] };
+                    this.showRoleModal = true;
                 },
 
-                logout() {
-                    localStorage.clear();
-                    window.location.href = '/login.html';
-                }
+                async saveRole() {
+                    if (!this.roleForm.name) { alert("Vui lòng nhập tên vai trò"); return; }
+                    // Thêm projectId vào payload
+                    const payload = { ...this.roleForm, projectId: this.selectedProjectId };
+                    
+                    const url = this.isEditingRole ? `http://localhost:3000/api/roles/${this.roleForm.id}` : 'http://localhost:3000/api/roles';
+                    const method = this.isEditingRole ? 'PUT' : 'POST';
+                    
+                    try {
+                        const res = await fetch(url, {
+                            method: method,
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+                            body: JSON.stringify(payload)
+                        });
+                        if (res.ok) {
+                            alert("Thành công!");
+                            this.showRoleModal = false;
+                            this.fetchRoles();
+                        } else {
+                            const data = await res.json();
+                            alert("Lỗi: " + data.message);
+                        }
+                    } catch (e) { console.error(e); alert("Lỗi kết nối."); }
+                },
+
+                async deleteRole(id) {
+                    if (!confirm("Xóa vai trò này?")) return;
+                    try {
+                        const res = await fetch(`http://localhost:3000/api/roles/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if (res.ok) this.fetchRoles();
+                        else { const d = await res.json(); alert("Lỗi: " + d.message); }
+                    } catch(e) { console.error(e); }
+                },
+
+                // === STAFF LOGIC ===
+                get filteredStaff() { return this.allStaff; },
+
+                openAddStaffModal() {
+                    if(!this.selectedProjectId) { alert("Vui lòng chọn dự án trước"); return; }
+                    this.isEditingStaff = false;
+                    this.tempPassword = null;
+                    this.staffForm = { fullName: '', email: '', password: '', roleId: '', isTenantAdmin: false, status: 'active', projectId: this.selectedProjectId };
+                    this.showStaffModal = true;
+                },
+
+                openEditStaffModal(staff) {
+                    this.isEditingStaff = true;
+                    this.tempPassword = null;
+                    this.staffForm = { 
+                        id: staff.id,
+                        fullName: staff.fullName,
+                        email: staff.email,
+                        password: '', 
+                        roleId: staff.role ? staff.role.id : '',
+                        isTenantAdmin: staff.isTenantAdmin,
+                        status: staff.status || 'active', 
+                        projectId: this.selectedProjectId
+                    };
+                    this.showStaffModal = true;
+                },
+                
+                async saveStaff() {
+                    if (!this.staffForm.fullName || !this.staffForm.email || !this.staffForm.roleId) { alert("Vui lòng điền đầy đủ thông tin."); return; }
+                    if (!this.isEditingStaff && !this.staffForm.password) { alert("Vui lòng nhập mật khẩu cho nhân viên mới."); return; }
+
+                    const url = this.isEditingStaff ? `http://localhost:3000/api/members/${this.staffForm.id}` : 'http://localhost:3000/api/members';
+                    const method = this.isEditingStaff ? 'PUT' : 'POST';
+
+                    try {
+                        const res = await fetch(url, {
+                            method: method,
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+                            body: JSON.stringify(this.staffForm)
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok) {
+                            if (!this.isEditingStaff && data.temporaryPassword) {
+                                this.tempPassword = data.temporaryPassword;
+                                this.fetchStaff(); 
+                            } else {
+                                alert("Thành công!");
+                                this.showStaffModal = false;
+                                this.fetchStaff();
+                            }
+                        } else {
+                            alert("Lỗi: " + (data.message || "Không thể lưu"));
+                        }
+                    } catch (e) { console.error(e); alert("Lỗi kết nối server."); }
+                },
+
+                async deleteStaff(id) {
+                    if (!confirm("Bạn có chắc chắn muốn xóa nhân sự này khỏi hệ thống? Hành động này sẽ xóa nhân viên khỏi tất cả dự án.")) return;
+                    
+                    try {
+                        const token = localStorage.getItem('accessToken');
+                        const res = await fetch(`http://localhost:3000/api/members/${id}`, { 
+                            method: 'DELETE', 
+                            headers: { 'Authorization': `Bearer ${token}` } 
+                        });
+                        
+                        if (res.ok) {
+                            alert("Đã xóa nhân sự thành công.");
+                            // Reload lại danh sách
+                            this.fetchStaff();
+                            // Cập nhật lại số lượng hiển thị
+                            if (this.projects.length > 0) {
+                                // Trigger update UI nếu cần
+                            }
+                        } else {
+                            // Hiển thị lỗi chi tiết từ Backend trả về
+                            const err = await res.json();
+                            alert("Lỗi khi xóa: " + (err.message || res.statusText));
+                        }
+                    } catch (e) { 
+                        console.error(e); 
+                        alert("Lỗi kết nối đến Server."); 
+                    }
+                },
+                
+                openDetailModal(staff) { this.selectedStaff = staff; this.showDetailModal = true; },
+                getRoleName(role) { return role ? role.name : 'Chưa gán'; },
+                get canAddUser() { const limit = this.plans[this.currentPlan].limits.users; if(limit === 'unlimited') return true; return this.allStaff.length < limit; },
+                getLimitText(type) { return this.plans[this.currentPlan].limits[type]; },
+                logout() { localStorage.clear(); window.location.href = '/login.html'; }
             }
         }
     </script>

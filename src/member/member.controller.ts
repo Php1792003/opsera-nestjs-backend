@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -21,7 +22,7 @@ import { UpdateMemberDto } from './dto/update-member.dto';
 @Controller('members')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class MemberController {
-  constructor(private readonly memberService: MemberService) {}
+  constructor(private readonly memberService: MemberService) { }
 
   @Post()
   @Permissions(Permission.CREATE_USER)
@@ -35,8 +36,12 @@ export class MemberController {
 
   @Get()
   @Permissions(Permission.READ_USER)
-  findAll(@Request() req: RequestWithUser) {
-    return this.memberService.findAll(req.user.tenantId);
+  findAll(
+    @Request() req: RequestWithUser,
+    @Query('projectId') projectId?: string,
+  ) {
+    const { tenantId } = req.user;
+    return this.memberService.findAll(tenantId, projectId);
   }
 
   @Put(':id')

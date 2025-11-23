@@ -1,11 +1,4 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateMemberDto } from './create-member.dto';
 
-export class UpdateMemberDto {
-  @IsString()
-  @IsOptional()
-  fullName?: string;
-
-  @IsUUID()
-  @IsOptional()
-  roleId?: string;
-}
+export class UpdateMemberDto extends PartialType(CreateMemberDto) { }

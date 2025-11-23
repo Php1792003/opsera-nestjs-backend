@@ -21,7 +21,7 @@ export class RoleService {
   constructor(
     private prisma: PrismaService,
     private auditService: AuditService,
-  ) {}
+  ) { }
 
   async create(
     dto: CreateRoleDto,
@@ -48,6 +48,7 @@ export class RoleService {
         name: dto.name,
         permissions: permissionsStr,
         tenantId: tenantId,
+        projectId: dto.projectId || null,
       },
     });
 
@@ -67,19 +68,20 @@ export class RoleService {
     return this.formatRoleResponse(newRole);
   }
 
-  async findAll(tenantId: string): Promise<RoleResponseDto[]> {
+  async findAll(tenantId: string, projectId?: string): Promise<RoleResponseDto[]> {
+    const whereCondition: any = { tenantId };
+
+    if (projectId) {
+      whereCondition.OR = [
+        { projectId: projectId },
+        { projectId: null }
+      ];
+    }
+
     const roles = await this.prisma.role.findMany({
-      where: { tenantId: tenantId },
-      include: {
-        _count: {
-          select: {
-            users: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      where: whereCondition,
+      include: { _count: { select: { users: true } } },
+      orderBy: { createdAt: 'desc' },
     });
 
     return roles.map((role) => this.formatRoleResponse(role));

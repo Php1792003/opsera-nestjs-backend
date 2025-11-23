@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 export class CreateScanDto {
   @IsNotEmpty()
   @IsString()
-  qrCodeData: string; // Dữ liệu quét được từ QR
+  qrCodeData: string;
 
   @IsOptional()
   @IsString()
@@ -11,11 +11,11 @@ export class CreateScanDto {
 
   @IsOptional()
   @IsString()
-  location?: string; // "10.123, 106.456" hoặc địa chỉ text
+  location?: string;
 
   @IsOptional()
   @IsString()
-  status?: string; // VALID, INVALID
+  status?: string;
 
   @IsOptional()
   attachments?: any;

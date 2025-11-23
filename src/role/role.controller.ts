@@ -8,6 +8,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ import { Permission } from './constants/permissions.constant';
 @Controller('roles')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class RoleController {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(private readonly roleService: RoleService) { }
 
   @Post()
   @Permissions(Permission.CREATE_ROLE)
@@ -37,9 +38,13 @@ export class RoleController {
 
   @Get()
   @Permissions(Permission.READ_ROLE)
-  async findAll(@Request() req: RequestWithUser) {
+  // === SỬA ĐOẠN NÀY ===
+  async findAll(
+    @Request() req: RequestWithUser,
+    @Query('projectId') projectId?: string,
+  ) {
     const { tenantId } = req.user;
-    return this.roleService.findAll(tenantId);
+    return this.roleService.findAll(tenantId, projectId);
   }
 
   @Get('permissions/list')

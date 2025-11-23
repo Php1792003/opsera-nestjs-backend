@@ -51,6 +51,7 @@ model User {
   fullName              String
   isTenantAdmin         Boolean   @default(false)
   isSuperAdmin          Boolean   @default(false)
+  status                String    @default("active")
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   tenantId              String
@@ -59,7 +60,7 @@ model User {
   tenant                Tenant    @relation(fields: [tenantId], references: [id], onDelete: NoAction)
   role                  Role?     @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-   projectMembers       ProjectMember[] @relation("UserToProjectMembers")
+  projectMembers       ProjectMember[] @relation("UserToProjectMembers")
   createdTasks          Task[]    @relation("Creator")
   assignedTasks         Task[]    @relation("Assignee")
   scanLogs              ScanLog[]
@@ -91,6 +92,8 @@ model Role {
   updatedAt   DateTime @updatedAt
   tenantId    String
 
+  projectId   String?
+  
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction)
   users       User[]
 
