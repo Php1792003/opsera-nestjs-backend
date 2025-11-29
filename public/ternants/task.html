@@ -29,9 +29,8 @@
 </head>
 
 <body class="bg-gray-50 text-gray-800" x-data="taskApp()" x-init="init()">
-
-    <div class="flex h-screen overflow-hidden" x-cloak>
-        <!-- Sidebar -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- SIDEBAR -->
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-center h-20 border-b border-gray-100">
@@ -39,7 +38,6 @@
                         <a href="/index.html"><img src="../img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
                     </div>
                 </div>
-
                 <nav class="mt-6 px-4 space-y-2">
                     <a href="../ternants/dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -61,36 +59,8 @@
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                         Công việc & Task
                     </a>
-                    
-                    <template x-if="['professional', 'enterprise'].includes(currentPlan)">
-                        <div class="pt-2 mt-2 border-t border-gray-100">
-                            <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nâng cao</p>
-                            <a href="../ternants/report.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-purple-600 rounded-lg transition-colors">
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0h6"></path></svg>
-                                Báo cáo Thống kê
-                            </a>
-                            <a href="../ternants/audit_log.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-purple-600 rounded-lg transition-colors">
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                Nhật ký Hoạt động
-                            </a>
-                        </div>
-                    </template>
-                    <template x-if="currentPlan === 'enterprise'">
-                        <div class="pt-2 mt-2 border-t border-gray-100">
-                            <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doanh nghiệp</p>
-                            <a href="../ternants/api_integration.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-indigo-600 rounded-lg transition-colors">
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                Tích hợp API
-                            </a>
-                            <a href="../ternants/branding.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-indigo-600 rounded-lg transition-colors">
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                                Tùy chỉnh Thương hiệu
-                            </a>
-                        </div>
-                    </template>
                 </nav>
             </div>
-            
             <div class="p-4 border-t border-gray-200">
                 <button @click="logout" class="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -99,24 +69,20 @@
             </div>
         </aside>
 
+        <!-- MAIN CONTENT -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            
             <header class="flex justify-between items-center py-4 px-6 bg-white border-b border-gray-200 shadow-sm">
                 <div class="flex items-center">
                     <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                     </button>
-                    <h2 class="text-xl font-bold text-gray-800 hidden sm:block">Nhân sự & Phân quyền</h2>
+                    <h2 class="text-xl font-bold text-gray-800 hidden sm:block">Công việc & Task</h2>
                 </div>
-
                 <div class="flex items-center space-x-6">
                      <div class="flex items-center bg-gray-100 rounded-lg p-1">
-                        <span class="text-xs font-medium text-gray-500 px-2">Gói hiện tại:</span>
+                        <span class="text-xs font-medium text-gray-500 px-2">Gói:</span>
                         <span class="text-sm font-bold text-blue-600 uppercase px-2" x-text="currentPlan"></span>
                      </div>
-
                     <div class="flex items-center cursor-pointer">
                         <div class="text-right mr-3 hidden sm:block">
                             <div class="text-sm font-semibold text-gray-800" x-text="user.name"></div>
@@ -127,10 +93,8 @@
                 </div>
             </header>
 
-            <!-- Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-                
-                <!-- Project Selector & Controls -->
+                <!-- Controls -->
                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <div class="flex items-center w-full md:w-auto">
                         <span class="text-gray-600 font-medium mr-3 whitespace-nowrap">Dự án:</span>
@@ -140,55 +104,41 @@
                             </template>
                         </select>
                     </div>
-                    
                     <div class="flex w-full md:w-auto space-x-3">
                         <div class="relative flex-1 md:w-64">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             </span>
-                            <input type="text" x-model="searchQuery" placeholder="Tìm công việc..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opsera-primary">
+                            <input type="text" x-model="searchQuery" placeholder="Tìm công việc..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opsera-primary text-sm">
                         </div>
-                        <button @click="openCreateModal" :disabled="!selectedProjectId" :class="!selectedProjectId ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-opsera-primary hover:bg-blue-700'" class="flex items-center px-4 py-2 text-white rounded-lg font-medium transition-colors shadow-sm whitespace-nowrap">
+                        <button @click="openCreateModal" :disabled="!selectedProjectId" :class="!selectedProjectId ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-opsera-primary hover:bg-blue-700'" class="flex items-center px-4 py-2 text-white rounded-lg font-medium transition-colors shadow-sm whitespace-nowrap text-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             Tạo Task
                         </button>
                     </div>
                 </div>
 
-                <!-- Loading -->
                 <div x-show="isLoading" class="flex justify-center py-10">
                     <svg class="animate-spin h-8 w-8 text-opsera-primary" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 </div>
 
-                <!-- Kanban Board -->
                 <div x-show="selectedProjectId && !isLoading" class="flex flex-col lg:flex-row gap-6 h-[calc(100vh-220px)] overflow-x-auto pb-4">
-                    
-                    <!-- Column: PENDING -->
+                    <!-- PENDING -->
                     <div class="flex-1 flex flex-col bg-gray-100 rounded-xl border border-gray-200 min-w-[300px]">
                         <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-xl flex justify-between items-center sticky top-0 z-10">
-                            <div class="flex items-center">
-                                <span class="w-3 h-3 rounded-full bg-gray-400 mr-2"></span>
-                                <h3 class="font-bold text-gray-700 uppercase text-sm">Chờ xử lý (Pending)</h3>
-                            </div>
-                            <span class="bg-white px-2 py-0.5 rounded text-xs font-bold text-gray-500 border border-gray-200" x-text="tasksByStatus('PENDING').length"></span>
+                            <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-gray-400 mr-2"></span><h3 class="font-bold text-gray-700 uppercase text-xs tracking-wider">Chờ xử lý</h3></div>
+                            <span class="bg-white px-2 py-0.5 rounded text-xs font-bold text-gray-500 border border-gray-200 shadow-sm" x-text="tasksByStatus('PENDING').length"></span>
                         </div>
                         <div class="flex-1 p-3 space-y-3 overflow-y-auto kanban-col">
                             <template x-for="task in tasksByStatus('PENDING')" :key="task.id">
                                 <div @click="openTaskDetail(task)" class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition-all group border-l-4 border-l-gray-400">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" 
-                                              :class="getPriorityColor(task.priority)">
-                                            <span x-text="task.priority"></span>
-                                        </span>
-                                    </div>
-                                    <h4 class="font-bold text-gray-800 mb-1 line-clamp-2" x-text="task.title"></h4>
+                                    <div class="flex justify-between items-start mb-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" :class="getPriorityColor(task.priority)"><span x-text="task.priority"></span></span></div>
+                                    <h4 class="font-bold text-gray-800 mb-1 line-clamp-2 text-sm" x-text="task.title"></h4>
                                     <p class="text-xs text-gray-500 line-clamp-2 mb-3" x-text="task.description"></p>
-                                    
                                     <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-                                        <div class="flex items-center space-x-1">
-                                            <span class="text-xs text-gray-600 truncate max-w-[80px]" x-text="task.assignee?.fullName || 'Chưa gán'"></span>
-                                        </div>
-                                        <div class="flex items-center text-xs text-gray-500">
+                                        <div class="flex items-center space-x-1"><div class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] text-gray-600 font-bold" x-text="(task.assignee?.fullName || 'U').charAt(0)"></div><span class="text-xs text-gray-600 truncate max-w-[80px]" x-text="task.assignee?.fullName || 'Chưa gán'"></span></div>
+                                       <div class="flex items-center text-xs text-red-500 font-semibold" :class="isOverdue(task.deadline) ? 'text-red-500 font-bold' : ''">
+                                            <svg x-show="task.deadline" class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             <span x-text="formatDate(task.deadline)"></span>
                                         </div>
                                     </div>
@@ -197,30 +147,22 @@
                         </div>
                     </div>
 
-                    <!-- Column: IN_PROGRESS -->
+                    <!-- IN_PROGRESS -->
                     <div class="flex-1 flex flex-col bg-blue-50 rounded-xl border border-blue-100 min-w-[300px]">
                         <div class="p-4 border-b border-blue-200 bg-blue-100 rounded-t-xl flex justify-between items-center sticky top-0 z-10">
-                            <div class="flex items-center">
-                                <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-                                <h3 class="font-bold text-blue-800 uppercase text-sm">Đang thực hiện</h3>
-                            </div>
-                            <span class="bg-white px-2 py-0.5 rounded text-xs font-bold text-blue-600 border border-blue-200" x-text="tasksByStatus('IN_PROGRESS').length"></span>
+                            <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span><h3 class="font-bold text-blue-800 uppercase text-xs tracking-wider">Đang thực hiện</h3></div>
+                            <span class="bg-white px-2 py-0.5 rounded text-xs font-bold text-blue-600 border border-blue-200 shadow-sm" x-text="tasksByStatus('IN_PROGRESS').length"></span>
                         </div>
                         <div class="flex-1 p-3 space-y-3 overflow-y-auto kanban-col">
                             <template x-for="task in tasksByStatus('IN_PROGRESS')" :key="task.id">
                                 <div @click="openTaskDetail(task)" class="bg-white p-4 rounded-lg border border-blue-200 shadow-sm hover:shadow-md cursor-pointer transition-all border-l-4 border-l-blue-500">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" :class="getPriorityColor(task.priority)">
-                                            <span x-text="task.priority"></span>
-                                        </span>
-                                    </div>
-                                    <h4 class="font-bold text-gray-800 mb-1 line-clamp-2" x-text="task.title"></h4>
+                                    <div class="flex justify-between items-start mb-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" :class="getPriorityColor(task.priority)"><span x-text="task.priority"></span></span></div>
+                                    <h4 class="font-bold text-gray-800 mb-1 line-clamp-2 text-sm" x-text="task.title"></h4>
                                     <p class="text-xs text-gray-500 line-clamp-2 mb-3" x-text="task.description"></p>
                                     <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-                                        <div class="flex items-center space-x-1">
-                                            <span class="text-xs text-gray-600 truncate max-w-[80px]" x-text="task.assignee?.fullName || 'Chưa gán'"></span>
-                                        </div>
-                                        <div class="flex items-center text-xs text-gray-500">
+                                        <div class="flex items-center space-x-1"><div class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-[10px] text-blue-600 font-bold" x-text="(task.assignee?.fullName || 'U').charAt(0)"></div><span class="text-xs text-gray-600 truncate max-w-[80px]" x-text="task.assignee?.fullName || 'Chưa gán'"></span></div>
+                                        <div class="flex items-center text-xs text-gray-500" :class="isOverdue(task.deadline) ? 'text-red-500 font-bold' : ''">
+                                            <svg x-show="task.deadline" class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             <span x-text="formatDate(task.deadline)"></span>
                                         </div>
                                     </div>
@@ -229,124 +171,64 @@
                         </div>
                     </div>
 
-                    <!-- Column: COMPLETED -->
+                    <!-- COMPLETED -->
                     <div class="flex-1 flex flex-col bg-green-50 rounded-xl border border-green-100 min-w-[300px]">
                         <div class="p-4 border-b border-green-200 bg-green-100 rounded-t-xl flex justify-between items-center sticky top-0 z-10">
-                            <div class="flex items-center">
-                                <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                                <h3 class="font-bold text-green-800 uppercase text-sm">Hoàn thành</h3>
-                            </div>
-                            <span class="bg-white px-2 py-0.5 rounded text-xs font-bold text-green-600 border border-green-200" x-text="tasksByStatus('COMPLETED').length"></span>
+                            <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span><h3 class="font-bold text-green-800 uppercase text-xs tracking-wider">Hoàn thành</h3></div>
+                            <span class="bg-white px-2 py-0.5 rounded text-xs font-bold text-green-600 border border-green-200 shadow-sm" x-text="tasksByStatus('COMPLETED').length"></span>
                         </div>
                         <div class="flex-1 p-3 space-y-3 overflow-y-auto kanban-col">
                             <template x-for="task in tasksByStatus('COMPLETED')" :key="task.id">
                                 <div @click="openTaskDetail(task)" class="bg-white p-4 rounded-lg border border-green-200 shadow-sm hover:shadow-md cursor-pointer transition-all border-l-4 border-l-green-500 opacity-75 hover:opacity-100">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" :class="getPriorityColor(task.priority)">
-                                            <span x-text="task.priority"></span>
-                                        </span>
-                                    </div>
-                                    <h4 class="font-bold text-gray-800 mb-1 line-clamp-2 line-through decoration-gray-400" x-text="task.title"></h4>
+                                    <div class="flex justify-between items-start mb-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" :class="getPriorityColor(task.priority)"><span x-text="task.priority"></span></span></div>
+                                    <h4 class="font-bold text-gray-800 mb-1 line-clamp-2 line-through decoration-gray-400 text-sm" x-text="task.title"></h4>
                                     <p class="text-xs text-gray-500 line-clamp-2 mb-3" x-text="task.description"></p>
-                                    <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-                                        <div class="flex items-center space-x-1">
-                                            <span class="text-xs text-gray-600 truncate max-w-[80px]" x-text="task.assignee?.fullName || 'Chưa gán'"></span>
-                                        </div>
-                                        <div class="text-xs text-gray-400 italic">Done</div>
-                                    </div>
+                                    <div class="flex justify-between items-center pt-3 border-t border-gray-100"><div class="flex items-center space-x-1"><div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-[10px] text-green-600 font-bold" x-text="(task.assignee?.fullName || 'U').charAt(0)"></div><span class="text-xs text-gray-600 truncate max-w-[80px]" x-text="task.assignee?.fullName || 'Chưa gán'"></span></div><div class="text-xs text-gray-400 italic">Done</div></div>
                                 </div>
                             </template>
                         </div>
                     </div>
-
                 </div>
 
                 <div x-show="!selectedProjectId" class="text-center py-20">
                     <h3 class="text-lg font-medium text-gray-900">Vui lòng chọn một dự án để xem công việc.</h3>
                 </div>
-
             </main>
         </div>
 
-        <!-- TASK DETAIL MODAL (EDIT & DELETE) -->
+        <!-- TASK DETAIL MODAL -->
         <div x-show="showDetailModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showDetailModal = false"></div>
+                <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @click="showDetailModal = false"></div>
                 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
-                        <div class="sm:flex sm:items-start">
-                            <div class="w-full">
-                                <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-4">
-                                    <div>
-                                        <div class="flex items-center space-x-2 mb-1">
-                                            <span class="text-xs font-bold px-2 py-1 rounded uppercase" 
-                                                  :class="getPriorityColor(selectedTask?.priority)">
-                                                <span x-text="selectedTask?.priority"></span>
-                                            </span>
-                                        </div>
-                                        <!-- Editable Title -->
-                                        <input type="text" x-model="selectedTask.title" class="text-xl font-bold text-gray-900 border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none w-full">
-                                    </div>
-                                    <button @click="showDetailModal = false" class="text-gray-400 hover:text-gray-500">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                    </button>
+                        <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-4">
+                            <div class="w-full mr-4">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider" :class="getPriorityColor(selectedTask?.priority)"><span x-text="selectedTask?.priority"></span></span>
+                                    <span class="text-xs text-gray-400">#<span x-text="selectedTask?.id.slice(0,8)"></span></span>
                                 </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <h4 class="text-sm font-bold text-gray-700 mb-1">Mô tả</h4>
-                                            <textarea x-model="selectedTask.description" rows="3" class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm text-gray-600"></textarea>
-                                        </div>
-                                        <div>
-                                            <h4 class="text-sm font-bold text-gray-700 mb-1">Độ ưu tiên</h4>
-                                            <select x-model="selectedTask.priority" class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                                                <option value="LOW">Thấp</option>
-                                                <option value="MEDIUM">Trung bình</option>
-                                                <option value="HIGH">Cao</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="bg-gray-50 p-4 rounded-lg space-y-3 text-sm">
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-gray-500">Trạng thái:</span>
-                                            <select x-model="selectedTask.status" class="border border-gray-300 rounded px-2 py-1 text-sm font-bold">
-                                                <option value="PENDING">PENDING</option>
-                                                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                                                <option value="COMPLETED">COMPLETED</option>
-                                            </select>
-                                        </div>
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-gray-500">Người thực hiện:</span>
-                                            <select x-model="selectedTask.assigneeId" class="border border-gray-300 rounded px-2 py-1 text-sm max-w-[150px]">
-                                                <option value="">-- Chưa gán --</option>
-                                                <template x-for="member in projectMembers" :key="member.id">
-                                                    <option :value="member.id" x-text="member.fullName" :selected="member.id === selectedTask.assigneeId"></option>
-                                                </template>
-                                            </select>
-                                        </div>
-                                        <div class="border-t border-gray-200 my-2"></div>
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-gray-500">Hạn chót:</span>
-                                            <!-- Cần convert date string sang format YYYY-MM-DDTHH:mm để bind vào input -->
-                                            <input type="datetime-local" x-model="selectedTask.deadlineInput" class="border border-gray-300 rounded px-2 py-1 text-sm w-40">
-                                        </div>
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-gray-500">Ước tính (giờ):</span>
-                                            <input type="number" x-model="selectedTask.estimatedHours" class="border border-gray-300 rounded px-2 py-1 text-sm w-20 text-right">
-                                        </div>
-                                    </div>
-                                </div>
+                                <input type="text" x-model="selectedTask.title" class="text-xl font-bold text-gray-900 border border-transparent hover:border-gray-300 focus:border-blue-500 rounded px-1 -ml-1 focus:outline-none w-full bg-transparent">
+                            </div>
+                            <button @click="showDetailModal = false" class="text-gray-400 hover:text-gray-500"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div><h4 class="text-sm font-bold text-gray-700 mb-1">Mô tả</h4><textarea x-model="selectedTask.description" rows="6" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none"></textarea></div>
+                                <div><h4 class="text-sm font-bold text-gray-700 mb-1">Độ ưu tiên</h4><select x-model="selectedTask.priority" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm"><option value="LOW">Thấp</option><option value="MEDIUM">Trung bình</option><option value="HIGH">Cao</option></select></div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg space-y-4 text-sm h-fit border border-gray-100">
+                                <div class="flex justify-between items-center"><span class="text-gray-500 font-medium">Trạng thái:</span><select x-model="selectedTask.status" class="border border-gray-300 rounded px-2 py-1 text-sm font-bold w-40"><option value="PENDING">PENDING</option><option value="IN_PROGRESS">IN_PROGRESS</option><option value="COMPLETED">COMPLETED</option></select></div>
+                                <div class="flex justify-between items-center"><span class="text-gray-500 font-medium">Người thực hiện:</span><select x-model="selectedTask.assigneeId" class="border border-gray-300 rounded px-2 py-1 text-sm w-40"><option value="">-- Chưa gán --</option><template x-for="member in projectMembers" :key="member.id"><option :value="member.id" x-text="member.fullName" :selected="member.id === selectedTask.assigneeId"></option></template></select></div>
+                                <div class="border-t border-gray-200"></div>
+                                <div class="flex justify-between items-center"><span class="text-gray-500 font-medium">Hạn chót:</span><input type="datetime-local" x-model="selectedTask.deadlineInput" class="border border-gray-300 rounded px-2 py-1 text-sm w-40"></div>
+                                <div class="flex justify-between items-center"><span class="text-gray-500 font-medium">Ước tính (giờ):</span><input type="number" x-model="selectedTask.estimatedHours" class="border border-gray-300 rounded px-2 py-1 text-sm w-20 text-right"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-between">
-                        <button @click="deleteTask" class="inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none sm:text-sm">Xóa Task</button>
-                        
-                        <div class="flex space-x-3">
-                            <button @click="showDetailModal = false" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:text-sm">Hủy</button>
-                            <button @click="updateTask" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-opsera-primary text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:text-sm">Lưu Cập nhật</button>
-                        </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-between border-t border-gray-100">
+                        <button @click="deleteTask" class="text-red-600 font-bold text-sm px-4 py-2 border border-red-200 rounded hover:bg-red-50">Xóa Task</button>
+                        <div class="flex space-x-3"><button @click="showDetailModal = false" class="px-4 py-2 bg-white border border-gray-300 rounded text-gray-700">Hủy</button><button @click="updateTask" class="px-4 py-2 bg-opsera-primary text-white rounded font-bold hover:bg-blue-700">Lưu Cập nhật</button></div>
                     </div>
                 </div>
             </div>
@@ -356,292 +238,202 @@
         <div x-show="showCreateModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @click="showCreateModal = false"></div>
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Tạo Công việc Mới</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tiêu đề <span class="text-red-500">*</span></label>
-                                <input type="text" x-model="newTask.title" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="Nhập tên công việc...">
+                        <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-4"><h3 class="text-lg font-bold text-gray-900">Tạo Công việc Mới</h3><button @click="showCreateModal = false" class="text-gray-400 hover:text-gray-500"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div>
+                        <div class="mb-4"><label class="block text-sm font-bold text-gray-700 mb-1">Tiêu đề <span class="text-red-500">*</span></label><input type="text" x-model="newTask.title" class="w-full border border-gray-300 rounded-lg px-3 py-2 font-semibold" placeholder="Nhập tên công việc..."></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Mô tả</label><textarea x-model="newTask.description" rows="5" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea></div>
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Độ ưu tiên</label><select x-model="newTask.priority" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-sm"><option value="LOW">Thấp</option><option value="MEDIUM">Trung bình</option><option value="HIGH">Cao</option></select></div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
-                                <textarea x-model="newTask.description" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Mô tả chi tiết..."></textarea>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Độ ưu tiên</label>
-                                    <select x-model="newTask.priority" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white">
-                                        <option value="LOW">Thấp</option>
-                                        <option value="MEDIUM">Trung bình</option>
-                                        <option value="HIGH">Cao</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Thời gian ước tính (giờ)</label>
-                                    <input type="number" x-model.number="newTask.estimatedHours" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Hạn chót</label>
-                                <input type="datetime-local" x-model="newTask.deadline" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Giao cho (Assignee)</label>
-                                <select x-model="newTask.assigneeId" class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white">
-                                    <option value="">-- Chưa gán --</option>
-                                    <template x-for="member in projectMembers" :key="member.id">
-                                        <option :value="member.id" x-text="member.fullName"></option>
-                                    </template>
-                                </select>
+                            <div class="bg-gray-50 p-4 rounded-lg space-y-4 text-sm h-fit border border-gray-100">
+                                <div class="flex justify-between items-center"><span class="text-gray-600 font-medium">Trạng thái:</span><select x-model="newTask.status" class="border border-gray-300 rounded px-2 py-1 text-sm font-bold w-40"><option value="PENDING">PENDING</option><option value="IN_PROGRESS">IN_PROGRESS</option><option value="COMPLETED">COMPLETED</option></select></div>
+                                <div class="flex justify-between items-center"><span class="text-gray-600 font-medium">Người thực hiện:</span><select x-model="newTask.assigneeId" class="border border-gray-300 rounded px-2 py-1 text-sm w-40"><option value="">-- Chưa gán --</option><template x-for="member in projectMembers" :key="member.id"><option :value="member.id" x-text="member.fullName"></option></template></select></div>
+                                <div class="border-t border-gray-200"></div>
+                                <div class="flex justify-between items-center"><span class="text-gray-600 font-medium">Hạn chót:</span><input type="datetime-local" x-model="newTask.deadlineInput" class="border border-gray-300 rounded px-2 py-1 text-sm w-40"></div>
+                                <div class="flex justify-between items-center"><span class="text-gray-600 font-medium">Ước tính (giờ):</span><input type="number" x-model="newTask.estimatedHours" min="0" class="border border-gray-300 rounded px-2 py-1 text-sm w-20 text-right"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button @click="saveTask" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">Tạo</button>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
+                        <button @click="saveTask" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-opsera-primary text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">Tạo Công việc</button>
                         <button @click="showCreateModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Hủy</button>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
         function taskApp() {
             return {
-                sidebarOpen: false,
-                currentPlan: 'starter',
-                user: { name: 'Loading...', avatar: '', role: 'User' },
-                
-                selectedProjectId: null,
-                searchQuery: '',
-                isLoading: false,
-                
-                // Data
-                projects: [],
-                tasks: [],
-                projectMembers: [], 
-
-                // Modals
-                showDetailModal: false,
-                showCreateModal: false,
-                selectedTask: null, // Object đang sửa
-                newTask: { title: '', description: '', priority: 'MEDIUM', estimatedHours: 0, deadline: '', assigneeId: '' },
-
-                plans: { starter: {}, professional: {}, enterprise: {} },
+                sidebarOpen: false, currentPlan: 'starter', user: { name: 'Loading...', avatar: '', role: 'User' },
+                selectedProjectId: null, searchQuery: '', isLoading: false,
+                projects: [], tasks: [], roles: [], projectMembers: [],
+                showDetailModal: false, showCreateModal: false,
+                selectedTask: null, newTask: { title: '', description: '', priority: 'MEDIUM', estimatedHours: 0, deadlineInput: '', assigneeId: '', status: 'PENDING' },
 
                 async init() {
                     const token = localStorage.getItem('accessToken');
-                    if (!token) { window.location.href = '/login.html'; return; }
-
-                    const userStr = localStorage.getItem('user');
-                    const planStr = localStorage.getItem('userPlan');
-
-                    if (userStr) {
-                        const u = JSON.parse(userStr);
-                        this.user = { ...u, avatar: `https://ui-avatars.com/api/?name=${u.fullName}&background=2563EB&color=fff` };
-                        this.currentPlan = u.tenant?.subscriptionPlan?.toLowerCase() || 'starter';
+                    if (!token) return window.location.href = '/login.html';
+                    const u = localStorage.getItem('user');
+                    if(u) {
+                        const parsed = JSON.parse(u);
+                        this.user = { ...parsed, avatar: `https://ui-avatars.com/api/?name=${parsed.fullName}&background=2563EB&color=fff` };
+                        this.currentPlan = parsed.tenant?.subscriptionPlan?.toLowerCase() || 'starter';
                     }
-                    
                     await this.fetchProjects();
                 },
 
                 async fetchProjects() {
                     try {
-                        const res = await fetch('http://localhost:3000/api/projects', {
-                            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-                        });
+                        const res = await fetch('http://localhost:3000/api/projects', { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
                         if (res.ok) {
                             this.projects = await res.json();
-                            if (this.projects.length > 0) {
-                                this.selectedProjectId = this.projects[0].id;
-                                this.changeProject();
-                            }
+                            if (this.projects.length > 0) { this.selectedProjectId = this.projects[0].id; this.changeProject(); }
                         }
-                    } catch(e) { console.error(e); }
+                    } catch(e) {}
                 },
 
-                changeProject() {
-                    this.fetchTasks();
-                    this.fetchMembers();
-                },
+                changeProject() { this.fetchTasks(); this.fetchRoles(); this.fetchMembers(); },
 
                 async fetchTasks() {
                     if (!this.selectedProjectId) return;
                     this.isLoading = true;
                     try {
-                        const token = localStorage.getItem('accessToken');
-                        const res = await fetch(`http://localhost:3000/api/tasks?projectId=${this.selectedProjectId}`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        if (res.ok) {
-                            const data = await res.json();
-                            this.tasks = data.tasks; 
-                        }
-                    } catch(e) { console.error(e); }
-                    finally { this.isLoading = false; }
+                        const res = await fetch(`http://localhost:3000/api/tasks?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if (res.ok) { const data = await res.json(); this.tasks = data.tasks || []; }
+                    } catch(e) {} finally { this.isLoading = false; }
+                },
+
+                async fetchRoles() {
+                    try {
+                        const res = await fetch(`http://localhost:3000/api/roles?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if(res.ok) this.roles = await res.json();
+                    } catch(e) {}
                 },
 
                 async fetchMembers() {
-                    if (!this.selectedProjectId) return;
                     try {
-                        const res = await fetch(`http://localhost:3000/api/members?projectId=${this.selectedProjectId}`, {
-                            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-                        });
-                        if (res.ok) {
-                            this.projectMembers = await res.json();
-                        }
-                    } catch(e) { console.error(e); }
+                        const res = await fetch(`http://localhost:3000/api/members?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if(res.ok) this.projectMembers = await res.json();
+                    } catch(e) {}
                 },
 
                 tasksByStatus(status) {
                     let filtered = this.tasks.filter(t => t.status === status);
-                    if (this.searchQuery) {
-                        const q = this.searchQuery.toLowerCase();
-                        filtered = filtered.filter(t => t.title.toLowerCase().includes(q));
-                    }
+                    if (this.searchQuery) filtered = filtered.filter(t => t.title.toLowerCase().includes(this.searchQuery.toLowerCase()));
                     return filtered;
                 },
 
-                getStaffName(id) {
-                    // Tìm tên nhân viên trong danh sách projectMembers
-                    const member = this.projectMembers.find(m => m.id === id);
-                    return member ? member.fullName : (id ? 'Unknown' : 'Chưa gán');
-                },
-
-                getPriorityColor(priority) {
-                    switch(priority) {
-                        case 'HIGH': return 'bg-red-100 text-red-700 border border-red-200';
-                        case 'MEDIUM': return 'bg-orange-100 text-orange-700 border border-orange-200';
-                        case 'LOW': return 'bg-blue-100 text-blue-700 border border-blue-200';
-                        default: return 'bg-gray-100 text-gray-700';
-                    }
-                },
-
-                formatDate(dateString) {
-                    if (!dateString) return 'N/A';
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString('vi-VN');
-                },
-
-                isOverdue(dateString) {
-                    if (!dateString) return false;
-                    return new Date(dateString) < new Date();
-                },
-
-                // --- DETAIL & UPDATE TASK ---
-                openTaskDetail(task) {
-                    // Clone object để sửa không ảnh hưởng UI ngay
-                    this.selectedTask = JSON.parse(JSON.stringify(task));
-                    
-                    // Convert deadline sang định dạng input datetime-local (YYYY-MM-DDTHH:mm)
-                    if (this.selectedTask.deadline) {
-                        const d = new Date(this.selectedTask.deadline);
-                        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-                        this.selectedTask.deadlineInput = d.toISOString().slice(0,16);
-                    } else {
-                        this.selectedTask.deadlineInput = '';
-                    }
-                    
-                    this.showDetailModal = true;
+                // FORMAT DATE HELPER (LOCAL TIME FOR INPUT)
+                formatDateForInput(isoString) {
+                    if (!isoString) return "";
+                    const date = new Date(isoString);
+                    const offset = date.getTimezoneOffset() * 60000; 
+                    const localISOTime = (new Date(date.getTime() - offset)).toISOString().slice(0, 16);
+                    return localISOTime;
                 },
 
                 async updateTask() {
-                    if (!this.selectedTask.title) { alert("Tiêu đề không được để trống"); return; }
-                    
+                    if (!this.selectedTask) return;
+
+                    let finalAssigneeId = this.selectedTask.assigneeId;
+                    if (finalAssigneeId === "" || finalAssigneeId === "null") finalAssigneeId = null;
+
+                    // Logic quan trọng: Convert Input (Local) -> ISO String (UTC) để gửi lên Server
+                    let finalDeadline = null;
+                    if(this.selectedTask.deadlineInput) {
+                         finalDeadline = new Date(this.selectedTask.deadlineInput).toISOString();
+                    }
+
                     const payload = {
                         title: this.selectedTask.title,
                         description: this.selectedTask.description,
                         priority: this.selectedTask.priority,
                         status: this.selectedTask.status,
-                        assigneeId: this.selectedTask.assigneeId || null,
+                        assigneeId: finalAssigneeId,
                         estimatedHours: Number(this.selectedTask.estimatedHours),
-                        deadline: this.selectedTask.deadlineInput ? new Date(this.selectedTask.deadlineInput).toISOString() : null
+                        deadline: finalDeadline // Gửi ISO String chuẩn
                     };
-
+                    
                     try {
                         const res = await fetch(`http://localhost:3000/api/tasks/${this.selectedTask.id}`, {
                             method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                            },
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
                             body: JSON.stringify(payload)
                         });
 
                         if (res.ok) {
                             alert("Cập nhật thành công!");
                             this.showDetailModal = false;
-                            this.fetchTasks(); // Reload
-                        } else {
-                            const err = await res.json();
-                            alert("Lỗi: " + err.message);
-                        }
-                    } catch(e) { console.error(e); alert("Lỗi kết nối"); }
-                },
-
-                async deleteTask() {
-                    if(!confirm("Bạn có chắc muốn xóa công việc này?")) return;
-                    
-                    try {
-                        const res = await fetch(`http://localhost:3000/api/tasks/${this.selectedTask.id}`, {
-                            method: 'DELETE',
-                            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-                        });
-
-                        if (res.ok) {
-                            alert("Đã xóa!");
-                            this.showDetailModal = false;
                             this.fetchTasks();
                         } else {
                             const err = await res.json();
-                            alert("Lỗi: " + err.message);
+                            alert("Lỗi: " + (err.message || "Không thể cập nhật"));
                         }
-                    } catch(e) { console.error(e); }
+                    } catch(e) { alert("Lỗi kết nối"); }
                 },
 
-                // --- CREATE TASK ---
-                openCreateModal() {
-                    if(!this.selectedProjectId) { alert("Vui lòng chọn dự án"); return; }
-                    this.newTask = { title: '', description: '', priority: 'MEDIUM', estimatedHours: 0, deadline: '', assigneeId: '' };
-                    this.showCreateModal = true;
+                async deleteTask() {
+                    if(!confirm("Xóa công việc này?")) return;
+                    try {
+                        const res = await fetch(`http://localhost:3000/api/tasks/${this.selectedTask.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if (res.ok) { this.showDetailModal = false; this.fetchTasks(); }
+                    } catch(e) { alert("Lỗi kết nối"); }
                 },
 
                 async saveTask() {
-                    if(!this.newTask.title) { alert("Vui lòng nhập tiêu đề"); return; }
+                    if(!this.newTask.title) { alert("Nhập tiêu đề"); return; }
                     
-                    const payload = {
-                        ...this.newTask,
+                    let finalAssigneeId = this.newTask.assigneeId;
+                    if (finalAssigneeId === "" || finalAssigneeId === "null") finalAssigneeId = null;
+
+                    let finalDeadline = null;
+                    if (this.newTask.deadlineInput) finalDeadline = new Date(this.newTask.deadlineInput).toISOString();
+
+                    const payload = { 
+                        ...this.newTask, 
                         projectId: this.selectedProjectId,
-                        deadline: this.newTask.deadline ? new Date(this.newTask.deadline).toISOString() : null
+                        assigneeId: finalAssigneeId,
+                        deadline: finalDeadline
                     };
+                    delete payload.deadlineInput;
 
                     try {
                         const res = await fetch('http://localhost:3000/api/tasks', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                            },
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
                             body: JSON.stringify(payload)
                         });
-
-                        if (res.ok) {
-                            alert("Tạo công việc thành công!");
-                            this.showCreateModal = false;
-                            this.fetchTasks();
-                        } else {
-                            const err = await res.json();
-                            alert("Lỗi: " + err.message);
-                        }
-                    } catch(e) { console.error(e); alert("Lỗi kết nối"); }
+                        if (res.ok) { alert("Tạo thành công!"); this.showCreateModal = false; this.fetchTasks(); }
+                        else { const err = await res.json(); alert("Lỗi: " + err.message); }
+                    } catch(e) { alert("Lỗi kết nối"); }
                 },
 
-                logout() {
-                    localStorage.clear();
-                    window.location.href = '/login.html';
-                }
+                getPriorityColor(p) { return p==='HIGH'?'bg-red-100 text-red-700':(p==='MEDIUM'?'bg-orange-100 text-orange-700':'bg-blue-100 text-blue-700'); },
+                formatDate(d) { 
+                    if (!d) return 'N/A';
+                    const date = new Date(d);
+                    return date.getDate().toString().padStart(2, '0') + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + ' ' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
+                },
+                isOverdue(d) { return d && new Date(d) < new Date(); },
+                
+                openTaskDetail(task) { 
+                    this.selectedTask = JSON.parse(JSON.stringify(task)); 
+                    if (!this.selectedTask.assigneeId) this.selectedTask.assigneeId = "";
+                    // Fix hiển thị ngày lên input
+                    this.selectedTask.deadlineInput = this.formatDateForInput(this.selectedTask.deadline);
+                    this.showDetailModal = true; 
+                },
+                openCreateModal() { 
+                    if(!this.selectedProjectId) return alert("Chọn dự án trước");
+                    this.newTask = { title: '', description: '', priority: 'MEDIUM', estimatedHours: 0, deadlineInput: '', assigneeId: '', status: 'PENDING' };
+                    this.fetchMembers();
+                    this.showCreateModal = true; 
+                },
+                logout() { localStorage.clear(); window.location.href = '/login.html'; }
             }
         }
     </script>

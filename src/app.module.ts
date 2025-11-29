@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 // Core Modules
@@ -22,6 +21,9 @@ import { NotificationModule } from './notification/notification.module';
 import { MasterAdminModule } from './master-admin/master-admin.module';
 import { ViewModule } from './view/view.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ReportModule } from './report/report.module';
+import { IncidentModule } from './incident/incident.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -44,7 +46,10 @@ import { DashboardModule } from './dashboard/dashboard.module';
         },
       }),
     }),
-
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     AuthModule,
     ProjectModule,
     RoleModule,
@@ -57,15 +62,15 @@ import { DashboardModule } from './dashboard/dashboard.module';
     MasterAdminModule,
     ViewModule,
     DashboardModule,
+    ReportModule,
+    IncidentModule,
 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '',
     }),
-
-    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

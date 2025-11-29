@@ -1,13 +1,9 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsArray } from 'class-validator';
 
 export class CreateScanDto {
   @IsNotEmpty()
   @IsString()
   qrCodeData: string;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
 
   @IsOptional()
   @IsString()
@@ -18,5 +14,15 @@ export class CreateScanDto {
   status?: string;
 
   @IsOptional()
-  attachments?: any;
+  @IsString()
+  notes?: string;
+
+  @IsOptional()
+  @IsString()
+  issueDescription?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
 }

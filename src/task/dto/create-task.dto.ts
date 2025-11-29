@@ -1,19 +1,9 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsUUID,
-  IsDateString,
-  MaxLength,
-  IsEnum,
-  IsArray,
-  IsNumber,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID, IsDateString, IsEnum, IsNumber } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateTaskDto {
   @IsNotEmpty()
   @IsString()
-  @MaxLength(255)
   title: string;
 
   @IsOptional()
@@ -21,27 +11,28 @@ export class CreateTaskDto {
   description?: string;
 
   @IsNotEmpty()
-  @IsUUID('4')
+  @IsUUID()
   projectId: string;
 
   @IsOptional()
-  @IsUUID('4')
-  assigneeId?: string;
+  @IsUUID()
+  @Transform(({ value }) => (value === '' ? null : value)) // Quan trọng: Chuyển "" thành null
+  assigneeId?: string | null;
 
   @IsOptional()
   @IsDateString()
-  deadline?: string;
+  @Transform(({ value }) => (value === '' ? null : value))
+  deadline?: string | null;
 
   @IsOptional()
   @IsEnum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'])
   priority?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  tags?: string[];
+  tags?: any;
 
   @IsOptional()
   @IsNumber()
+  @Transform(({ value }) => (value === '' ? null : Number(value)))
   estimatedHours?: number;
 }

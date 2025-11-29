@@ -3,55 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mã QR & Điểm Quét - Opsera</title>
+    <title>Hệ thống Quản lý Tuần tra - Opsera</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style> 
         body { font-family: 'Nunito', sans-serif; } 
         [x-cloak] { display: none !important; } 
-        .qr-canvas canvas { margin: 0 auto; } 
+        
+        #reader { width: 100%; height: 100%; background: #000; border-radius: 0.5rem; overflow: hidden; }
+        #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+        
+        @keyframes scan-line { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        .animate-scan { animation: scan-line 2s infinite linear; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
     </style>
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'opsera-primary': '#2563EB',
-                        'opsera-dark': '#1F2937',
-                        'opsera-light': '#F3F4F6',
-                    }
-                }
-            }
+            theme: { extend: { colors: { 'opsera-primary': '#2563EB', 'opsera-dark': '#1F2937' } } }
         }
     </script>
 </head>
 
-<body class="bg-gray-50 text-gray-800" x-data="qrApp()" x-init="init()">
+<body class="bg-gray-50 text-gray-800" x-data="scanApp()" x-init="init()">
 
+    <!-- 1. NOTIFICATION TOAST -->
+    <div x-show="notification.show" class="fixed inset-0 z-[120] flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end" x-cloak>
+        <div x-show="notification.show" x-transition class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto border-l-4 p-4"
+             :class="notification.type === 'success' ? 'border-green-500' : 'border-red-500'">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg x-show="notification.type === 'success'" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <svg x-show="notification.type === 'error'" class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div class="ml-3 w-0 flex-1 pt-0.5">
+                    <p class="text-sm font-medium text-gray-900" x-text="notification.title"></p>
+                    <p class="mt-1 text-sm text-gray-500" x-text="notification.message"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. UNAUTHORIZED MODAL -->
+    <div x-show="showUnauthorizedModal" class="fixed inset-0 z-[110] flex items-center justify-center px-4" x-cloak>
+        <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm"></div>
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Truy cập bị từ chối</h3>
+            <p class="mt-2 text-sm text-gray-500">Task sự cố đã tạo, nhưng bạn không có quyền xử lý (Role không khớp). Task đã chuyển cho bộ phận liên quan.</p>
+            <div class="mt-6"><button @click="showUnauthorizedModal = false" class="w-full bg-red-600 text-white rounded py-2 hover:bg-red-700">Đóng</button></div>
+        </div>
+    </div>
+
+    <!-- 3. LAYOUT -->
     <div class="flex h-screen overflow-hidden" x-cloak>
-        
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between">
+       <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between">
             <div>
+                <!-- Logo -->
                 <div class="flex items-center justify-center h-20 border-b border-gray-100">
                     <div class="flex items-center space-x-2">
                         <a href="/index.html"><img src="../img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
                     </div>
                 </div>
 
+                <!-- Menu -->
                 <nav class="mt-6 px-4 space-y-2">
+                    <!-- Chung cho tất cả các gói -->
                     <a href="../ternants/dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                         Tổng quan (Dashboard)
                     </a>
                     
-                    <a href="../ternants/project.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                    <a href="../ternants/project.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         Quản lý Dự án
                     </a>
 
-                    <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
+                    <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                         Mã QR & Điểm quét
                     </a>
@@ -66,6 +102,7 @@
                         Công việc & Task
                     </a>
 
+                    <!-- CHỈ HIỂN THỊ CHO GÓI PROFESSIONAL TRỞ LÊN -->
                     <template x-if="['professional', 'enterprise'].includes(currentPlan)">
                         <div class="pt-2 mt-2 border-t border-gray-100">
                             <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nâng cao</p>
@@ -80,6 +117,7 @@
                         </div>
                     </template>
 
+                    <!-- CHỈ HIỂN THỊ CHO GÓI ENTERPRISE -->
                     <template x-if="currentPlan === 'enterprise'">
                         <div class="pt-2 mt-2 border-t border-gray-100">
                             <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doanh nghiệp</p>
@@ -96,6 +134,7 @@
                 </nav>
             </div>
             
+            <!-- Bottom Sidebar -->
             <div class="p-4 border-t border-gray-200">
                 <button @click="logout" class="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -104,120 +143,186 @@
             </div>
         </aside>
 
+        <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             
+            <!-- Top Header -->
             <header class="flex justify-between items-center py-4 px-6 bg-white border-b border-gray-200 shadow-sm">
                 <div class="flex items-center">
                     <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
                     </button>
-                    <h2 class="text-xl font-bold text-gray-800 hidden sm:block">Mã QR & Điểm quét</h2>
+                    <h2 class="text-xl font-bold text-gray-800 hidden sm:block">Trung tâm điều hành</h2>
                 </div>
 
                 <div class="flex items-center space-x-6">
+                     <!-- Plan Switcher (Simulation Tool) -->
                      <div class="flex items-center bg-gray-100 rounded-lg p-1">
                         <span class="text-xs font-medium text-gray-500 px-2">Gói hiện tại:</span>
+                        <!-- Hiển thị gói thật từ DB -->
                         <span class="text-sm font-bold text-blue-600 uppercase px-2" x-text="currentPlan"></span>
                      </div>
+
+                     <!-- Notifications -->
+                     <button class="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">3</span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </button>
+
+                    <!-- Profile Dropdown -->
                     <div class="flex items-center cursor-pointer">
                         <div class="text-right mr-3 hidden sm:block">
+                            <!-- Tên người dùng thật -->
                             <div class="text-sm font-semibold text-gray-800" x-text="user.name"></div>
+                            <!-- Chức vụ thật -->
                             <div class="text-xs text-gray-500 uppercase" x-text="user.role"></div>
                         </div>
+                        <!-- Avatar tự động từ tên thật -->
                         <img class="h-9 w-9 rounded-full object-cover border border-gray-200" :src="user.avatar" alt="User Avatar">
                     </div>
                 </div>
             </header>
 
-            <!-- Content -->
+            <!-- MAIN CONTENT -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-                
-                <!-- Project Selector & Actions -->
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <!-- CONTROLS -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center w-full sm:w-auto">
-                        <span class="text-gray-600 font-medium mr-3 whitespace-nowrap">Chọn Dự án:</span>
-                        <div class="w-full sm:w-64 relative">
-                            <select x-model="selectedProjectId" @change="filterQrByProject()" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-opsera-primary text-gray-700 font-semibold bg-white">
-                                <option value="" disabled selected>-- Chọn dự án --</option>
-                                <template x-for="project in projects" :key="project.id">
-                                    <option :value="project.id" x-text="project.name"></option>
-                                </template>
-                            </select>
-                        </div>
+                        <span class="mr-3 font-medium">Dự án:</span>
+                        <select x-model="selectedProjectId" @change="changeProject()" class="border rounded-lg px-3 py-2 w-full sm:w-64">
+                            <template x-for="p in projects" :key="p.id"><option :value="p.id" x-text="p.name"></option></template>
+                        </select>
                     </div>
-                    
                     <div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-500 mr-2">
-                            Tổng QR: <span class="font-bold text-gray-800" x-text="allQrPoints.length"></span> / <span x-text="getLimitText('qr')"></span>
-                        </span>
-                        
-                        <!-- NÚT QUÉT MÃ ĐỂ CHUYỂN SANG SCAN.HTML -->
-                        <a href="scan.html" class="flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors shadow-sm">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                            Quét Mã Ngay
-                        </a>
-
-                        <button @click="openCreateModal" :disabled="!canAddQr || !selectedProjectId" :class="(!canAddQr || !selectedProjectId) ? 'bg-gray-300 cursor-not-allowed' : 'bg-opsera-primary hover:bg-blue-700'" class="flex items-center px-4 py-2 text-white rounded-lg font-medium transition-colors shadow-sm">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            Thêm Điểm Quét
+                        <div class="flex bg-gray-100 rounded-lg p-1">
+                            <button @click="switchView('list')" :class="currentView==='list'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Danh sách</button>
+                            <button @click="switchView('scan')" :class="currentView==='scan'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Quét QR</button>
+                            <button @click="switchView('incidents')" :class="currentView==='incidents'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Sự cố</button>
+                        </div>
+                        <button x-show="currentView === 'list'" @click="openCreateModal" class="bg-opsera-primary text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-blue-700 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> Thêm QR
                         </button>
                     </div>
                 </div>
 
-                <div x-show="isLoading && !projects.length" class="flex justify-center items-center py-10">
-                    <svg class="animate-spin h-8 w-8 text-opsera-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                </div>
-
-                <div x-show="selectedProjectId" class="space-y-8">
-                    <div>
-                        <h3 class="text-lg font-bold text-opsera-dark mb-4 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            Danh sách Điểm quét (<span x-text="currentProjectQrPoints.length"></span>)
-                        </h3>
+                <div x-show="!isLoading && selectedProjectId">
+                    
+                    <!-- VIEW: LIST (QR Grid + Scan Logs) -->
+                    <div x-show="currentView === 'list'" class="space-y-8">
+                        <!-- QR Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <template x-for="point in currentProjectQrPoints" :key="point.id">
-                                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 hover:border-opsera-primary transition-colors flex flex-col items-center text-center relative group">
-                                    <button @click="deleteQr(point.id)" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                                    <div :id="'qrcode-' + point.id" class="qr-canvas mb-4 p-2 bg-white border border-gray-100 rounded shadow-inner"></div>
+                                <div class="bg-white p-5 rounded-lg shadow-sm border hover:border-blue-500 transition relative group flex flex-col items-center text-center">
+                                    <button @click="deleteQr(point.id)" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                    <div :id="'qrcode-' + point.id" class="mb-4 p-2 bg-white border rounded"></div>
                                     <div x-init="$nextTick(() => { generateQrCode(point.id, point.data || point.id) })"></div>
-                                    <h4 class="font-bold text-gray-800 text-lg truncate w-full" x-text="point.name"></h4>
-                                    <p class="text-sm text-gray-500 mb-2 truncate w-full" x-text="point.location || 'Chưa cập nhật vị trí'"></p>
+                                    <h4 class="font-bold text-lg truncate w-full" x-text="point.name"></h4>
+                                    <p class="text-sm text-gray-500 mb-2 truncate w-full" x-text="point.location || 'Chưa cập nhật'"></p>
                                     <div class="flex w-full gap-2 mt-auto">
-                                        <button @click="openEditModal(point)" class="flex-1 px-3 py-2 bg-gray-50 text-gray-600 rounded hover:bg-gray-100 text-sm font-medium">Sửa</button>
-                                        <button @click="downloadQr(point.id, point.name)" class="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-sm font-medium flex justify-center items-center">Tải về</button>
+                                        <button @click="openEditModal(point)" class="flex-1 bg-gray-50 text-gray-600 py-2 rounded text-sm font-bold hover:bg-gray-100">Sửa</button>
+                                        <button @click="downloadQr(point.id, point.name)" class="flex-1 bg-blue-50 text-blue-600 py-2 rounded text-sm font-bold hover:bg-blue-100">Tải về</button>
                                     </div>
                                 </div>
                             </template>
-                            <div x-show="currentProjectQrPoints.length === 0" class="col-span-full text-center py-8 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">Chưa có điểm quét nào trong dự án này. Hãy tạo mới!</div>
+                            <div x-show="currentProjectQrPoints.length === 0" class="col-span-full text-center py-8 text-gray-500 border border-dashed rounded bg-gray-50">Chưa có điểm quét nào.</div>
+                        </div>
+
+                        <!-- Scan Log Table (GỘP CẢ SCAN & INCIDENT) -->
+                        <div class="bg-white rounded-lg shadow-sm border overflow-hidden mt-8">
+                            <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
+                                <h3 class="font-bold text-gray-800">Nhật ký quét (Bao gồm Sự cố)</h3>
+                                <button @click="fetchLogs" class="text-sm text-blue-600 hover:underline">Làm mới</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-gray-100 text-xs uppercase text-gray-500">
+                                        <tr>
+                                            <th class="px-6 py-3">Thời gian</th>
+                                            <th class="px-6 py-3">Điểm quét</th>
+                                            <th class="px-6 py-3">Vị trí</th>
+                                            <th class="px-6 py-3">Nhân viên</th>
+                                            <th class="px-6 py-3">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y text-sm">
+                                        <template x-for="log in scanLogs" :key="log.id">
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 text-gray-500" x-text="new Date(log.scannedAt).toLocaleString('vi-VN')"></td>
+                                                <td class="px-6 py-4 font-bold" x-text="log.qrCode?.name || 'Unknown'"></td>
+                                                <td class="px-6 py-4 text-gray-500" x-text="log.location || 'N/A'"></td>
+                                                <td class="px-6 py-4 font-bold text-blue-600" x-text="log.user?.fullName || 'N/A'"></td>
+                                                <td class="px-6 py-4">
+                                                    <span class="px-2 py-1 rounded text-xs font-bold" 
+                                                          :class="log.status === 'VALID' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                                                          x-text="log.status === 'VALID' ? 'Hợp lệ' : 'Sự cố'">
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                        <tr x-show="scanLogs.length === 0"><td colspan="5" class="p-6 text-center text-gray-500">Chưa có dữ liệu.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Log Table -->
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                            <h3 class="text-lg font-bold text-opsera-dark">Nhật ký quét gần đây</h3>
-                            <button @click="fetchLogs" class="text-sm text-blue-600 hover:underline">Làm mới</button>
+                    <!-- VIEW 2: SCANNER -->
+                    <div x-show="currentView === 'scan'" class="flex flex-col items-center justify-center h-[500px]">
+                        <div class="relative w-full max-w-md aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl">
+                            <div id="reader"></div>
+                            <div x-show="scannerActive" class="absolute inset-0 pointer-events-none border-2 border-white/30 rounded-2xl">
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-blue-500 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
+                                    <div class="absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_10px_#2563EB] animate-scan"></div>
+                                </div>
+                            </div>
+                            <div x-show="!scannerActive" class="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
+                                <button @click="startScanner" class="px-6 py-3 bg-opsera-primary text-white rounded-full font-bold shadow-lg hover:bg-blue-600">Bắt đầu Quét</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 3: INCIDENTS MANAGEMENT -->
+                    <div x-show="currentView === 'incidents'" class="bg-white rounded-lg shadow border overflow-hidden">
+                        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
+                            <h3 class="font-bold text-gray-800">Quản lý Sự cố</h3>
+                            <button @click="fetchIncidents" class="text-sm text-blue-600 hover:underline">Làm mới</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
-                                    <tr class="bg-gray-50 text-xs text-gray-500 uppercase">
-                                        <th class="px-6 py-3">Thời gian</th>
+                                    <tr class="bg-gray-100 text-xs uppercase text-gray-500">
+                                        <th class="px-6 py-3">Hình ảnh</th>
                                         <th class="px-6 py-3">Điểm quét</th>
-                                        <th class="px-6 py-3">Vị trí ghi nhận</th>
-                                        <th class="px-6 py-3">Nhân viên</th>
-                                        <th class="px-6 py-3">Trạng thái</th>
+                                        <th class="px-6 py-3">Mô tả</th>
+                                        <th class="px-6 py-3">Người báo cáo</th>
+                                        <th class="px-6 py-3">Phân công</th>
+                                        <th class="px-6 py-3">Hành động</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-100 text-sm">
-                                    <template x-for="log in scanLogs.filter(l => l.qrCode?.projectId === selectedProjectId)" :key="log.id">
+                                <tbody class="divide-y text-sm">
+                                    <template x-for="issue in issues" :key="issue.id">
                                         <tr class="hover:bg-gray-50">
-                                            <td class="px-6 py-4 text-gray-500" x-text="new Date(log.scannedAt).toLocaleString('vi-VN')"></td>
-                                            <td class="px-6 py-4 font-medium text-gray-800" x-text="log.qrCode?.name || 'N/A'"></td>
-                                            <td class="px-6 py-4 text-gray-500" x-text="log.location || 'N/A'"></td>
-                                            <td class="px-6 py-4 font-bold text-blue-600" x-text="log.user?.fullName || 'N/A'"></td>
                                             <td class="px-6 py-4">
-                                                <span class="px-2 py-1 rounded text-xs font-bold" :class="log.status === 'VALID' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'" x-text="log.status === 'VALID' ? 'Hợp lệ' : 'Cảnh báo'"></span>
+                                                <div class="h-12 w-16 bg-gray-200 rounded overflow-hidden border cursor-pointer" @click="viewImage(issue.image)">
+                                                    <img :src="issue.image ? (apiUrl + issue.image) : 'https://via.placeholder.com/150'" class="w-full h-full object-cover">
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="font-bold text-gray-800" x-text="issue.qrCode"></div>
+                                                <div class="text-xs text-gray-500" x-text="issue.location"></div>
+                                            </td>
+                                            <td class="px-6 py-4 text-gray-600 truncate max-w-xs" x-text="issue.description"></td>
+                                            <td class="px-6 py-4 text-gray-500" x-text="issue.reporter"></td>
+                                            <td class="px-6 py-4">
+                                                <span class="px-2 py-1 rounded text-xs font-bold border" 
+                                                      :class="issue.department !== 'Unassigned' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'"
+                                                      x-text="issue.department === 'Unassigned' ? 'Chưa phân công' : issue.department"></span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <button x-show="!issue.hasTask" @click="openAssignModal(issue)" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-3 py-1 rounded text-xs font-bold">Phân công</button>
+                                                <span x-show="issue.hasTask" class="text-green-600 bg-green-50 px-2 py-1 rounded text-xs font-bold border border-green-200">Đã tạo Task</span>
                                             </td>
                                         </tr>
                                     </template>
@@ -225,133 +330,359 @@
                             </table>
                         </div>
                     </div>
+
                 </div>
             </main>
         </div>
     </div>
 
-    <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
-        <div class="fixed inset-0 bg-gray-900/75" @click="showModal = false"></div>
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg relative z-10 p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4" x-text="isEdit ? 'Cập nhật Điểm Quét' : 'Tạo Điểm Quét Mới'"></h3>
-            <div class="space-y-4">
-                <input type="text" x-model="formData.name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Tên điểm quét *">
-                <input type="text" x-model="formData.location" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Vị trí chi tiết">
+    <!-- MODAL: SCAN RESULT -->
+    <div x-show="scanResult" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
+        <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" @click="resumeScanning"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Đã tìm thấy mã!</h3>
+            <p class="text-sm font-mono bg-gray-100 p-2 rounded mb-4" x-text="pendingScanData"></p>
+            <div class="grid grid-cols-2 gap-4">
+                <button @click="confirmCheckIn" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold">Check-in</button>
+                <button @click="openReportModal" class="w-full py-3 bg-white border-2 border-red-500 text-red-600 rounded-xl font-bold hover:bg-red-50">Báo Sự cố</button>
             </div>
-            <div class="mt-6 flex justify-end space-x-3">
-                <button @click="showModal = false" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Hủy</button>
-                <button @click="saveQr" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Lưu</button>
+            <button @click="resumeScanning" class="mt-4 text-gray-400 underline text-sm">Bỏ qua</button>
+        </div>
+    </div>
+
+    <!-- MODAL: REPORT ISSUE -->
+    <div x-show="showIssueModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4" x-cloak>
+        <div class="fixed inset-0 bg-gray-900/80" @click="showIssueModal = false"></div>
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative z-10 flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b bg-red-50 rounded-t-xl flex justify-between items-center">
+                <h3 class="font-bold text-red-600">Báo cáo Sự cố</h3>
+                <button @click="showIssueModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-1">Mô tả</label>
+                    <textarea x-model="incidentForm.description" rows="3" class="w-full border rounded p-2"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2">Hình ảnh (Tối đa 5)</label>
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <template x-for="(img, idx) in incidentForm.images" :key="idx">
+                            <div class="relative aspect-square border rounded overflow-hidden">
+                                <img :src="img" class="w-full h-full object-cover">
+                                <button @click="removeImage(idx)" class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center text-xs">&times;</button>
+                            </div>
+                        </template>
+                        <label class="flex items-center justify-center border-2 border-dashed h-full rounded cursor-pointer min-h-[80px]" x-show="incidentForm.images.length < 5">
+                            <span class="text-2xl text-gray-400">+</span>
+                            <input type="file" multiple accept="image/*" class="hidden" @change="handleImageSelect">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t flex justify-end gap-2">
+                <button @click="showIssueModal = false" class="px-4 py-2 border rounded">Hủy</button>
+                <button @click="submitIncident" :disabled="isSubmitting" class="px-4 py-2 bg-red-600 text-white rounded font-bold">Gửi</button>
             </div>
         </div>
     </div>
 
+    <!-- MODAL: ASSIGN -->
+    <div x-show="showAssignModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
+        <div class="fixed inset-0 bg-gray-900/75" @click="showAssignModal = false"></div>
+        <div class="bg-white rounded-xl p-6 w-full max-w-md relative z-10">
+            <h3 class="text-xl font-bold mb-2">Phân công</h3>
+            <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">
+                <template x-for="role in roles" :key="role.id">
+                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-blue-50" :class="tempAssign === role.name ? 'border-blue-500 bg-blue-50' : ''">
+                        <input type="radio" name="dept" :value="role.name" x-model="tempAssign" class="h-4 w-4">
+                        <span class="ml-3 font-medium" x-text="role.name"></span>
+                    </label>
+                </template>
+                <div x-show="roles.length === 0" class="text-center text-gray-500 italic">Không tìm thấy bộ phận.</div>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button @click="showAssignModal = false" class="px-4 py-2 border rounded">Hủy</button>
+                <button @click="confirmAssign" :disabled="!tempAssign" class="px-4 py-2 bg-blue-600 text-white rounded font-bold disabled:opacity-50">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: QR CREATE -->
+    <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
+        <div class="fixed inset-0 bg-gray-900/75" @click="showModal = false"></div>
+        <div class="bg-white rounded-xl p-6 w-full max-w-lg relative z-10">
+            <h3 class="text-lg font-bold mb-4" x-text="isEdit ? 'Cập nhật' : 'Tạo Mới'"></h3>
+            <div class="space-y-4">
+                <input type="text" x-model="formData.name" class="w-full px-3 py-2 border rounded" placeholder="Tên điểm quét">
+                <input type="text" x-model="formData.location" class="w-full px-3 py-2 border rounded" placeholder="Vị trí">
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button @click="showModal = false" class="px-4 py-2 border rounded">Hủy</button>
+                <button @click="saveQr" class="px-4 py-2 bg-blue-600 text-white rounded">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: IMAGE PREVIEW -->
+    <div x-show="showImageModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95" @click="showImageModal = false" x-cloak>
+        <img :src="previewImageSrc" class="max-w-full max-h-full rounded">
+    </div>
+
     <script>
-        function qrApp() {
+        function scanApp() {
             return {
-                sidebarOpen: false,
-                currentPlan: 'starter',
-                user: { name: 'Loading...', avatar: '', role: 'User' },
-                projects: [],
-                allQrPoints: [],
-                currentProjectQrPoints: [],
-                scanLogs: [],
-                selectedProjectId: "",
+                apiUrl: 'http://localhost:3000',
+                sidebarOpen: false, currentView: 'list',
+                projects: [], roles: [], issues: [], scanLogs: [], currentProjectQrPoints: [], allQrPoints: [],
+                selectedProjectId: '', user: { name: 'User', avatar: '', role: 'User' },
+                
+                // State
+                scannerActive: false, html5QrCode: null, pendingScanData: null, scanResult: null, isProcessing: false,
+                showIssueModal: false, isSubmitting: false, incidentForm: { description: '', images: [] },
+                showAssignModal: false, selectedIssue: null, tempAssign: '',
+                showModal: false, isEdit: false, formData: { id: null, name: '', location: '' },
+                showUnauthorizedModal: false, showImageModal: false, previewImageSrc: '',
+                notification: { show: false, type: 'success', title: '', message: '' },
                 isLoading: false,
-                showModal: false,
-                isEdit: false,
-                formData: { id: null, name: '', location: '' },
                 plans: { starter: { limits: { qr: 100 } }, professional: { limits: { qr: 500 } }, enterprise: { limits: { qr: 2000 } } },
+                currentPlan: 'starter',
 
                 async init() {
                     const token = localStorage.getItem('accessToken');
-                    if(!token) { window.location.href = '/index.html'; return; }
-                    const userStr = localStorage.getItem('user');
-                    if(userStr) {
-                        const u = JSON.parse(userStr);
-                        this.user = { ...u, avatar: `https://ui-avatars.com/api/?name=${u.fullName}&background=2563EB&color=fff` };
-                        this.currentPlan = u.tenant?.subscriptionPlan?.toLowerCase() || 'starter';
+                    if (!token) return window.location.href = '/login.html';
+                    const u = localStorage.getItem('user');
+                    if (u) {
+                        const parsed = JSON.parse(u);
+                        this.user = { ...parsed, avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(parsed.fullName)}&background=2563EB&color=fff` };
+                        this.currentPlan = parsed.tenant?.subscriptionPlan?.toLowerCase() || 'starter';
                     }
                     await this.fetchProjects();
-                    await this.fetchAllQrs();
-                    await this.fetchLogs();
+                },
+
+                showNotify(type, title, message) {
+                    this.notification = { show: true, type, title, message };
+                    if (type === 'success') setTimeout(() => { this.notification.show = false; }, 2500);
                 },
 
                 async fetchProjects() {
+                    this.isLoading = true;
                     try {
-                        const res = await fetch('http://localhost:3000/api/projects', { headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`} });
-                        if(res.ok) {
+                        const res = await fetch(`${this.apiUrl}/api/projects`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if (res.ok) {
                             this.projects = await res.json();
-                            if(this.projects.length > 0) {
-                                this.$nextTick(() => {
-                                    this.selectedProjectId = this.projects[0].id;
-                                    this.filterQrByProject();
-                                });
+                            if (this.projects.length) {
+                                this.selectedProjectId = this.projects[0].id;
+                                this.changeProject();
                             }
                         }
-                    } catch(e) { console.error(e); }
+                    } catch (e) {} finally { this.isLoading = false; }
                 },
 
-                async fetchAllQrs() {
+                changeProject() {
+                    this.fetchQrCodes();
+                    this.fetchLogs();
+                    this.fetchRoles();
+                    if (this.currentView === 'incidents') this.fetchIncidents();
+                },
+
+                async fetchRoles() {
                     try {
-                        const res = await fetch('http://localhost:3000/api/qrcodes', { headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`} });
-                        if(res.ok) { this.allQrPoints = await res.json(); this.filterQrByProject(); }
-                    } catch(e) { console.error(e); }
+                        const res = await fetch(`${this.apiUrl}/api/roles?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        this.roles = res.ok ? await res.json() : [];
+                    } catch (e) { this.roles = []; }
                 },
 
+                async fetchQrCodes() {
+                    try {
+                        const res = await fetch(`${this.apiUrl}/api/qrcodes`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        if (res.ok) {
+                            const all = await res.json();
+                            this.allQrPoints = all;
+                            this.currentProjectQrPoints = all.filter(q => q.projectId === this.selectedProjectId);
+                        }
+                    } catch (e) {}
+                },
+
+                // LOGIC GỘP LOGS & INCIDENTS (Fix vấn đề bạn yêu cầu)
                 async fetchLogs() {
                     try {
-                        const res = await fetch('http://localhost:3000/api/qrcodes/logs', { headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`} });
-                        if(res.ok) { this.scanLogs = await res.json(); }
-                    } catch(e) { console.error(e); }
+                        // 1. Lấy logs quét thường (Check-in)
+                        const resLogs = await fetch(`${this.apiUrl}/api/qrcodes/logs`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        const logs = resLogs.ok ? await resLogs.json() : [];
+                        const projectLogs = logs.filter(l => l.qrCode && l.qrCode.projectId === this.selectedProjectId);
+
+                        // 2. Lấy Incidents (Sự cố)
+                        const resInc = await fetch(`${this.apiUrl}/api/incidents?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        const incidents = resInc.ok ? await resInc.json() : [];
+
+                        // 3. Gộp và Map Incidents thành format Log
+                        const mappedIncidents = incidents.map(inc => ({
+                            id: inc.id,
+                            scannedAt: inc.reportedAt || new Date().toISOString(), // Dùng thời gian báo cáo
+                            qrCode: { name: inc.qrCode, projectId: this.selectedProjectId },
+                            location: inc.location,
+                            user: { fullName: inc.reporter },
+                            status: 'ISSUE' // Đánh dấu là sự cố
+                        }));
+
+                        // 4. Merge và Sort
+                        this.scanLogs = [...projectLogs, ...mappedIncidents].sort((a, b) => new Date(b.scannedAt) - new Date(a.scannedAt));
+
+                    } catch (e) { console.error("Lỗi fetch logs:", e); }
                 },
 
-                filterQrByProject() {
-                    if(!this.selectedProjectId) return;
-                    this.currentProjectQrPoints = this.allQrPoints.filter(q => q.projectId === this.selectedProjectId);
+                async fetchIncidents() {
+                    try {
+                        const res = await fetch(`${this.apiUrl}/api/incidents?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        this.issues = res.ok ? await res.json() : [];
+                    } catch (e) {}
                 },
 
+                switchView(view) {
+                    if (this.currentView === 'scan' && view !== 'scan') this.stopScanner();
+                    this.currentView = view;
+                    if (view === 'list') { this.fetchQrCodes(); this.fetchLogs(); }
+                    if (view === 'incidents') this.fetchIncidents();
+                },
+
+                // SCANNER
+                async startScanner() {
+                    this.scannerActive = true; this.scanResult = null;
+                    this.$nextTick(async () => {
+                        try {
+                            const devices = await Html5Qrcode.getCameras();
+                            if (!devices || !devices.length) throw new Error("No camera");
+                            this.html5QrCode = new Html5Qrcode("reader");
+                            const cameraId = devices.find(d => d.label.toLowerCase().includes('back'))?.id || devices[0].id;
+                            await this.html5QrCode.start(cameraId, { fps: 10, qrbox: 250, aspectRatio: 1.0 }, (txt) => this.onScanSuccess(txt), () => {});
+                        } catch (err) { this.showNotify('error', 'Lỗi', err.message); this.scannerActive = false; }
+                    });
+                },
+                async stopScanner() {
+                    if (this.html5QrCode) { try { await this.html5QrCode.stop(); this.html5QrCode.clear(); } catch(e){} this.html5QrCode = null; }
+                    this.scannerActive = false;
+                },
+                onScanSuccess(txt) {
+                    if (this.isProcessing) return;
+                    this.isProcessing = true;
+                    try { this.html5QrCode.pause(); } catch(e){}
+                    this.pendingScanData = txt;
+                    const qrInfo = this.currentProjectQrPoints.find(q => q.data === txt || q.id === txt);
+                    this.scanResult = { qrCode: { name: qrInfo ? qrInfo.name : 'Mã QR Mới', location: qrInfo ? qrInfo.location : '?' } };
+                },
+                resumeScanning() {
+                    this.scanResult = null; this.pendingScanData = null; this.isProcessing = false;
+                    if (this.html5QrCode) this.html5QrCode.resume();
+                },
+
+                async confirmCheckIn() {
+                    try {
+                        const res = await fetch(`${this.apiUrl}/api/scans`, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+                            body: JSON.stringify({ qrCodeData: this.pendingScanData, location: "Web Scan", status: "VALID" })
+                        });
+                        if (res.ok) { 
+                            this.showNotify('success', 'Thành Công', 'Check-in thành công!'); 
+                            this.fetchLogs(); // Cập nhật log ngay
+                            this.resumeScanning(); 
+                        }
+                        else { const err = await res.json(); this.showNotify('error', 'Lỗi', err.message); this.resumeScanning(); }
+                    } catch(e) { this.showNotify('error', 'Lỗi Mạng', e.message); this.resumeScanning(); }
+                },
+
+                // REPORT INCIDENT
+                openReportModal() { this.scanResult = null; this.incidentForm = { description: '', images: [] }; this.showIssueModal = true; },
+                handleImageSelect(e) {
+                    const files = Array.from(e.target.files);
+                    if (this.incidentForm.images.length + files.length > 5) return alert("Tối đa 5 ảnh");
+                    files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => this.incidentForm.images.push(ev.target.result);
+                        reader.readAsDataURL(file);
+                    });
+                },
+                removeImage(i) { this.incidentForm.images.splice(i, 1); },
+                
+                async submitIncident() {
+                    if (!this.incidentForm.description) return alert("Nhập mô tả!");
+                    this.isSubmitting = true;
+                    try {
+                        const res = await fetch(`${this.apiUrl}/api/incidents`, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+                            body: JSON.stringify({
+                                projectId: this.selectedProjectId,
+                                qrCode: this.pendingScanData,
+                                description: this.incidentForm.description,
+                                images: this.incidentForm.images
+                            })
+                        });
+                        const data = await res.json();
+                        this.showIssueModal = false; this.isSubmitting = false;
+                        if (res.ok) {
+                            const hasPermission = (this.user.role === data.assignedRoleName) || this.user.isTenantAdmin;
+                            if (!hasPermission) this.showUnauthorizedModal = true;
+                            else this.showNotify('success', 'Thành công', 'Đã báo cáo.');
+                            this.fetchLogs(); // Cập nhật log ngay lập tức
+                            this.resumeScanning();
+                        } else {
+                            this.showNotify('error', 'Lỗi', data.message);
+                        }
+                    } catch (e) { this.isSubmitting = false; alert("Lỗi mạng"); }
+                },
+
+                // ASSIGNMENT
+                openAssignModal(issue) { this.selectedIssue = issue; this.tempAssign = ''; this.showAssignModal = true; },
+                async confirmAssign() {
+                    if (!this.tempAssign) return;
+                    try {
+                        const res = await fetch(`${this.apiUrl}/api/incidents/${this.selectedIssue.id}/assign`, {
+                            method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+                            body: JSON.stringify({ department: this.tempAssign })
+                        });
+                        if (res.ok) {
+                            this.showNotify('success', 'Thành công', 'Đã phân công!');
+                            this.showAssignModal = false;
+                            this.fetchIncidents();
+                        } else {
+                            const err = await res.json();
+                            alert(err.message);
+                        }
+                    } catch (e) { alert("Lỗi phân công"); }
+                },
+
+                // QR CRUD
+                openCreateModal() { this.isEdit = false; this.formData={id:null, name:'', location:''}; this.showModal = true; },
+                openEditModal(pt) { this.isEdit = true; this.formData={id:pt.id, name:pt.name, location:pt.location}; this.showModal = true; },
+                async saveQr() {
+                    const url = this.isEdit ? `${this.apiUrl}/api/qrcodes/${this.formData.id}` : `${this.apiUrl}/api/qrcodes`;
+                    const method = this.isEdit ? 'PUT' : 'POST';
+                    try {
+                        await fetch(url, { method, headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`}, body: JSON.stringify({...this.formData, projectId: this.selectedProjectId}) });
+                        this.showNotify('success', 'Thành Công', 'Lưu thành công!');
+                        this.showModal = false; this.fetchQrCodes();
+                    } catch (e) { this.showNotify('error', 'Lỗi', 'Không thể lưu.'); }
+                },
+                async deleteQr(id) {
+                    if(confirm("Xóa?")) {
+                        try {
+                            await fetch(`${this.apiUrl}/api/qrcodes/${id}`, { method: 'DELETE', headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`} });
+                            this.showNotify('success', 'Đã Xóa', 'Thành công.');
+                            this.fetchQrCodes();
+                        } catch (e) { this.showNotify('error', 'Lỗi', 'Không thể xóa.'); }
+                    }
+                },
+                downloadQr(id, name) {
+                    const img = document.querySelector(`#qrcode-${id} img`);
+                    if(img) { const a = document.createElement('a'); a.download = `QR-${name}.png`; a.href = img.src; a.click(); }
+                },
                 generateQrCode(elId, text) {
                     const el = document.getElementById('qrcode-'+elId);
                     if(el) { el.innerHTML = ''; new QRCode(el, { text: text, width: 100, height: 100 }); }
                 },
 
-                openCreateModal() { this.isEdit = false; this.formData = {id:null, name:'', location:''}; this.showModal = true; },
-                openEditModal(pt) { this.isEdit = true; this.formData = {id:pt.id, name:pt.name, location:pt.location}; this.showModal = true; },
-
-                async saveQr() {
-                    const url = this.isEdit ? `http://localhost:3000/api/qrcodes/${this.formData.id}` : 'http://localhost:3000/api/qrcodes';
-                    const method = this.isEdit ? 'PUT' : 'POST';
-                    const body = { name: this.formData.name, location: this.formData.location, projectId: this.selectedProjectId };
-                    
-                    await fetch(url, {
-                        method: method,
-                        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`},
-                        body: JSON.stringify(body)
-                    });
-                    this.showModal = false;
-                    this.fetchAllQrs();
-                },
-
-                async deleteQr(id) {
-                    if(confirm("Xóa QR này?")) {
-                        await fetch(`http://localhost:3000/api/qrcodes/${id}`, { method: 'DELETE', headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`} });
-                        this.fetchAllQrs();
-                    }
-                },
-
-                downloadQr(id, name) {
-                    const img = document.querySelector(`#qrcode-${id} img`);
-                    if(img) {
-                        const link = document.createElement('a');
-                        link.download = `QR-${name}.png`;
-                        link.href = img.src;
-                        link.click();
-                    }
-                },
-
-                get canAddQr() { return this.allQrPoints.length < this.plans[this.currentPlan].limits.qr; },
-                getLimitText(type) { return this.plans[this.currentPlan].limits[type]; },
-                logout() { if(confirm("Đăng xuất?")) { localStorage.clear(); window.location.href = '/index.html'; } }
+                viewImage(path) { if(path) { this.previewImageSrc = path.startsWith('http') ? path : (this.apiUrl + path); this.showImageModal = true; } },
+                getDepartmentName(code) { return code === 'Unassigned' ? 'Chưa phân công' : code; },
+                logout() { if(confirm("Đăng xuất?")) { localStorage.clear(); window.location.href = '/login.html'; } }
             }
         }
     </script>

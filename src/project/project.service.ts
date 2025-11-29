@@ -17,7 +17,6 @@ export class ProjectService {
     private auditService: AuditService,
   ) { }
 
-  // Hàm helper để format dữ liệu trả về đúng ý Frontend
   private mapToResponse(project: any): ProjectResponse {
     return {
       id: project.id,
@@ -150,12 +149,6 @@ export class ProjectService {
 
     if (!existingProject) {
       throw new NotFoundException('Project not found or access denied.');
-    }
-
-    if (
-      existingProject._count.qrcodes > 0 ||
-      existingProject._count.tasks > 0
-    ) {
     }
 
     await this.prisma.project.delete({

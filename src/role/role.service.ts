@@ -72,6 +72,7 @@ export class RoleService {
     const whereCondition: any = { tenantId };
 
     if (projectId) {
+      // STRICT FILTERING: Only return roles specific to this project OR global roles
       whereCondition.OR = [
         { projectId: projectId },
         { projectId: null }
@@ -115,6 +116,31 @@ export class RoleService {
     }
 
     return this.formatRoleResponse(role);
+  }
+
+  // CRITICAL FOR INCIDENT ASSIGNMENT
+  async findByNameAndProject(name: string, projectId: string, tenantId: string) {
+    // 1. Try to find project-specific role first
+    let role = await this.prisma.role.findFirst({
+      where: {
+        name: name,
+        projectId: projectId,
+        tenantId: tenantId
+      }
+    });
+
+    // 2. If not found, try to find global tenant role
+    if (!role) {
+      role = await this.prisma.role.findFirst({
+        where: {
+          name: name,
+          projectId: null,
+          tenantId: tenantId
+        }
+      });
+    }
+
+    return role;
   }
 
   async findMembersByRole(roleId: string, tenantId: string) {
