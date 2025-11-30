@@ -95,7 +95,7 @@ export class TaskService {
       this.prisma.task.findMany({
         where,
         include: {
-          assignee: { select: { id: true, fullName: true, email: true } },
+          assignee: { select: { id: true, fullName: true, email: true, avatar: true } },
           project: { select: { name: true } },
           creator: { select: { fullName: true } }
         },

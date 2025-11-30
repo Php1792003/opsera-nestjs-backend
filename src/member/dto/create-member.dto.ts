@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsBoolean, IsUUID } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 
 export class CreateMemberDto {
   @IsEmail()
@@ -6,21 +6,24 @@ export class CreateMemberDto {
   email: string;
 
   @IsString()
-  @IsNotEmpty()
-  fullName: string;
+  @IsOptional()
+  fullName?: string;
 
-  @IsUUID()
+  @IsString()
+  @IsOptional()
+  password?: string;
+
+  @IsString()
   @IsNotEmpty()
   roleId: string;
 
-  @IsUUID()
-  @IsOptional() // Project ID có thể optional nếu thêm trực tiếp vào Tenant
-  projectId?: string;
+  @IsString()
+  @IsNotEmpty()
+  tenantId: string; // Thường lấy từ token, nhưng nếu DTO có thì cứ để
 
-  // === CÁC TRƯỜNG BỔ SUNG CHO KHỚP GIAO DIỆN ===
   @IsString()
   @IsOptional()
-  password?: string; // Cho phép nhập pass từ giao diện
+  projectId?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -29,4 +32,8 @@ export class CreateMemberDto {
   @IsString()
   @IsOptional()
   status?: string;
+
+  @IsString()
+  @IsOptional()
+  avatar?: string;
 }
