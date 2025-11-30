@@ -11,19 +11,23 @@ export class ReportController {
     @Get('dashboard')
     async getDashboard(
         @Request() req,
-        @Query('projectId') projectId: string
+        @Query('projectId') projectId: string,
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string
     ) {
-        return this.reportService.getDashboardStats(projectId, req.user.tenantId);
+        return this.reportService.getDashboardStats(projectId, req.user.tenantId, startDate, endDate);
     }
 
     @Get('export')
     async exportExcel(
+        @Res() res: Response,
         @Request() req,
         @Query('projectId') projectId: string,
-        @Res() res: Response
-    ) {
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string,
+    ): Promise<void> {
         try {
-            const workbook = await this.reportService.exportExcelReport(projectId, req.user.tenantId);
+            const workbook = await this.reportService.exportExcelReport(projectId, req.user.tenantId, startDate, endDate);
 
             res.setHeader(
                 'Content-Type',
@@ -31,7 +35,7 @@ export class ReportController {
             );
             res.setHeader(
                 'Content-Disposition',
-                'attachment; filename=' + 'Report.xlsx',
+                'attachment; filename=' + 'Project_Report.xlsx',
             );
 
             await workbook.xlsx.write(res);
@@ -45,10 +49,12 @@ export class ReportController {
     @Get('ai-analyze')
     async aiAnalyze(
         @Request() req,
-        @Query('projectId') projectId: string
+        @Query('projectId') projectId: string,
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string
     ) {
         try {
-            const analysis = await this.reportService.getAiAnalysis(projectId, req.user.tenantId);
+            const analysis = await this.reportService.getAiAnalysis(projectId, req.user.tenantId, startDate, endDate);
             return { analysis };
         } catch (error) {
             console.error("AI Analyze Error:", error);

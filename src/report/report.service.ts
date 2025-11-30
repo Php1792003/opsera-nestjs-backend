@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as ExcelJS from 'exceljs';
 import { AiAnalysisService } from './ai-analysis.service';
-import { startOfMonth, endOfMonth, subMonths, startOfDay, endOfDay, subDays } from 'date-fns';
+import { startOfDay, endOfDay, format } from 'date-fns';
 
 @Injectable()
 export class ReportService {
@@ -11,118 +11,166 @@ export class ReportService {
         private aiService: AiAnalysisService
     ) { }
 
-    async getDashboardStats(projectId: string, tenantId: string) {
-        const now = new Date();
-        const currentMonthStart = startOfMonth(now);
-        const lastMonthStart = startOfMonth(subMonths(now, 1));
-        const lastMonthEnd = endOfMonth(subMonths(now, 1));
-
-        // Filter common
-        const whereProjectFilter = {
-            qrCode: { projectId: projectId },
-            tenantId: tenantId
-        };
-
-        // 1. KPI
-        const currentPatrols = await this.prisma.scanLog.count({
-            where: { ...whereProjectFilter, scannedAt: { gte: currentMonthStart } }
-        });
-        const lastMonthPatrols = await this.prisma.scanLog.count({
-            where: { ...whereProjectFilter, scannedAt: { gte: lastMonthStart, lte: lastMonthEnd } }
-        });
-        const patrolGrowth = lastMonthPatrols === 0 ? 100 : Math.round(((currentPatrols - lastMonthPatrols) / lastMonthPatrols) * 100);
-
-        const totalIncidents = await this.prisma.scanLog.count({
-            where: { ...whereProjectFilter, status: 'ISSUE' }
-        });
-
-        const totalTasks = await this.prisma.task.count({ where: { projectId, tenantId } });
-        const completedTasks = await this.prisma.task.count({ where: { projectId, tenantId, status: 'COMPLETED' } });
-        const taskCompletionRate = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
-
-        // Đếm nhân sự (thông qua bảng user) - logic đơn giản là đếm user trong tenant
-        // (Hoặc lọc kỹ hơn nếu có bảng ProjectMember)
-        const activeStaff = await this.prisma.user.count({
-            where: { tenantId, status: 'active' }
-        });
-
-        // 2. Charts Data
-        const patrolChartData: { labels: string[]; actual: number[]; plan: number[] } = { labels: [], actual: [], plan: [] };
-
-        for (let i = 6; i >= 0; i--) {
-            const date = subDays(now, i);
-            const count = await this.prisma.scanLog.count({
-                where: { ...whereProjectFilter, scannedAt: { gte: startOfDay(date), lte: endOfDay(date) } }
-            });
-            patrolChartData.labels.push(date.toISOString().split('T')[0]);
-            patrolChartData.actual.push(count);
-            patrolChartData.plan.push(50);
+    async getDashboardStats(projectId: string, tenantId: string, startDate?: string, endDate?: string) {
+        if (!projectId) {
+            throw new BadRequestException('Project ID is required');
         }
 
-        // Incident by Role
-        const incidentsByRoleRaw = await this.prisma.scanLog.findMany({
-            where: { ...whereProjectFilter, status: 'ISSUE' },
-            include: { user: { include: { role: true } } }
-        });
-        const incidentsByRoleMap = new Map<string, number>();
-        incidentsByRoleRaw.forEach(log => {
-            const roleName = log.user?.role?.name || 'Unknown';
-            incidentsByRoleMap.set(roleName, (incidentsByRoleMap.get(roleName) || 0) + 1);
+        // 1. Xử lý Filter Date Range
+        const dateRange: any = {};
+        if (startDate && endDate) {
+            dateRange.gte = startOfDay(new Date(startDate));
+            dateRange.lte = endOfDay(new Date(endDate));
+        }
+
+        // FIX: Incident dùng 'reportedAt', Task dùng 'createdAt'
+        // Bạn cần kiểm tra lại schema.prisma để chắc chắn tên trường.
+        // Giả sử Incident dùng 'reportedAt' và Task dùng 'createdAt'.
+
+        const incidentFilter: any = { projectId, tenantId };
+        if (startDate && endDate) incidentFilter.reportedAt = dateRange; // <--- SỬA TỪ createdAt THÀNH reportedAt
+
+        const taskFilter: any = { projectId, tenantId };
+        if (startDate && endDate) taskFilter.createdAt = dateRange;
+
+        // 2. KPI TỔNG QUAN
+        const totalIncidents = await this.prisma.incident.count({ where: incidentFilter });
+        const totalTasks = await this.prisma.task.count({ where: taskFilter });
+        const completedTasks = await this.prisma.task.count({ where: { ...taskFilter, status: 'COMPLETED' } });
+        const taskCompletionRate = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+        const activeStaff = await this.prisma.projectMember.count({ where: { projectId } });
+
+        // 3. BIỂU ĐỒ 1: TỔNG SỐ LẦN SỰ CỐ
+        const incidents = await this.prisma.incident.findMany({
+            where: incidentFilter,
+            select: { reportedAt: true }, // <--- SỬA TỪ createdAt THÀNH reportedAt
+            orderBy: { reportedAt: 'asc' }
         });
 
-        // 3. Top Staff
-        const topScanners = await this.prisma.scanLog.groupBy({
-            by: ['userId'],
-            where: { ...whereProjectFilter },
-            _count: { id: true },
-            orderBy: { _count: { id: 'desc' } },
-            take: 5
+        const incidentMap = new Map<string, number>();
+        incidents.forEach(inc => {
+            // FIX: Check null trước khi format
+            if (inc.reportedAt) {
+                const dateStr = format(inc.reportedAt, 'yyyy-MM-dd');
+                incidentMap.set(dateStr, (incidentMap.get(dateStr) || 0) + 1);
+            }
         });
 
-        const topStaff = await Promise.all(topScanners.map(async (item) => {
-            if (!item.userId) return null;
-            const user = await this.prisma.user.findUnique({ where: { id: item.userId } });
-            return {
-                id: user?.id,
-                name: user?.fullName || 'Unknown',
-                scans: item._count.id,
-                score: Math.min(item._count.id * 10, 100)
-            };
-        }));
+        const incidentChartData: { labels: string[], actual: number[], plan: number[] } = { labels: [], actual: [], plan: [] };
+
+        if (incidentMap.size > 0) {
+            for (const [date, count] of incidentMap.entries()) {
+                incidentChartData.labels.push(date);
+                incidentChartData.actual.push(count);
+                incidentChartData.plan.push(5);
+            }
+        } else {
+            incidentChartData.labels.push(format(new Date(), 'yyyy-MM-dd'));
+            incidentChartData.actual.push(0);
+            incidentChartData.plan.push(5);
+        }
+
+
+        // 4. BIỂU ĐỒ 2: PHÂN LOẠI SỰ CỐ THEO ROLE (%)
+        const incidentsForRole = await this.prisma.incident.findMany({
+            where: incidentFilter,
+            select: { department: true }
+        });
+
+        const roleCountMap = new Map<string, number>();
+        incidentsForRole.forEach(inc => {
+            const roleName = inc.department || 'Chưa phân công';
+            roleCountMap.set(roleName, (roleCountMap.get(roleName) || 0) + 1);
+        });
+
+        const incidentByRoleData: { labels: string[], data: number[] } = { labels: [], data: [] };
+        roleCountMap.forEach((count, roleName) => {
+            incidentByRoleData.labels.push(roleName);
+            incidentByRoleData.data.push(count);
+        });
+
+
+        // 5. BẢNG ĐÁNH GIÁ THÀNH VIÊN
+        const completedTasksList = await this.prisma.task.findMany({
+            where: {
+                projectId: projectId,
+                tenantId: tenantId,
+                status: 'COMPLETED',
+                ...taskFilter, // Dùng taskFilter (có createdAt)
+                assigneeId: { not: null }
+            },
+            include: {
+                assignee: { select: { id: true, fullName: true } }
+            }
+        });
+
+        const userStats = new Map<string, { name: string, count: number }>();
+
+        completedTasksList.forEach(task => {
+            const uid = task.assigneeId;
+            if (!uid) return;
+
+            const uname = task.assignee?.fullName || 'Unknown';
+            if (!userStats.has(uid)) {
+                userStats.set(uid, { name: uname, count: 0 });
+            }
+
+            const stat = userStats.get(uid);
+            if (stat) stat.count += 1;
+        });
+
+        const topStaff = Array.from(userStats.values()).map(u => ({
+            name: u.name,
+            scans: u.count,
+            score: u.count * 5
+        })).sort((a, b) => b.score - a.score);
 
         return {
-            stats: { totalPatrols: currentPatrols, patrolGrowth, totalIncidents, taskCompletionRate, activeStaff },
-            charts: {
-                patrol: patrolChartData,
-                incident: {
-                    labels: Array.from(incidentsByRoleMap.keys()),
-                    data: Array.from(incidentsByRoleMap.values())
-                }
+            stats: {
+                totalPatrols: 0,
+                patrolGrowth: 0,
+                totalIncidents,
+                taskCompletionRate,
+                activeStaff
             },
-            topStaff: topStaff.filter(s => s !== null)
+            charts: {
+                patrol: incidentChartData,
+                incident: incidentByRoleData
+            },
+            topStaff: topStaff
         };
     }
 
-    async exportExcelReport(projectId: string, tenantId: string) {
-        const statsData = await this.getDashboardStats(projectId, tenantId);
+    async exportExcelReport(projectId: string, tenantId: string, startDate?: string, endDate?: string) {
+        const statsData = await this.getDashboardStats(projectId, tenantId, startDate, endDate);
         const project = await this.prisma.project.findUnique({ where: { id: projectId } });
         if (!project) throw new NotFoundException('Project not found');
-
-        const aiReview = await this.aiService.analyzeProjectPerformance({ ...statsData, projectName: project.name });
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Report');
 
         worksheet.addRow(['BÁO CÁO DỰ ÁN', project.name]);
-        worksheet.addRow(['Tổng tuần tra', statsData.stats.totalPatrols]);
-        worksheet.addRow(['Sự cố', statsData.stats.totalIncidents]);
-        worksheet.addRow(['AI Đánh giá:', aiReview.replace(/<[^>]*>/g, '')]);
+        worksheet.addRow(['Thời gian', `${startDate || 'Toàn bộ'} - ${endDate || 'Toàn bộ'}`]);
+        worksheet.addRow([]);
+
+        worksheet.addRow(['THỐNG KÊ CHUNG']);
+        worksheet.addRow(['Tổng sự cố', statsData.stats.totalIncidents]);
+        worksheet.addRow(['Tỷ lệ hoàn thành Task', statsData.stats.taskCompletionRate + '%']);
+        worksheet.addRow(['Nhân sự hoạt động', statsData.stats.activeStaff]);
+        worksheet.addRow([]);
+
+        worksheet.addRow(['BẢNG ĐÁNH GIÁ NHÂN VIÊN']);
+        worksheet.addRow(['Họ tên', 'Task Hoàn thành', 'Điểm số']);
+        statsData.topStaff.forEach(staff => {
+            worksheet.addRow([staff.name, staff.scans, staff.score]);
+        });
 
         return workbook;
     }
 
-    async getAiAnalysis(projectId: string, tenantId: string) {
-        const statsData = await this.getDashboardStats(projectId, tenantId);
+    async getAiAnalysis(projectId: string, tenantId: string, startDate?: string, endDate?: string) {
+        const statsData = await this.getDashboardStats(projectId, tenantId, startDate, endDate);
         const project = await this.prisma.project.findUnique({ where: { id: projectId } });
         if (!project) throw new NotFoundException('Project not found');
         return this.aiService.analyzeProjectPerformance({ ...statsData, projectName: project.name });

@@ -82,12 +82,12 @@
                         Tổng quan (Dashboard)
                     </a>
                     
-                    <a href="../ternants/project.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
+                    <a href="../ternants/project.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         Quản lý Dự án
                     </a>
 
-                    <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                    <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                         Mã QR & Điểm quét
                     </a>
@@ -336,7 +336,6 @@
         </div>
     </div>
 
-    <!-- MODAL: SCAN RESULT -->
     <div x-show="scanResult" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" @click="resumeScanning"></div>
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
@@ -350,7 +349,6 @@
         </div>
     </div>
 
-    <!-- MODAL: REPORT ISSUE -->
     <div x-show="showIssueModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/80" @click="showIssueModal = false"></div>
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative z-10 flex flex-col max-h-[90vh]">
@@ -386,7 +384,6 @@
         </div>
     </div>
 
-    <!-- MODAL: ASSIGN -->
     <div x-show="showAssignModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/75" @click="showAssignModal = false"></div>
         <div class="bg-white rounded-xl p-6 w-full max-w-md relative z-10">
@@ -407,7 +404,6 @@
         </div>
     </div>
 
-    <!-- MODAL: QR CREATE -->
     <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/75" @click="showModal = false"></div>
         <div class="bg-white rounded-xl p-6 w-full max-w-lg relative z-10">
@@ -423,7 +419,6 @@
         </div>
     </div>
 
-    <!-- MODAL: IMAGE PREVIEW -->
     <div x-show="showImageModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95" @click="showImageModal = false" x-cloak>
         <img :src="previewImageSrc" class="max-w-full max-h-full rounded">
     </div>

@@ -18,8 +18,8 @@ export class CreateMemberDto {
   roleId: string;
 
   @IsString()
-  @IsNotEmpty()
-  tenantId: string; // Thường lấy từ token, nhưng nếu DTO có thì cứ để
+  @IsOptional()
+  tenantId?: string;
 
   @IsString()
   @IsOptional()
