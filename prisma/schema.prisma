@@ -7,6 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==========================================
+// CORE SYSTEM MODELS
+// ==========================================
+
 model Tenant {
   id                    String   @id @default(uuid())
   name                  String
@@ -39,8 +43,8 @@ model Tenant {
   taskTimeEntries       TaskTimeEntry[]
   taskTemplates         TaskTemplate[]
   activityLogs          ActivityLog[]
-  
   incidents             Incident[] 
+  conversations         Conversation[]
 
   @@index([subscriptionPlan])
   @@index([isActive])
@@ -81,8 +85,16 @@ model User {
   taskTimeEntries       TaskTimeEntry[]
   createdTaskTemplates  TaskTemplate[]
   activityLogs          ActivityLog[]
-  
   reportedIncidents     Incident[] @relation("IncidentReporter")
+
+  // === CHAT RELATIONS ===
+  conversations         ConversationMember[] 
+  sentMessages          Message[]
+  
+  adminOfGroups         Conversation[]      @relation("GroupAdmin")
+  seenMessages          MessageSeen[]
+  reactedMessages       MessageReaction[]
+  deletedMessages       MessageDeletedFor[]
 
   @@index([tenantId])
   @@index([roleId])
@@ -120,8 +132,8 @@ model Project {
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   qrcodes     QRCode[]
   tasks       Task[]
-  
   incidents   Incident[]
+  conversations Conversation[]
 
   @@index([tenantId])
   @@index([name])
@@ -136,424 +148,447 @@ model ProjectMember {
   @@id([userId, projectId])
 }
 
+// ... CÁC MODEL CŨ GIỮ NGUYÊN ...
+
 model QRCode {
-  id          String   @id @default(uuid())
-  name        String
-  location    String?
-  data        String   @unique @default(cuid())
-  isActive    Boolean  @default(true)
-  latitude    Float?
-  longitude   Float?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  projectId   String
-  tenantId    String
-
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  scanLogs    ScanLog[]
-  
-  incidents   Incident[]
-
+  id String @id @default(uuid())
+  name String
+  location String?
+  data String @unique @default(cuid())
+  isActive Boolean @default(true)
+  latitude Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projectId String
+  tenantId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  scanLogs ScanLog[]
+  incidents Incident[]
   @@index([projectId])
   @@index([tenantId])
 }
-
 model Task {
-  id             String    @id @default(uuid())
-  title          String
-  description    String?   @db.NVarChar(Max)
-  status         String    @default("PENDING")
-  priority       String    @default("MEDIUM")
-  tags           String?   @db.NVarChar(Max)
+  id String @id @default(uuid())
+  title String
+  description String? @db.NVarChar(Max)
+  status String @default("PENDING")
+  priority String @default("MEDIUM")
+  tags String? @db.NVarChar(Max)
   estimatedHours Float?
-  actualHours    Float?
-  notes          String?   @db.NVarChar(Max)
-  deadline       DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  projectId      String
-  creatorId      String
-  assigneeId     String?
-  tenantId       String
-
-  project        Project        @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  creator        User           @relation("Creator", fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  assignee       User?          @relation("Assignee", fields: [assigneeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  
-  comments       TaskComment[]
-  attachments    TaskAttachment[]
-  timeEntries    TaskTimeEntry[]
-  
-  // === ĐÃ SỬA: Đổi Incident? thành Incident[] để gỡ bỏ ràng buộc Unique trên Incident ===
-  incidents      Incident[]
-  // ======================================================================================
-
+  actualHours Float?
+  notes String? @db.NVarChar(Max)
+  deadline DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projectId String
+  creatorId String
+  assigneeId String?
+  tenantId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  creator User @relation("Creator", fields: [creatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  assignee User? @relation("Assignee", fields: [assigneeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  comments TaskComment[]
+  attachments TaskAttachment[]
+  timeEntries TaskTimeEntry[]
+  incidents Incident[]
   @@index([projectId])
   @@index([creatorId])
   @@index([assigneeId])
   @@index([tenantId])
 }
-
 model ScanLog {
-  id          String   @id @default(cuid())
-  scannedAt   DateTime @default(now())
-  notes       String?  @db.NVarChar(Max)
-  attachments String?  @db.NVarChar(Max)
-  status      String?  @default("VALID")
-  location    String?  @db.NVarChar(Max)
-  
-  qrCodeId    String
-  userId      String
-  tenantId    String
-
-  qrCode      QRCode   @relation(fields: [qrCodeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user        User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  // === ĐÃ SỬA: Đổi Incident? thành Incident[] ===
-  incidents   Incident[]
-  // =============================================
-
+  id String @id @default(cuid())
+  scannedAt DateTime @default(now())
+  notes String? @db.NVarChar(Max)
+  attachments String? @db.NVarChar(Max)
+  status String? @default("VALID")
+  location String? @db.NVarChar(Max)
+  qrCodeId String
+  userId String
+  tenantId String
+  qrCode QRCode @relation(fields: [qrCodeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  incidents Incident[]
   @@index([qrCodeId])
   @@index([userId])
 }
-
 model Incident {
-  id          String   @id @default(uuid())
-  description String   @db.NVarChar(Max)
-  
-  images      IncidentImage[]
-  
-  status      String   @default("OPEN")
-  department  String?
-  reportedAt  DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  tenantId    String
-  projectId   String
-  qrCodeId    String?
-  scanLogId   String?  
-  taskId      String?  
-  reporterId  String?
-
-  // === QUAN TRỌNG: ĐÃ GỠ BỎ @unique Ở taskId VÀ scanLogId ===
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  qrCode      QRCode?  @relation(fields: [qrCodeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  scanLog     ScanLog? @relation(fields: [scanLogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  task        Task?    @relation(fields: [taskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  reporter    User?    @relation("IncidentReporter", fields: [reporterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
+  id String @id @default(uuid())
+  description String @db.NVarChar(Max)
+  images IncidentImage[]
+  status String @default("OPEN")
+  department String?
+  reportedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenantId String
+  projectId String
+  qrCodeId String?
+  scanLogId String?  
+  taskId String?  
+  reporterId String?
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  project Project @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  qrCode QRCode? @relation(fields: [qrCodeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  scanLog ScanLog? @relation(fields: [scanLogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reporter User? @relation("IncidentReporter", fields: [reporterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   @@index([tenantId])
   @@index([projectId])
 }
-
-
 model IncidentImage {
-  id          String   @id @default(uuid())
-  url         String   @db.NVarChar(Max)
-  incidentId  String
-  incident    Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id String @id @default(uuid())
+  url String @db.NVarChar(Max)
+  incidentId String
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
-
-// ... (Các model Subscription, MasterAdmin... giữ nguyên như cũ)
 model Subscription {
-  id              String   @id @default(uuid())
-  plan            String
-  price           Decimal  @db.Decimal(10, 2)
-  status          String   @default("ACTIVE")
-  startDate       DateTime @default(now())
-  endDate         DateTime
-  autoRenew       Boolean  @default(true)
-  paymentMethod   String?
+  id String @id @default(uuid())
+  plan String
+  price Decimal @db.Decimal(10, 2)
+  status String @default("ACTIVE")
+  startDate DateTime @default(now())
+  endDate DateTime
+  autoRenew Boolean @default(true)
+  paymentMethod String?
   lastPaymentDate DateTime?
   nextPaymentDate DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  tenantId        String
-
-  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenantId String
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   @@index([tenantId])
   @@index([status])
 }
-
 model MasterAdmin {
-  id           String              @id @default(uuid())
-  email        String              @unique
-  password     String
-  fullName     String
-  isActive     Boolean             @default(true)
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  id String @id @default(uuid())
+  email String @unique
+  password String
+  fullName String
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   activityLogs MasterActivityLog[]
 }
-
 model MasterActivityLog {
-  id            String      @id @default(cuid())
-  action        String
-  details       String?     @db.NVarChar(Max)
-  entity        String?
-  entityId      String?
-  createdAt     DateTime    @default(now())
+  id String @id @default(cuid())
+  action String
+  details String? @db.NVarChar(Max)
+  entity String?
+  entityId String?
+  createdAt DateTime @default(now())
   masterAdminId String
-  masterAdmin   MasterAdmin @relation(fields: [masterAdminId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
+  masterAdmin MasterAdmin @relation(fields: [masterAdminId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   @@index([masterAdminId])
 }
-
 model Notification {
-  id        String   @id @default(uuid())
-  title     String
-  message   String   @db.NVarChar(Max)
-  type      String
-  isRead    Boolean  @default(false)
+  id String @id @default(uuid())
+  title String
+  message String @db.NVarChar(Max)
+  type String
+  isRead Boolean @default(false)
   createdAt DateTime @default(now())
-  tenantId  String
-  userId    String?
-
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  user      User?    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
+  tenantId String
+  userId String?
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user User? @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   @@index([tenantId])
   @@index([userId])
 }
-
 model LocationLog {
-  id        String   @id @default(uuid())
-  latitude  Float
+  id String @id @default(uuid())
+  latitude Float
   longitude Float
-  address   String?
+  address String?
   createdAt DateTime @default(now())
-  tenantId  String
-  userId    String
-
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
+  tenantId String
+  userId String
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   @@index([tenantId])
   @@index([userId])
 }
-
 model File {
-  id           String   @id @default(uuid())
-  fileName     String
+  id String @id @default(uuid())
+  fileName String
   originalName String
-  filePath     String
-  mimeType     String
-  size         Int
-  createdAt    DateTime @default(now())
-  tenantId     String
-  userId       String
-
-  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user         User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
+  filePath String
+  mimeType String
+  size Int
+  createdAt DateTime @default(now())
+  tenantId String
+  userId String
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   @@index([tenantId])
   @@index([userId])
 }
-
 model Workflow {
-  id          String             @id @default(uuid())
-  name        String
-  description String?            @db.NVarChar(Max)
-  isActive    Boolean            @default(true)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  tenantId    String
+  id String @id @default(uuid())
+  name String
+  description String? @db.NVarChar(Max)
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenantId String
   createdById String
-
-  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  createdBy   User               @relation(fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  steps       WorkflowStep[]
-  instances   WorkflowInstance[]
-
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdBy User @relation(fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  steps WorkflowStep[]
+  instances WorkflowInstance[]
   @@index([tenantId])
   @@index([createdById])
 }
-
 model WorkflowStep {
-  id         String   @id @default(uuid())
-  name       String
-  order      Int
-  type       String
-  config     String?  @db.NVarChar(Max)
+  id String @id @default(uuid())
+  name String
+  order Int
+  type String
+  config String? @db.NVarChar(Max)
   workflowId String
-
-  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   @@index([workflowId])
 }
-
 model WorkflowInstance {
-  id          String             @id @default(uuid())
-  status      String             @default("PENDING")
-  data        String?            @db.NVarChar(Max)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  workflowId  String
+  id String @id @default(uuid())
+  status String @default("PENDING")
+  data String? @db.NVarChar(Max)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  workflowId String
   startedById String
-  tenantId    String
-
-  workflow    Workflow           @relation(fields: [workflowId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  startedBy   User               @relation(fields: [startedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  approvals   WorkflowApproval[]
-
+  tenantId String
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  startedBy User @relation(fields: [startedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvals WorkflowApproval[]
   @@index([workflowId])
   @@index([startedById])
   @@index([tenantId])
 }
-
 model WorkflowApproval {
-  id                 String           @id @default(uuid())
-  status             String           @default("PENDING")
-  comments           String?          @db.NVarChar(Max)
-  approvedAt         DateTime?
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  id String @id @default(uuid())
+  status String @default("PENDING")
+  comments String? @db.NVarChar(Max)
+  approvedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   workflowInstanceId String
-  assignedToId       String
-  approvedById       String?
-  tenantId           String
-
+  assignedToId String
+  approvedById String?
+  tenantId String
   workflowInstance WorkflowInstance @relation(fields: [workflowInstanceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  assignedTo       User             @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  approvedBy       User?            @relation("ApprovedBy", fields: [approvedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
+  assignedTo User @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvedBy User? @relation("ApprovedBy", fields: [approvedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   @@index([workflowInstanceId])
   @@index([assignedToId])
 }
-
 model RateLimitRule {
-  id          String       @id @default(uuid())
-  name        String
-  pattern     String
-  method      String?
-  limit       Int
-  window      Int
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  tenantId    String
-  createdById String
-
-  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  createdBy   User         @relation(fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  logs        RateLimitLog[]
-
-  @@index([tenantId])
-}
-
-model RateLimitLog {
-  id            String        @id @default(uuid())
-  ipAddress     String
-  userAgent     String?
-  requestCount  Int           @default(1)
-  windowStart   DateTime
-  createdAt     DateTime      @default(now())
-  tenantId      String
-  userId        String?
-  ruleId        String
-
-  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user          User?         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  rule          RateLimitRule @relation(fields: [ruleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@index([tenantId])
-  @@index([userId])
-}
-
-model TaskComment {
-  id        String   @id @default(uuid())
-  content   String   @db.NVarChar(Max)
+  id String @id @default(uuid())
+  name String
+  pattern String
+  method String?
+  limit Int
+  window Int
+  isActive Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  taskId    String
-  userId    String
-  tenantId  String
-
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  user      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([taskId])
-  @@index([userId])
-}
-
-model TaskAttachment {
-  id           String   @id @default(uuid())
-  fileName     String
-  originalName String
-  filePath     String
-  mimeType     String
-  size         Int
-  createdAt    DateTime @default(now())
-  taskId       String
-  userId       String
-  tenantId     String
-
-  task         Task     @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  user         User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([taskId])
-  @@index([userId])
-}
-
-model TaskTimeEntry {
-  id          String    @id @default(uuid())
-  description String?   @db.NVarChar(Max)
-  startTime   DateTime
-  endTime     DateTime?
-  duration    Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  taskId      String
-  userId      String
-  tenantId    String
-
-  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  user        User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([taskId])
-  @@index([userId])
-}
-
-model TaskTemplate {
-  id          String   @id @default(uuid())
-  name        String
-  description String?  @db.NVarChar(Max)
-  template    String   @db.NVarChar(Max)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  tenantId    String
+  tenantId String
   createdById String
-
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdBy User @relation(fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  logs RateLimitLog[]
+  @@index([tenantId])
+}
+model RateLimitLog {
+  id String @id @default(uuid())
+  ipAddress String
+  userAgent String?
+  requestCount Int @default(1)
+  windowStart DateTime
+  createdAt DateTime @default(now())
+  tenantId String
+  userId String?
+  ruleId String
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user User? @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  rule RateLimitRule @relation(fields: [ruleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  @@index([tenantId])
+  @@index([userId])
+}
+model TaskComment {
+  id String @id @default(uuid())
+  content String @db.NVarChar(Max)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  taskId String
+  userId String
+  tenantId String
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@index([taskId])
+  @@index([userId])
+}
+model TaskAttachment {
+  id String @id @default(uuid())
+  fileName String
+  originalName String
+  filePath String
+  mimeType String
+  size Int
+  createdAt DateTime @default(now())
+  taskId String
+  userId String
+  tenantId String
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@index([taskId])
+  @@index([userId])
+}
+model TaskTimeEntry {
+  id String @id @default(uuid())
+  description String? @db.NVarChar(Max)
+  startTime DateTime
+  endTime DateTime?
+  duration Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  taskId String
+  userId String
+  tenantId String
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@index([taskId])
+  @@index([userId])
+}
+model TaskTemplate {
+  id String @id @default(uuid())
+  name String
+  description String? @db.NVarChar(Max)
+  template String @db.NVarChar(Max)
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenantId String
+  createdById String
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdBy User @relation(fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@index([tenantId])
+}
+model ActivityLog {
+  id String @id @default(cuid())
+  action String
+  details String? @db.NVarChar(Max)
+  entity String?
+  entityId String?
+  createdAt DateTime @default(now())
+  userId String
+  tenantId String
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@index([userId])
   @@index([tenantId])
 }
 
-model ActivityLog {
-  id           String   @id @default(cuid())
-  action       String
-  details      String?  @db.NVarChar(Max)
-  entity       String?
-  entityId     String?
-  createdAt    DateTime @default(now())
-  userId       String
-  tenantId     String
+// ==========================================
+// CHAT SYSTEM V2 (SQL SERVER FIXED)
+// ==========================================
 
-  user         User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([userId])
+model Conversation {
+  id            String   @id @default(uuid())
+  type          String   @default("DIRECT")
+  name          String?  @db.NVarChar(Max)
+  avatar        String?  @db.NVarChar(Max)
+  adminId       String?
+  lastMessageId String?
+  lastMessageAt DateTime @default(now())
+  projectId     String?
+  tenantId      String
+  project       Project? @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  groupAdmin    User?    @relation("GroupAdmin", fields: [adminId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  members       ConversationMember[]
+  messages      Message[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  @@index([projectId])
   @@index([tenantId])
+  @@index([lastMessageAt])
+}
+
+model ConversationMember {
+  id             String       @id @default(uuid())
+  conversationId String
+  userId         String
+  role           String       @default("MEMBER")
+  isMuted        Boolean      @default(false)
+  isArchived     Boolean      @default(false)
+  isPinned       Boolean      @default(false)
+  unreadCount    Int          @default(0)
+  lastSeenAt     DateTime     @default(now())
+  joinedAt       DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  // FIX: user relation phải là NoAction cả Delete và Update
+  user           User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String?  @db.NVarChar(Max)
+  type           String   @default("TEXT")
+  metadata       String?  @db.NVarChar(Max)
+  replyToId      String?
+  isDeleted      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  // FIX: sender relation phải là NoAction
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seenBy         MessageSeen[]
+  reactions      MessageReaction[]
+  deletedFor     MessageDeletedFor[]
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model MessageSeen {
+  messageId String
+  userId    String
+  seenAt    DateTime @default(now())
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  // FIX: user relation phải là NoAction cả Delete và Update
+  user      User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@id([messageId, userId])
+}
+
+model MessageReaction {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  type      String
+  createdAt DateTime @default(now())
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@unique([messageId, userId])
+}
+
+model MessageDeletedFor {
+  messageId String
+  userId    String
+  deletedAt DateTime @default(now())
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  // FIX: user relation phải là NoAction cả Delete và Update
+  user      User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@id([messageId, userId])
 }

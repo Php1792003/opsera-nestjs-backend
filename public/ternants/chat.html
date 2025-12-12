@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Chat - Opsera Luxury</title>
+    
+    <!-- CDN Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' }, 'opsera-primary': '#2563EB', 'opsera-dark': '#1F2937', 'opsera-light': '#F3F4F6' },
+                    boxShadow: { 'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)', 'neumorph': '20px 20px 60px #d1d5db, -20px -20px 60px #ffffff' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f3f4f6; }
+        [x-cloak] { display: none !important; }
+        .scrollbar-custom::-webkit-scrollbar { width: 4px; height: 4px; }
+        .scrollbar-custom::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-custom::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        .bg-luxury-pattern { background-color: #f8fafc; background-image: linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px); background-size: 20px 20px; }
+        .msg-bubble { position: relative; }
+        .animate-pop { animation: fadeInScale 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .video-wrapper { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; }
+        #localVideo { transform: scaleX(-1); }
+        .message-row:hover .msg-action-btn { opacity: 1; visibility: visible; pointer-events: auto; }
+        .msg-action-btn { opacity: 0; visibility: hidden; transition: all 0.2s ease; pointer-events: none; }
+        .reaction-item:hover { transform: scale(1.2); }
+    </style>
+</head>
+
+<body class="h-screen flex overflow-hidden text-slate-600 bg-luxury-pattern" x-data="chatSystem()" x-init="initSystem()">
+
+    <!-- ... (UI TOAST, INCOMING CALL, VIDEO CALL giữ nguyên như v16) ... -->
+    <!-- (Phần này không thay đổi nên tôi rút gọn để tập trung vào phần Chat Box) -->
+    <!-- UI Background -->
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-indigo-100/40 rounded-full blur-[100px]"></div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div @click="clickToast(toast)" class="bg-white/90 backdrop-blur-xl border border-white/60 p-4 pr-5 rounded-2xl shadow-2xl flex items-start gap-4 min-w-[320px] max-w-[380px] pointer-events-auto animate-pop cursor-pointer hover:bg-white transition-colors relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-1.5" :class="{ 'bg-green-500': toast.type === 'success', 'bg-red-500': toast.type === 'error', 'bg-blue-500': toast.type === 'message', 'bg-amber-500': toast.type === 'warning' }"></div>
+                <div class="shrink-0 relative">
+                    <template x-if="toast.type === 'message'"><img :src="toast.avatar" class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm"></template>
+                    <template x-if="toast.type !== 'message'">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm" :class="toast.type === 'success' ? 'bg-green-100 text-green-600' : (toast.type === 'warning' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600')">
+                            <i class="text-xl" :class="toast.type === 'success' ? 'ph-bold ph-check' : (toast.type === 'warning' ? 'ph-bold ph-phone-slash' : 'ph-bold ph-warning')"></i>
+                        </div>
+                    </template>
+                </div>
+                <div class="flex-1 min-w-0 pt-0.5">
+                    <h4 class="font-bold text-sm text-slate-800 leading-tight mb-0.5 truncate" x-text="toast.title"></h4>
+                    <p class="text-xs text-slate-500 font-medium line-clamp-2 leading-relaxed" x-text="toast.msg"></p>
+                </div>
+                <button @click.stop="removeToast(toast.id)" class="absolute top-2 right-2 text-slate-300 hover:text-slate-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity"><i class="ph-bold ph-x text-xs"></i></button>
+            </div>
+        </template>
+    </div>
+
+    <!-- INCOMING CALL POPUP -->
+    <div x-show="incomingCall" class="fixed top-8 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-xl border border-white/50 p-3 pr-6 rounded-full shadow-2xl z-[100] flex items-center gap-4 animate-pop min-w-[340px]">
+        <div class="relative shrink-0">
+            <div class="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20"></div>
+            <img :src="getAvatar({fullName: incomingCall?.fromUserName, avatar: incomingCall?.fromUserAvatar})" class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md relative z-10 bg-slate-200">
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-0.5" x-text="incomingCall?.isVideoCall ? 'Video Call' : 'Cuộc gọi thoại'"></p>
+            <p class="font-bold text-slate-800 text-lg truncate" x-text="incomingCall?.fromUserName"></p>
+        </div>
+        <div class="flex gap-2">
+            <button @click="rejectCall" class="w-10 h-10 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"><i class="ph-bold ph-phone-x text-lg"></i></button>
+            <button @click="acceptCall" class="w-10 h-10 rounded-full bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-500/30 transition-all flex items-center justify-center animate-pulse"><i class="ph-bold ph-phone-call text-lg"></i></button>
+        </div>
+    </div>
+
+    <!-- VIDEO CALL INTERFACE -->
+    <div x-show="isInCall" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col animate-pop" x-cloak>
+        <div class="video-wrapper relative">
+            <video id="remoteVideo" class="w-full h-full object-cover bg-black" autoplay playsinline x-show="isRemoteCamOn"></video>
+            <div x-show="!isRemoteCamOn" class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-slate-800 to-slate-900 text-white z-10">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500/50 shadow-[0_0_50px_rgba(37,99,235,0.3)] mb-6 relative">
+                    <img :src="getAvatar(targetUser)" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-blue-500/20 animate-pulse"></div>
+                </div>
+                <h3 class="text-2xl font-bold tracking-tight" x-text="targetUser?.fullName || 'Đang kết nối...'"></h3>
+                <p class="text-slate-400 text-sm mt-2 font-mono" x-text="formatDuration(callDuration)"></p>
+            </div>
+            <video id="localVideo" class="absolute bottom-28 right-8 w-40 h-28 object-cover rounded-2xl border-2 border-white/20 shadow-2xl z-20 hover:scale-110 transition-transform cursor-pointer" autoplay playsinline muted x-show="isCamOn"></video>
+            <div x-show="!isCamOn" class="absolute bottom-28 right-8 w-40 h-28 rounded-2xl border-2 border-white/10 bg-slate-800 shadow-2xl z-20 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+                <img :src="getAvatar(user)" class="w-12 h-12 rounded-full object-cover opacity-80">
+                <div class="absolute bottom-1 right-1 bg-red-500 rounded-full p-1"><i class="ph-fill ph-video-camera-slash text-[10px] text-white"></i></div>
+            </div>
+            <div class="absolute top-8 left-8 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-3 z-30">
+                <div class="w-2 h-2 rounded-full" :class="callStatus === 'Đã kết nối' ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'"></div>
+                <span class="text-white font-medium text-sm" x-text="callStatus"></span>
+                <span class="text-white/80 font-mono text-sm border-l border-white/20 pl-3" x-show="callDuration > 0" x-text="formatDuration(callDuration)"></span>
+            </div>
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-xl border border-white/10 p-3 rounded-full flex gap-4 shadow-2xl z-30">
+                <button @click="toggleMic" class="w-12 h-12 rounded-full flex items-center justify-center transition-all" :class="isMicOn ? 'bg-white/10 text-white' : 'bg-white text-red-600'"><i class="text-xl" :class="isMicOn ? 'ph-fill ph-microphone' : 'ph-fill ph-microphone-slash'"></i></button>
+                <button @click="toggleCamera" class="w-12 h-12 rounded-full flex items-center justify-center transition-all" :class="isCamOn ? 'bg-white/10 text-white' : 'bg-white text-red-600'"><i class="text-xl" :class="isCamOn ? 'ph-fill ph-video-camera' : 'ph-fill ph-video-camera-slash'"></i></button>
+                <div class="w-px h-8 bg-white/10 my-auto mx-1"></div>
+                <button @click="endCall()" class="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg"><i class="ph-fill ph-phone-disconnect text-2xl"></i></button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SIDEBAR -->
+    <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-center h-20 border-b border-gray-100">
+                <div class="flex items-center space-x-2"><a href="/index.html"><img src="../img/aegism_logo_mini.png" alt="Logo" class="h-[30px] w-auto"/></a></div>
+            </div>
+            <nav class="mt-6 px-4 space-y-2">
+                <a href="../ternants/dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors group"><i class="fa-solid fa-gauge-high w-6 text-center mr-2 text-lg"></i><span>Tổng quan</span></a>
+                <a href="/ternants/chat.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold group"><i class="fa-solid fa-comments w-6 text-center mr-2 text-lg group-hover:text-opsera-primary"></i><span>Trò chuyện</span></a>
+                <a href="../ternants/project.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors group"><i class="fa-solid fa-building-user w-6 text-center mr-2 text-lg"></i><span>Quản lý Dự án</span></a>
+                <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors group"><i class="fa-solid fa-qrcode w-6 text-center mr-2 text-lg"></i><span>Mã QR</span></a>
+                <a href="../ternants/staff.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors group"><i class="fa-solid fa-users-gear w-6 text-center mr-2 text-lg"></i><span>Nhân sự</span></a>
+                <a href="../ternants/task.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors group"><i class="fa-solid fa-list-check w-6 text-center mr-2 text-lg"></i><span>Công việc</span></a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-gray-200"><button @click="logout" class="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors group"><i class="fa-solid fa-right-from-bracket w-6 text-center mr-2 text-lg"></i><span>Đăng xuất</span></button></div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        <header class="h-20 px-8 flex justify-between items-center bg-white/60 backdrop-blur-lg border-b border-white/50 sticky top-0 z-20">
+            <div class="flex items-center gap-4">
+                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 text-slate-500 hover:bg-white rounded-lg transition"><i class="ph ph-list text-2xl"></i></button>
+                <div><h2 class="text-xl font-bold text-slate-800">Box Chat</h2></div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center bg-gray-100 rounded-lg p-1"><span class="text-xs font-medium text-gray-500 px-2">Gói:</span><span class="text-sm font-bold text-blue-600 uppercase px-2" x-text="currentPlan"></span></div>
+                <div class="flex items-center cursor-pointer"><div class="text-right mr-3 hidden sm:block"><div class="text-sm font-semibold text-gray-800" x-text="user.name"></div><div class="text-xs text-gray-500 uppercase" x-text="user.role"></div></div>
+                <img class="h-9 w-9 rounded-full object-cover border border-gray-200" :src="getAvatar({fullName: user.name, avatar: user.avatar})"></div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 lg:p-6 overflow-hidden flex gap-6">
+            <div class="w-full md:w-[320px] bg-white/80 backdrop-blur-xl border border-white/60 rounded-3xl flex flex-col shadow-glass overflow-hidden" x-show="!isMobileChatOpen || window.innerWidth >= 768">
+                <div class="p-5 border-b border-slate-100">
+                    <div class="relative group mb-4">
+                        <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                        <input type="text" x-model="globalSearch" placeholder="Tìm kiếm hội thoại & người dùng..." class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder-slate-400">
+                    </div>
+                    <div class="flex bg-slate-100 p-1 rounded-xl">
+                        <button @click="activeTab = 'chat'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all" :class="activeTab === 'chat' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">Hội thoại</button>
+                        <button @click="activeTab = 'members'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all" :class="activeTab === 'members' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'">Thành viên</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-3 scrollbar-custom space-y-1">
+                    <div x-show="activeTab === 'chat'">
+                        <button @click="openCreateGroupModal" class="w-full py-3 mb-3 border border-dashed border-blue-300 text-blue-600 rounded-xl text-sm font-bold hover:bg-blue-50 transition-all flex items-center justify-center gap-2 group"><i class="ph-bold ph-plus-circle text-lg group-hover:scale-110 transition-transform"></i>Tạo nhóm mới</button>
+                        <template x-for="conv in filteredConversations" :key="conv.id">
+                            <div @click="selectConversation(conv)" class="p-3 rounded-xl cursor-pointer flex items-center gap-3 transition-all border border-transparent" :class="currentConv?.id === conv.id ? 'bg-blue-50 border-blue-100 shadow-sm' : 'hover:bg-white hover:shadow-sm'">
+                                <div class="relative shrink-0"><img :src="getAvatar({fullName: conv.name, avatar: conv.avatar})" class="w-10 h-10 rounded-full object-cover ring-2 ring-white"><div x-show="conv.online" class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-white"></div></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-center mb-0.5"><h4 class="text-sm font-bold text-slate-800 truncate" x-text="conv.name"></h4><span class="text-[10px] text-slate-400 font-semibold" x-text="formatDateTime(conv.lastTime, true)"></span></div>
+                                    <div class="flex justify-between items-center">
+                                        <p class="text-xs truncate max-w-[120px]" :class="conv.unreadCount > 0 ? 'font-bold text-slate-900' : 'text-slate-500'" x-text="conv.lastMessage"></p>
+                                        <div x-show="conv.unreadCount > 0" class="h-4 min-w-[16px] px-1 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-sm" x-text="conv.unreadCount"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="filteredConversations.length === 0" class="text-center py-4 text-xs text-slate-400">Không tìm thấy hội thoại nào</div>
+                    </div>
+                    <div x-show="activeTab === 'members'">
+                        <template x-for="member in filteredMembers" :key="member.id">
+                            <div @click="startDirectChat(member)" class="p-2.5 rounded-xl cursor-pointer flex items-center gap-3 hover:bg-white hover:shadow-sm transition-all border border-transparent hover:border-slate-100 group">
+                                <img :src="getAvatar({fullName: member.name, avatar: member.avatar})" class="w-9 h-9 rounded-full object-cover ring-1 ring-slate-100">
+                                <div class="flex-1 min-w-0"><h4 class="text-sm font-bold text-slate-800 truncate" x-text="member.name"></h4><p class="text-[10px] text-slate-500 font-bold uppercase bg-slate-100 inline px-1.5 rounded" x-text="member.role"></p></div>
+                                <div @click.stop="startDirectChat(member)" class="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-blue-100 flex items-center justify-center transition-colors shadow-sm cursor-pointer active:scale-95 transform">
+                                    <i class="ph-fill ph-chat-circle-text text-slate-300 group-hover:text-blue-600 text-lg transition-colors"></i>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="filteredMembers.length === 0" class="text-center py-4 text-xs text-slate-400">Không tìm thấy nhân viên nào</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 bg-white/60 backdrop-blur-md border border-white/60 rounded-[32px] flex flex-col shadow-glass relative overflow-hidden" x-show="isMobileChatOpen || window.innerWidth >= 768">
+                <div class="h-16 px-6 border-b border-slate-100 flex items-center justify-between bg-white/40 backdrop-blur-md" x-show="currentConv">
+                    <div class="flex items-center gap-4">
+                        <button @click="isMobileChatOpen = false" class="md:hidden text-slate-500 hover:text-slate-800"><i class="ph-bold ph-arrow-left text-xl"></i></button>
+                        <img :src="getAvatar({fullName: currentConv?.name, avatar: currentConv?.avatar})" class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm">
+                        <div><h3 class="font-bold text-slate-800 leading-tight" x-text="currentConv?.name"></h3><div x-show="currentConv?.online" class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span><span class="text-[10px] text-green-600 font-bold">Online</span></div></div>
+                    </div>
+                    <div class="flex gap-1" x-show="!currentConv.type || currentConv.type === 'DIRECT'">
+                        <button @click="startCall(false)" class="w-9 h-9 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all"><i class="ph-fill ph-phone text-lg"></i></button>
+                        <button @click="startCall(true)" class="w-9 h-9 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all"><i class="ph-fill ph-video-camera text-lg"></i></button>
+                        <div class="w-px h-5 bg-slate-200 mx-2 my-auto"></div>
+                        <button class="w-9 h-9 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"><i class="ph-fill ph-dots-three-vertical text-lg"></i></button>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 scrollbar-custom" id="chat-messages">
+                    <div x-show="!currentConv" class="h-full flex flex-col items-center justify-center text-slate-400"><div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm ring-4 ring-slate-50/50"><i class="ph-duotone ph-chats-circle text-5xl text-blue-200"></i></div><p class="font-bold text-slate-600">Bắt đầu cuộc trò chuyện</p></div>
+                    <template x-for="msg in messages" :key="msg.id">
+                        <div class="flex w-full animate-pop message-row mb-4" :class="msg.senderId === user.id ? 'justify-end' : 'justify-start'">
+                            <!-- CALL LOG -->
+                            <template x-if="msg.type === 'CALL_LOG'">
+                                <div class="flex w-full message-row mb-2" :class="msg.senderId === user.id ? 'justify-end' : 'justify-start'">
+                                    <img x-show="msg.senderId !== user.id" :src="getAvatar(msg.sender)" class="w-8 h-8 rounded-full shadow-sm border border-white bg-white mb-1 mr-2 self-end">
+                                    <div class="p-3.5 rounded-2xl border shadow-sm flex items-center gap-3 min-w-[220px]" :class="msg.senderId === user.id ? 'bg-white border-blue-100 rounded-br-none' : 'bg-white border-slate-100 rounded-bl-none'">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-inner" :class="msg.content.includes('nhỡ') || msg.content.includes('từ chối') ? 'bg-red-50 text-red-500' : (msg.content.includes('bận') ? 'bg-orange-50 text-orange-500' : 'bg-blue-50 text-blue-500')">
+                                            <i class="text-xl" :class="msg.content.includes('nhỡ') ? 'ph-fill ph-phone-slash' : (msg.content.includes('video') ? 'ph-fill ph-video-camera' : (msg.content.includes('bận') ? 'ph-fill ph-prohibit' : 'ph-fill ph-phone-call'))"></i>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <h4 class="text-xs font-extrabold text-slate-700" x-text="msg.content.includes('bận') ? 'Người nhận đang bận' : (msg.content.includes('nhỡ') ? 'Cuộc gọi nhỡ' : (msg.senderId === user.id ? 'Cuộc gọi đi' : 'Cuộc gọi đến'))"></h4>
+                                            <div class="flex items-center gap-1.5 mt-0.5"><span class="text-[10px] text-slate-400 font-medium" x-text="formatDateTime(msg.createdAt)"></span><template x-if="!msg.content.includes('nhỡ') && !msg.content.includes('bận') && !msg.content.includes('từ chối')"><span class="text-[10px] font-mono bg-slate-100 px-1.5 rounded text-slate-600" x-text="msg.content.split('-')[1]?.trim() || 'Kết thúc'"></span></template></div>
+                                            <template x-if="msg.content.includes('nhỡ') || msg.content.includes('bận')"><span class="text-[10px] text-red-500 font-bold mt-1 cursor-pointer hover:underline" @click="startCall(false)">Nhấn để gọi lại</span></template>
+                                        </div>
+                                    </div>
+                                    <img x-show="msg.senderId === user.id" :src="getAvatar(user)" class="w-8 h-8 rounded-full shadow-sm border border-white bg-white mb-1 ml-2 self-end">
+                                </div>
+                            </template>
+
+                            <!-- NORMAL MESSAGE -->
+                            <template x-if="msg.type !== 'CALL_LOG'">
+                                <div class="flex max-w-[80%] gap-2 items-end relative" :class="msg.senderId === user.id ? 'flex-row-reverse' : 'flex-row'">
+                                    <img x-show="msg.senderId !== user.id" :src="getAvatar(msg.sender)" class="w-8 h-8 rounded-full shadow-sm border border-white bg-white mb-1">
+                                    <div class="flex flex-col" :class="msg.senderId === user.id ? 'items-end' : 'items-start'">
+                                        <span x-show="msg.senderId !== user.id && currentConv.type === 'GROUP'" class="text-[10px] text-slate-400 ml-1 mb-0.5 font-bold" x-text="msg.sender?.fullName"></span>
+                                        <div class="relative group flex items-center gap-2" :class="msg.senderId === user.id ? 'flex-row-reverse' : 'flex-row'">
+                                            <div class="relative">
+                                                <template x-if="msg.type === 'IMAGE'"><div class="rounded-xl overflow-hidden border-2 border-white shadow-sm mb-1 cursor-pointer hover:shadow-md transition-shadow"><img :src="'http://localhost:3000' + msg.content" class="max-w-[240px] max-h-[300px] object-cover" @click="window.open('http://localhost:3000' + msg.content, '_blank')"></div></template>
+                                                <template x-if="msg.type === 'FILE'"><a :href="'http://localhost:3000' + msg.content" target="_blank" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm mb-1 min-w-[200px]"><div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="ph-fill ph-file-text text-2xl"></i></div><div class="flex-1 min-w-0"><p class="text-xs font-bold text-slate-700 truncate">File đính kèm</p><p class="text-[10px] text-blue-500 font-semibold">Nhấn để tải về</p></div></a></template>
+                                                <template x-if="msg.type === 'TEXT'"><div class="py-2 px-4 rounded-[18px] text-sm leading-relaxed shadow-sm border msg-bubble" :class="msg.senderId === user.id ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white' : 'bg-white text-slate-700'"><p x-text="msg.content"></p></div></template>
+                                                <div class="absolute -bottom-3 flex gap-1 z-10" :class="msg.senderId === user.id ? 'right-0' : 'left-0'"><template x-for="r in getUniqueReactions(msg.reactions)" :key="r.type"><div class="bg-white border border-slate-100 rounded-full px-1.5 py-0.5 shadow-sm text-[10px] flex items-center gap-0.5 cursor-help" :title="r.users"><span x-text="r.icon"></span><span class="font-bold text-slate-600" x-text="r.count"></span></div></template></div>
+                                            </div>
+                                            <div class="msg-action-btn transition-all duration-200 opacity-0 group-hover:opacity-100" :class="msg.senderId === user.id ? 'mr-1' : 'ml-1'">
+                                                <div x-data="{ open: false, showReact: false }" class="relative flex items-center gap-1">
+                                                    <div class="relative">
+                                                        <button @click="showReact = !showReact" class="w-6 h-6 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400 text-lg transition-colors">☺</button>
+                                                        <div x-show="showReact" @click.away="showReact = false" class="absolute bottom-full mb-2 bg-white rounded-full shadow-xl border border-slate-100 p-1 flex gap-1 animate-pop z-50" :class="msg.senderId === user.id ? 'right-0' : 'left-0'">
+                                                            <button @click="reactToMessage(msg.id, 'LIKE'); showReact=false" class="reaction-item w-8 h-8 rounded-full hover:bg-blue-50 flex items-center justify-center text-xl transition-transform">👍</button>
+                                                            <button @click="reactToMessage(msg.id, 'LOVE'); showReact=false" class="reaction-item w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center text-xl transition-transform">❤️</button>
+                                                            <button @click="reactToMessage(msg.id, 'HAHA'); showReact=false" class="reaction-item w-8 h-8 rounded-full hover:bg-yellow-50 flex items-center justify-center text-xl transition-transform">😂</button>
+                                                            <button @click="reactToMessage(msg.id, 'WOW'); showReact=false" class="reaction-item w-8 h-8 rounded-full hover:bg-yellow-50 flex items-center justify-center text-xl transition-transform">😮</button>
+                                                            <button @click="reactToMessage(msg.id, 'SAD'); showReact=false" class="reaction-item w-8 h-8 rounded-full hover:bg-yellow-50 flex items-center justify-center text-xl transition-transform">😢</button>
+                                                            <button @click="reactToMessage(msg.id, 'ANGRY'); showReact=false" class="reaction-item w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center text-xl transition-transform">😡</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="relative" x-show="msg.senderId === user.id">
+                                                        <button @click="open = !open" class="w-6 h-6 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-400"><i class="ph-bold ph-dots-three-vertical text-xs"></i></button>
+                                                        <div x-show="open" @click.away="open = false" class="absolute top-0 mt-1 w-24 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden py-1 z-20 right-full mr-1">
+                                                            <button @click="editMessage(msg); open = false" class="w-full text-left px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">Sửa</button>
+                                                            <button @click="deleteMessage(msg); open = false" class="w-full text-left px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50">Xóa</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- INFO: TIME & SEEN STATUS (CHỈNH SỬA CHO 1:1 VÀ GROUP) -->
+                                        <div class="flex items-center gap-1 mt-1 justify-end w-full">
+                                            <span class="text-[9px] text-slate-300 font-bold tracking-wide" x-text="formatDateTime(msg.createdAt)"></span>
+                                            
+                                            <!-- Logic hiển thị 'Đã xem' -->
+                                            <template x-if="msg.senderId === user.id && msg.seenBy && msg.seenBy.length > 0">
+                                                <div class="flex ml-1 items-center">
+                                                    <!-- Chat 1:1: Chỉ hiện text 'Đã xem' -->
+                                                    <template x-if="currentConv.type === 'DIRECT'">
+                                                        <template x-for="viewer in msg.seenBy" :key="viewer.user.id">
+                                                            <span x-show="viewer.user.id !== user.id" class="text-[9px] text-gray-400 font-medium italic">Đã xem</span>
+                                                        </template>
+                                                    </template>
+
+                                                    <!-- Chat Group: Hiện Avatar -->
+                                                    <template x-if="currentConv.type !== 'DIRECT'">
+                                                        <div class="flex -space-x-1.5">
+                                                            <template x-for="viewer in msg.seenBy" :key="viewer.user.id">
+                                                                <img x-show="viewer.user.id !== user.id" :src="getAvatar(viewer.user)" class="w-3.5 h-3.5 rounded-full ring-1 ring-white" :title="'Đã xem bởi ' + viewer.user.fullName">
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="p-4 bg-white/40 backdrop-blur-md border-t border-white/50" x-show="currentConv">
+                    <div class="flex items-end gap-2 bg-white p-1.5 rounded-[24px] border border-slate-200 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-400 transition-all">
+                        <button @click="$refs.fileInput.click()" class="w-9 h-9 flex-shrink-0 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"><i class="ph-bold ph-paperclip text-xl"></i></button>
+                        <input type="file" x-ref="fileInput" class="hidden" accept="*/*" @change="handleFileUpload($event)">
+                        <div class="flex-1 py-2"><textarea x-model="newMessage" @keydown.enter.prevent="sendMessage" rows="1" class="w-full bg-transparent border-none focus:ring-0 text-sm text-slate-700 placeholder-slate-400 resize-none max-h-24 font-medium" placeholder="Nhập tin nhắn..."></textarea></div>
+                        <button @click="sendMessage" :disabled="!newMessage.trim()" class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 transition-all"><i class="ph-fill ph-paper-plane-right text-lg"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div x-show="showCreateGroupModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm px-4" x-cloak>
+            <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden animate-pop">
+                <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-bold text-slate-800">Tạo Nhóm Chat</h3>
+                    <button @click="showCreateGroupModal = false" class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 transition-all"><i class="ph-bold ph-x"></i></button>
+                </div>
+                <div class="p-6 space-y-5">
+                    <div><label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Tên nhóm</label><input type="text" x-model="groupName" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white outline-none text-sm font-semibold transition-all" placeholder="Nhập tên nhóm..."></div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Thành viên</label>
+                        <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-xl p-1 scrollbar-custom bg-slate-50"><template x-for="member in availableMembers" :key="member.userId"><label class="flex items-center p-2 hover:bg-white rounded-lg cursor-pointer transition-all gap-3 border border-transparent hover:border-slate-100 hover:shadow-sm mb-1"><input type="checkbox" :value="member.userId" x-model="selectedMembers" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"><img :src="getAvatar({fullName: member.name, avatar: member.avatar})" class="w-8 h-8 rounded-full object-cover ring-1 ring-slate-100"><div class="flex-1 min-w-0"><p class="text-sm font-bold text-slate-700 truncate" x-text="member.name"></p><p class="text-[10px] text-slate-400 font-bold uppercase" x-text="member.role"></p></div></label></template></div>
+                        <div class="mt-2 text-right"><span class="text-xs font-semibold text-slate-500">Đã chọn: <b class="text-blue-600" x-text="selectedMembers.length"></b></span></div>
+                    </div>
+                </div>
+                <div class="p-5 border-t border-slate-100 bg-slate-50/30 flex justify-end gap-2"><button @click="showCreateGroupModal = false" class="px-4 py-2 text-slate-500 font-bold text-sm hover:text-slate-800 transition-colors">Hủy</button><button @click="createGroup" class="px-5 py-2 bg-blue-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:shadow-blue-500/40 transition-all">Tạo nhóm</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+
+        function chatSystem() {
+            return {
+                sidebarOpen: false, isMobileChatOpen: false, activeTab: 'chat', showCreateGroupModal: false,
+                user: {}, conversations: [], currentConv: null, messages: [], availableMembers: [],
+                globalSearch: '', newMessage: '', groupName: '', selectedMembers: [], toasts: [], socket: null, isUploading: false,
+                isAdminAccess: false, 
+                isInCall: false, incomingCall: null, peerConnection: null, localStream: null, remoteStream: null,
+                isMicOn: true, isCamOn: true, isRemoteCamOn: true,
+                callStatus: 'Sẵn sàng', targetUserIdForCall: null, targetUser: null, remoteVideoHasStream: false, callDuration: 0, callTimerInterval: null, callTimeout: null,
+                sounds: { notification: new Audio('/sound/notification.mp3'), ringtone: new Audio('/sound/bell.mp3'), waiting: new Audio('/sound/wait.mp3') },
+                remoteCandidatesQueue: [],
+
+                async initSystem() {
+                    const token = localStorage.getItem('accessToken');
+                    if (!token) return window.location.href = '/login.html';
+                    const u = JSON.parse(localStorage.getItem('user'));
+                    const forceBool = (val) => { if (val === true || val === 1 || val === "1") return true; if (typeof val === 'string' && val.toLowerCase() === 'true') return true; return false; };
+                    const isTenant = forceBool(u.isTenantAdmin); const isSuper = forceBool(u.isSuperAdmin);
+                    const isNameAdmin = u.fullName && (u.fullName.toLowerCase().includes("system admin") || u.fullName.toLowerCase() === 'admin');
+                    this.isAdminAccess = isTenant || isSuper || isNameAdmin;
+                    this.user = { id: u.id, name: u.fullName, email: u.email, roleName: this.isAdminAccess ? 'Quản trị viên' : 'Nhân viên', avatar: u.avatar };
+                    this.sounds.ringtone.loop = true; this.sounds.waiting.loop = true;
+                    this.initSocket(token); 
+                    await this.fetchAllMembers();
+                    await this.fetchConversations();
+                },
+
+                getAvatar(user) {
+                    if (user && user.avatar && !user.avatar.includes('ui-avatars.com')) return user.avatar;
+                    const name = user?.name || user?.fullName || 'User';
+                    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&bold=true&size=128&font-size=0.33`;
+                },
+
+                getUniqueReactions(reactions) {
+                    if (!reactions || reactions.length === 0) return [];
+                    const map = { 'LIKE': '👍', 'LOVE': '❤️', 'HAHA': '😂', 'WOW': '😮', 'SAD': '😢', 'ANGRY': '😡' };
+                    const grouped = reactions.reduce((acc, curr) => {
+                        if (!acc[curr.type]) acc[curr.type] = { icon: map[curr.type], count: 0, users: [] };
+                        acc[curr.type].count++;
+                        acc[curr.type].users.push(curr.user?.fullName);
+                        return acc;
+                    }, {});
+                    return Object.values(grouped).map(g => ({ ...g, users: g.users.join(', ') }));
+                },
+
+                reactToMessage(messageId, type) {
+                    if(!this.currentConv) return;
+                    this.socket.emit('addReaction', { messageId, type, conversationId: this.currentConv.id });
+                },
+
+                initSocket(token) {
+                    this.socket = io(API_URL, { query: { token }, transports: ['websocket'] });
+                    this.socket.on('connect', () => console.log('Socket Connected'));
+                    
+                    this.socket.on('newMessage', (msg) => { 
+                        if (this.currentConv && this.currentConv.id === msg.conversationId) { 
+                            this.messages.push(msg); 
+                            this.scrollToBottom(); 
+                            this.socket.emit('markSeen', { conversationId: this.currentConv.id, messageId: msg.id });
+                        } 
+                        
+                        const convIndex = this.conversations.findIndex(c => c.id === msg.conversationId);
+                        if (convIndex !== -1) {
+                            const updatedConv = this.conversations[convIndex];
+                            
+                            let preview = msg.content;
+                            if(msg.type === 'IMAGE') preview = '[Hình ảnh]';
+                            else if(msg.type === 'FILE') preview = '[Tệp tin]';
+                            else if(msg.type === 'CALL_LOG') preview = msg.content;
+                            
+                            updatedConv.lastMessage = preview;
+                            updatedConv.lastTime = msg.createdAt;
+                            
+                            if (!this.currentConv || this.currentConv.id !== msg.conversationId) {
+                                updatedConv.unreadCount = (updatedConv.unreadCount || 0) + 1;
+                            }
+                            
+                            this.conversations.splice(convIndex, 1);
+                            this.conversations.unshift(updatedConv);
+                        } else { 
+                            this.fetchConversations(); 
+                        }
+
+                        if (msg.senderId !== this.user.id && msg.type !== 'CALL_LOG') { 
+                            this.playSound('notification'); 
+                            this.showToast('message', msg.sender.fullName, msg.type === 'TEXT' ? msg.content : '[Media]', this.getAvatar(msg.sender)); 
+                        }
+                    });
+                    
+                    this.socket.on('messageSeen', (data) => {
+                        // data: { conversationId, messageId, userId, user }
+                        if (this.currentConv && this.currentConv.id === data.conversationId) {
+                            const msgIndex = this.messages.findIndex(m => m.id === data.messageId);
+                            if (msgIndex !== -1) {
+                                if (!this.messages[msgIndex].seenBy) this.messages[msgIndex].seenBy = [];
+                                // Thêm người xem nếu chưa có, tránh duplicate
+                                if (!this.messages[msgIndex].seenBy.some(v => v.user.id === data.userId)) {
+                                    this.messages[msgIndex].seenBy.push({ user: data.user || { id: data.userId, fullName: 'User', avatar: '' } });
+                                }
+                            }
+                        }
+                    });
+
+                    this.socket.on('messageReactionUpdate', (data) => { const msgIndex = this.messages.findIndex(m => m.id === data.messageId); if (msgIndex !== -1) { this.messages[msgIndex].reactions = data.reactions; } });
+                    this.socket.on('messageUpdated', (updatedMsg) => { const index = this.messages.findIndex(m => m.id === updatedMsg.id); if (index !== -1) { this.messages[index] = { ...this.messages[index], ...updatedMsg }; } this.fetchConversations(); });
+                    this.socket.on('call-made', async (data) => { if (this.isInCall) { this.socket.emit('call-busy', { toUser: data.fromUserId, conversationId: this.currentConv?.id }); return; } this.incomingCall = data; this.playSound('ringtone'); });
+                    this.socket.on('user-busy', () => { this.showToast('warning', 'Người nhận đang bận', 'Người dùng đang trong cuộc gọi khác.'); this.stopSound('waiting'); if (this.currentConv) { this.socket.emit('sendMessage', { conversationId: this.currentConv.id, content: '📞 Cuộc gọi nhỡ (Người nhận bận)', type: 'CALL_LOG' }); } this.endCall(false, 'BUSY', false); });
+                    this.socket.on('answer-made', async (data) => { clearTimeout(this.callTimeout); await this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); await this.processBufferedCandidates(); this.callStatus = 'Đã kết nối'; this.stopSound('waiting'); this.startCallTimer(); });
+                    this.socket.on('ice-candidate', async (data) => { const candidate = new RTCIceCandidate(data.candidate); if (this.peerConnection && this.peerConnection.remoteDescription && this.peerConnection.remoteDescription.type) { await this.peerConnection.addIceCandidate(candidate); if (this.peerConnection.connectionState === 'connected') this.callStatus = 'Đã kết nối'; } else { this.remoteCandidatesQueue.push(candidate); } });
+                    this.socket.on('call-ended', () => { this.endCall(true); this.showToast('info', 'Thông báo', 'Cuộc gọi đã kết thúc'); });
+                    this.socket.on('remote-camera-toggled', (status) => { this.isRemoteCamOn = status; });
+                },
+
+                async processBufferedCandidates() { if (this.remoteCandidatesQueue.length > 0) { for (const candidate of this.remoteCandidatesQueue) { try { await this.peerConnection.addIceCandidate(candidate); } catch (e) { console.error(e); } } this.remoteCandidatesQueue = []; } },
+                async editMessage(msg) { const newContent = prompt("Sửa:", msg.content); if (newContent) { try { await fetch(`${API_URL}/api/chat/messages/${msg.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }, body: JSON.stringify({ content: newContent }) }); } catch (e) {} } },
+                async deleteMessage(msg) { if (confirm("Xóa?")) { try { await fetch(`${API_URL}/api/chat/messages/${msg.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } }); } catch (e) {} } },
+                playSound(name) { try { this.sounds[name]?.play().catch(()=>{}); } catch (e) {} },
+                stopSound(name) { try { this.sounds[name]?.pause(); this.sounds[name].currentTime = 0; } catch (e) {} },
+                stopAllCallSounds() { this.stopSound('ringtone'); this.stopSound('waiting'); },
+                startCallTimer() { this.callDuration = 0; this.callTimerInterval = setInterval(() => { this.callDuration++; }, 1000); },
+                stopCallTimer() { clearInterval(this.callTimerInterval); },
+                async startCall(videoEnabled) { if (!this.currentConv) return; const member = this.currentConv.members.find(m => m.userId !== this.user.id); if (!member) return alert("Không tìm thấy"); this.targetUserIdForCall = member.userId; this.targetUser = member.user || member; this.remoteVideoHasStream = false; this.isInCall = true; this.callStatus = videoEnabled ? 'Đang gọi video...' : 'Đang gọi thoại...'; this.playSound('waiting'); this.isRemoteCamOn = true; await this.setupLocalMedia(videoEnabled); this.createPeerConnection(); if (this.localStream) this.localStream.getTracks().forEach(track => this.peerConnection.addTrack(track, this.localStream)); try { const offer = await this.peerConnection.createOffer(); await this.peerConnection.setLocalDescription(offer); this.socket.emit('call-user', { userToCall: this.targetUserIdForCall, signalData: offer, fromUser: this.user, isVideoCall: videoEnabled }); this.callTimeout = setTimeout(() => { this.endCall(false, 'MISSED'); }, 30000); } catch(e) { this.endCall(); } },
+                async acceptCall() { const data = this.incomingCall; this.incomingCall = null; this.stopSound('ringtone'); this.isInCall = true; this.callStatus = 'Đang kết nối...'; this.targetUserIdForCall = data.fromUserId; this.targetUser = { fullName: data.fromUserName, avatar: data.fromUserAvatar }; const isVideo = data.isVideoCall || false; this.isCamOn = isVideo; this.isRemoteCamOn = isVideo; await this.setupLocalMedia(isVideo); this.createPeerConnection(); if (this.localStream) this.localStream.getTracks().forEach(track => this.peerConnection.addTrack(track, this.localStream)); await this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer)); await this.processBufferedCandidates(); const answer = await this.peerConnection.createAnswer(); await this.peerConnection.setLocalDescription(answer); this.socket.emit('make-answer', { signal: answer, toUser: data.fromUserId }); if (!isVideo) { this.socket.emit('toggle-camera', { toUser: data.fromUserId, status: false }); } this.startCallTimer(); },
+                rejectCall() { if(this.incomingCall) { this.socket.emit('end-call', { toUser: this.incomingCall.fromUserId, conversationId: this.currentConv?.id, status: 'REJECTED', duration: 0 }); } this.incomingCall = null; this.stopSound('ringtone'); },
+                endCall(isRemote = false, statusOverride = null, sendSignal = true) { let status = statusOverride; if (!status) { status = (this.callDuration > 0) ? 'ENDED' : 'MISSED'; } if (!isRemote && this.targetUserIdForCall && sendSignal) { this.socket.emit('end-call', { toUser: this.targetUserIdForCall, conversationId: this.currentConv?.id, duration: this.callDuration, status: status }); } clearTimeout(this.callTimeout); this.stopAllCallSounds(); this.stopCallTimer(); this.isInCall = false; this.incomingCall = null; this.targetUserIdForCall = null; this.callDuration = 0; this.targetUser = null; if (this.peerConnection) { this.peerConnection.close(); this.peerConnection = null; } if (this.localStream) { this.localStream.getTracks().forEach(track => track.stop()); this.localStream = null; } this.remoteCandidatesQueue = []; const lv = document.getElementById('localVideo'); if(lv) lv.srcObject = null; const rv = document.getElementById('remoteVideo'); if(rv) rv.srcObject = null; },
+                formatDateTime(isoString, short = false) { if (!isoString) return ''; const d = new Date(isoString); const timeStr = d.getHours() + ':' + (d.getMinutes()<10?'0':'') + d.getMinutes(); if (short) return timeStr; return `${timeStr} - ${d.getDate()}/${d.getMonth()+1}`; },
+                formatDuration(s) { const m = Math.floor(s/60); const sec = s%60; return `${m}:${sec<10?'0':''}${sec}`; },
+                async setupLocalMedia(videoEnabled) { try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: videoEnabled ? { width: { ideal: 1280 }, height: { ideal: 720 } } : false }); this.localStream = stream; const localVideoEl = document.getElementById('localVideo'); if (localVideoEl) { localVideoEl.srcObject = stream; localVideoEl.style.display = videoEnabled ? 'block' : 'none'; } this.isCamOn = videoEnabled; this.isMicOn = true; } catch (err) { this.showToast('error', 'Lỗi', err.message); this.endCall(); } },
+                createPeerConnection() { this.peerConnection = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] }); this.peerConnection.onicecandidate = (event) => { if (event.candidate) this.socket.emit('ice-candidate', { candidate: event.candidate, toUser: this.targetUserIdForCall }); }; this.peerConnection.ontrack = (event) => { const rv = document.getElementById('remoteVideo'); if (event.streams && event.streams[0]) { rv.srcObject = event.streams[0]; this.remoteVideoHasStream = true; } else { if(!rv.srcObject) rv.srcObject = new MediaStream(); rv.srcObject.addTrack(event.track); this.remoteVideoHasStream = true; } }; this.peerConnection.onconnectionstatechange = () => { if (this.peerConnection.connectionState === 'connected') { this.callStatus = 'Đã kết nối'; this.$nextTick(); } }; },
+                toggleMic() { this.isMicOn = !this.isMicOn; this.localStream.getAudioTracks()[0].enabled = this.isMicOn; },
+                toggleCamera() { this.isCamOn = !this.isCamOn; if(this.localStream.getVideoTracks().length > 0) this.localStream.getVideoTracks()[0].enabled = this.isCamOn; if(this.targetUserIdForCall) this.socket.emit('toggle-camera', { toUser: this.targetUserIdForCall, status: this.isCamOn }); },
+                async fetchAllMembers() { try { const res = await fetch(`${API_URL}/api/chat/members`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } }); if (res.ok) { const data = await res.json(); this.availableMembers = data.filter(m => m.id !== this.user.id); } } catch(e) {} },
+                async fetchConversations() { try { const res = await fetch(`${API_URL}/api/chat/conversations`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } }); if (res.ok) { this.conversations = await res.json().then(d => d.sort((a,b)=>new Date(b.lastTime)-new Date(a.lastTime))); } } catch(e) {} },
+                async handleFileUpload(event) { const file = event.target.files[0]; if (!file || !this.currentConv) return; this.isUploading = true; const formData = new FormData(); formData.append('file', file); try { const uploadRes = await fetch(`${API_URL}/api/chat/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }, body: formData }); if(uploadRes.ok) { const data = await uploadRes.json(); const type = data.type === 'IMAGE' ? 'IMAGE' : 'FILE'; this.socket.emit('sendMessage', { conversationId: this.currentConv.id, content: data.url, type: type }); } } catch (e) {} finally { this.isUploading = false; event.target.value = ''; } },
+                get filteredMembers() { if (!this.globalSearch) return this.availableMembers; return this.availableMembers.filter(m => m.name.toLowerCase().includes(this.globalSearch.toLowerCase())); },
+                get filteredConversations() { if (!this.globalSearch) return this.conversations; return this.conversations.filter(c => c.name.toLowerCase().includes(this.globalSearch.toLowerCase())); },
+                
+                async selectConversation(conv) { 
+                    this.currentConv = conv; 
+                    this.isMobileChatOpen = true; 
+                    this.messages = []; 
+                    conv.unreadCount = 0; 
+                    
+                    this.socket.emit('joinConversation', { conversationId: conv.id }); 
+                    
+                    fetch(`${API_URL}/api/chat/conversations/${conv.id}/read`, { method: 'PUT', headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } }); 
+                    
+                    try { 
+                        const res = await fetch(`${API_URL}/api/chat/conversations/${conv.id}/messages`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } }); 
+                        if(res.ok) { 
+                            this.messages = await res.json(); 
+                            this.scrollToBottom(); 
+                            
+                            const lastMsg = this.messages[this.messages.length - 1];
+                            if (lastMsg && lastMsg.senderId !== this.user.id) {
+                                this.socket.emit('markSeen', { conversationId: conv.id, messageId: lastMsg.id });
+                            }
+                        } 
+                    } catch(e) {} 
+                },
+                
+                async startDirectChat(member) { try { const res = await fetch(`${API_URL}/api/chat/direct`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }, body: JSON.stringify({ targetUserId: member.userId }) }); if (res.ok) { let rawConv = await res.json(); const existingIdx = this.conversations.findIndex(c => c.id === rawConv.id); let convToUse; if (existingIdx !== -1) { const existing = this.conversations[existingIdx]; this.conversations.splice(existingIdx, 1); convToUse = { ...existing, ...rawConv }; convToUse.name = member.fullName || member.name; convToUse.avatar = this.getAvatar(member); convToUse.online = member.online; this.conversations.unshift(convToUse); } else { convToUse = { ...rawConv }; convToUse.name = member.fullName || member.name; convToUse.avatar = this.getAvatar(member); convToUse.online = member.online; convToUse.type = 'DIRECT'; convToUse.unreadCount = 0; convToUse.lastMessage = 'Bắt đầu cuộc trò chuyện'; convToUse.lastTime = new Date().toISOString(); if (!convToUse.members || convToUse.members.length === 0) { convToUse.members = [{userId: this.user.id}, {userId: member.userId, user: member}]; } this.conversations.unshift(convToUse); } this.activeTab = 'chat'; this.globalSearch = ''; this.$nextTick(() => { this.selectConversation(convToUse); }); } } catch(e) { console.error("Lỗi startDirectChat", e); } },
+                sendMessage() { if (!this.newMessage.trim() || !this.currentConv) return; this.socket.emit('sendMessage', { conversationId: this.currentConv.id, content: this.newMessage }); this.newMessage = ''; },
+                async createGroup() { if(!this.groupName) return; try { const res = await fetch(`${API_URL}/api/chat/groups`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }, body: JSON.stringify({ name: this.groupName, memberIds: this.selectedMembers }) }); if (res.ok) { this.showToast('success', 'Thành công', 'Đã tạo nhóm'); this.showCreateGroupModal = false; this.fetchConversations(); } } catch(e) {} },
+                openCreateGroupModal() { this.groupName = ''; this.selectedMembers = []; this.showCreateGroupModal = true; },
+                scrollToBottom() { this.$nextTick(() => { const el = document.getElementById('chat-messages'); if(el) el.scrollTop = el.scrollHeight; }); },
+                showToast(type, title, msg, avatar = null) { const id = Date.now(); this.toasts.push({ id, type, title, msg, avatar, visible: true }); setTimeout(() => { this.removeToast(id); }, 4000); },
+                removeToast(id) { this.toasts = this.toasts.filter(t => t.id !== id); },
+                clickToast(toast) { this.removeToast(toast.id); },
+                logout() { localStorage.clear(); window.location.href = '/login.html'; }
+            }
+        }
+    </script>
+</body>
+</html>

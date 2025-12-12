@@ -23,6 +23,7 @@ import { ViewModule } from './view/view.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ReportModule } from './report/report.module';
 import { IncidentModule } from './incident/incident.module';
+import { ChatModule } from './chat/chat.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
@@ -64,6 +65,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     DashboardModule,
     ReportModule,
     IncidentModule,
+    ChatModule,
 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),

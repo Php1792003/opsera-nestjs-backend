@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { RoleService } from '../role/role.service';
+import { NotificationService } from '../notification/notification.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,6 +17,7 @@ export class IncidentService {
         private prisma: PrismaService,
         private auditService: AuditService,
         private roleService: RoleService,
+        private notificationService: NotificationService,
     ) { }
 
     async create(
@@ -77,6 +79,18 @@ export class IncidentService {
             },
             include: { images: true }
         });
+
+        const reporter = await this.prisma.user.findUnique({ where: { id: userId } });
+        const locationName = qrRecord ? qrRecord.name : 'Vị trí chưa định danh';
+        const reporterName = reporter ? reporter.fullName : 'Một nhân viên';
+
+        await this.notificationService.notifyUser(
+            userId,
+            tenantId,
+            'Sự cố mới',
+            `${reporterName} đã báo cáo sự cố tại ${locationName}.`,
+            'INFO'
+        );
 
         return {
             message: "Báo cáo sự cố thành công. Đang chờ phân công.",
@@ -195,6 +209,12 @@ export class IncidentService {
 
         await this.auditService.logActivity(userId, tenantId, 'ASSIGN_INCIDENT', { incidentId, role: role.name }, 'INCIDENT', incidentId);
 
+        await this.notificationService.notifyRole(
+            role.name,
+            tenantId,
+            'Phân công sự cố',
+            `Bộ phận ${role.name} được phân công xử lý sự cố tại ${locationName}.`
+        );
         return { message: 'Đã phân công và tạo công việc thành công.' };
     }
 }

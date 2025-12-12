@@ -75,9 +75,11 @@ export class TaskService {
     if (task.assigneeId && task.creatorId !== task.assigneeId) {
       const assignee = await this.prisma.user.findUnique({ where: { id: task.assigneeId } });
       const assigner = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (assignee && assigner) await this.notificationService.sendTaskAssignedNotification(assignee, task, assigner);
-    }
 
+      if (assignee && assigner) {
+        await this.notificationService.sendTaskAssignedNotification(assignee, task, assigner);
+      }
+    }
     return task;
   }
 
@@ -156,6 +158,14 @@ export class TaskService {
 
     // Update Incident nếu có
     await this.prisma.incident.updateMany({ where: { taskId }, data: { status: 'IN_PROGRESS' } });
+
+    await this.notificationService.notifyUser(
+      task.creatorId,
+      tenantId,
+      'Công việc được tiếp nhận',
+      `Nhân viên ${user.fullName} đã bắt đầu xử lý task: "${task.title}".`,
+      'SUCCESS'
+    );
 
     return updated;
   }

@@ -1,70 +1,94 @@
-import { Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
+import { Injectable, MessageEvent } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Task } from '@prisma/client';
+import { Subject, Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { NotificationGateway } from './notification.gateway';
 
 @Injectable()
 export class NotificationService {
-  constructor(
-    private readonly mailerService: MailerService,
-    private readonly prisma: PrismaService,
-  ) {}
+  // Luồng sự kiện nội bộ
+  private notificationSubject = new Subject<{
+    tenantId: string;
+    userId?: string;
+    payload: any
+  }>();
 
-  async createInAppNotification(
-    tenantId: string,
-    title: string,
-    message: string,
-    type: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS',
-    userId?: string,
-  ) {
-    return this.prisma.notification.create({
-      data: {
-        tenantId,
-        title,
-        message,
-        type,
-        userId: userId || null,
-      },
-    });
+  constructor(private readonly prisma: PrismaService, private readonly notificationGateway: NotificationGateway) { }
+
+  getNotificationStream(tenantId: string, userId: string): Observable<MessageEvent> {
+    return this.notificationSubject.asObservable().pipe(
+      filter((event) => {
+        if (event.tenantId !== tenantId) return false;
+        if (event.userId && event.userId !== userId) return false;
+        return true;
+      }),
+      map((event) => ({ data: event.payload } as MessageEvent)),
+    );
   }
 
+  // Hàm Core tạo & gửi thông báo
+  async createAndSend(data: {
+    tenantId: string;
+    title: string;
+    message: string;
+    type: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+    userId?: string; // Null = Broadcast
+  }) {
+    // 1. Lưu DB
+    const noti = await this.prisma.notification.create({
+      data: {
+        tenantId: data.tenantId,
+        title: data.title,
+        message: data.message,
+        type: data.type,
+        userId: data.userId || null,
+      },
+    });
+
+    this.notificationGateway.sendNotification(data.userId || null, data.tenantId, noti);
+
+    return noti;
+  }
+
+  // --- NGHIỆP VỤ CỤ THỂ ---
+
+  // 1. Thông báo khi Giao Task (Quan trọng: Đã sửa tên hàm cho khớp với TaskService)
   async sendTaskAssignedNotification(
     assignee: User,
     task: Task,
     assigner: User,
   ) {
-    const title = `New Task Assigned: "${task.title}"`;
-    const message = `${assigner.fullName} has assigned a new task to you.`;
-    const taskUrl = ` http://localhost:3000/projects/${task.projectId}/tasks/${task.id}`;
+    const title = `Công việc mới: "${task.title}"`;
+    const message = `${assigner.fullName} đã phân công công việc này cho bạn.`;
 
-    await this.createInAppNotification(
-      assignee.tenantId,
+    await this.createAndSend({
+      tenantId: assignee.tenantId,
+      userId: assignee.id, // Gửi riêng cho người được giao
       title,
       message,
-      'INFO',
-      assignee.id,
-    );
+      type: 'INFO'
+    });
+  }
 
-    const emailHtml = `
-      <h1>New Task Assigned</h1>
-      <p>Hello ${assignee.fullName},</p>
-      <p>${message}</p>
-      <p><strong>Task:</strong> ${task.title}</p>
-      <p><strong>Project:</strong> [Project Name]</p>
-      <p><a href="${taskUrl}" style="padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">View Task Details</a></p>
-    `;
+  // 2. Thông báo chung cho User
+  async notifyUser(userId: string, tenantId: string, title: string, message: string, type: 'INFO' | 'SUCCESS' | 'WARNING' = 'INFO') {
+    return this.createAndSend({ tenantId, userId, title, message, type });
+  }
 
-    this.mailerService
-      .sendMail({
-        to: assignee.email,
-        subject: `[Opsera] ${title}`,
-        html: emailHtml,
-      })
-      .catch((error) => {
-        console.error(
-          `Failed to send task assignment email to ${assignee.email}`,
-          error,
-        );
-      });
+  // 3. Thông báo cho Role (Incident)
+  async notifyRole(roleName: string, tenantId: string, title: string, message: string) {
+    const users = await this.prisma.user.findMany({
+      where: { tenantId, role: { name: roleName }, status: 'active' },
+      select: { id: true }
+    });
+    for (const user of users) {
+      await this.createAndSend({ tenantId, userId: user.id, title, message, type: 'WARNING' });
+    }
+  }
+
+  // 4. Broadcast
+  async notifyBroadcast(tenantId: string, title: string, message: string) {
+    return this.createAndSend({ tenantId, userId: undefined, title, message, type: 'ERROR' });
   }
 }
