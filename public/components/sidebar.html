@@ -1,0 +1,120 @@
+<!-- components/sidebar.html -->
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between"
+       x-data="headerApp()" x-init="initHeader()">
+    <div>
+        <div class="flex items-center justify-center h-20 border-b border-gray-100">
+            <div class="flex items-center space-x-2">
+                <a href="/index.html"><img src="../img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
+            </div>
+        </div>
+
+        <nav class="mt-6 px-4 space-y-2">
+            <!-- TỔNG QUAN -->
+            <a href="../ternants/dashboard.html" 
+               class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+               :class="isActive('dashboard.html') ? 'bg-blue-50 text-opsera-primary font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-opsera-primary'">
+                <i class="fa-solid fa-gauge-high w-6 text-center mr-2 text-lg"></i>
+                <span>Tổng quan</span>
+            </a>
+            
+            <!-- DỰ ÁN -->
+            <template x-if="canAccess('READ_PROJECT')">
+                <a href="../ternants/project.html" 
+                   class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                   :class="isActive('project.html') ? 'bg-blue-50 text-opsera-primary font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-opsera-primary'">
+                    <i class="fa-solid fa-building-user w-6 text-center mr-2 text-lg"></i>
+                    <span>Quản lý Dự án</span>
+                </a>
+            </template>
+
+            <!-- QR CODE -->
+            <template x-if="canAccess('READ_QRCODE')">
+                <a href="../ternants/qrcodes.html" 
+                   class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                   :class="isActive('qrcodes.html') ? 'bg-blue-50 text-opsera-primary font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-opsera-primary'">
+                    <i class="fa-solid fa-qrcode w-6 text-center mr-2 text-lg"></i>
+                    <span>Mã QR & Điểm quét</span>
+                </a>
+            </template>
+
+            <!-- NHÂN SỰ -->
+            <template x-if="canAccess(['READ_USER', 'READ_ROLE'])">
+                <a href="../ternants/staff.html" 
+                   class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                   :class="isActive('staff.html') ? 'bg-blue-50 text-opsera-primary font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-opsera-primary'">
+                    <i class="fa-solid fa-users-gear w-6 text-center mr-2 text-lg"></i>
+                    <span>Nhân sự & Phân quyền</span>
+                </a>
+            </template>
+
+            <!-- TASK -->
+            <template x-if="canAccess('READ_TASK')">
+                <a href="../ternants/task.html" 
+                   class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                   :class="isActive('task.html') ? 'bg-blue-50 text-opsera-primary font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-opsera-primary'">
+                    <i class="fa-solid fa-list-check w-6 text-center mr-2 text-lg"></i>
+                    <span>Công việc & Task</span>
+                </a>
+            </template>
+
+            <!-- CHAT -->
+            <template x-if="canAccess('READ_CHAT')">
+                <a href="/ternants/chat.html" 
+                   class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                   :class="isActive('chat.html') ? 'bg-blue-50 text-opsera-primary font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-opsera-primary'">
+                    <i class="fa-solid fa-comments w-6 text-center mr-2 text-lg"></i>
+                    <span>Trò chuyện</span>
+                </a>
+            </template>
+
+            <!-- NÂNG CAO -->
+            <template x-if="['professional', 'enterprise'].includes(currentPlan)">
+                <div class="pt-2 mt-2 border-t border-gray-100">
+                    <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nâng cao</p>
+                    
+                    <a x-show="canAccess('READ_REPORT')" href="../ternants/report.html" 
+                       class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                       :class="isActive('report.html') ? 'bg-purple-50 text-purple-600 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-600'">
+                        <i class="fa-solid fa-chart-pie w-6 text-center mr-2 text-lg"></i>
+                        <span>Báo cáo Thống kê</span>
+                    </a>
+                    
+                    <a x-show="canAccess('READ_AUDIT_LOG')" href="../ternants/audit_log.html" 
+                       class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                       :class="isActive('audit_log.html') ? 'bg-purple-50 text-purple-600 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-purple-600'">
+                        <i class="fa-solid fa-clock-rotate-left w-6 text-center mr-2 text-lg"></i>
+                        <span>Nhật ký Hoạt động</span>
+                    </a>
+                </div>
+            </template>
+
+            <!-- DOANH NGHIỆP -->
+            <template x-if="currentPlan === 'enterprise'">
+                <div class="pt-2 mt-2 border-t border-gray-100">
+                    <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doanh nghiệp</p>
+                    
+                    <a x-show="canAccess('MANAGE_API')" href="../ternants/api_integration.html" 
+                       class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                       :class="isActive('api_integration.html') ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-indigo-600'">
+                        <i class="fa-solid fa-plug w-6 text-center mr-2 text-lg"></i>
+                        <span>Tích hợp API</span>
+                    </a>
+                    
+                    <a x-show="canAccess('MANAGE_BRANDING')" href="../ternants/branding.html" 
+                       class="flex items-center px-4 py-3 rounded-lg transition-colors group"
+                       :class="isActive('branding.html') ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-indigo-600'">
+                        <i class="fa-solid fa-palette w-6 text-center mr-2 text-lg"></i>
+                        <span>Tùy chỉnh Thương hiệu</span>
+                    </a>
+                </div>
+            </template>
+        </nav>
+    </div>
+    
+    <div class="p-4 border-t border-gray-200">
+        <button @click="logout" class="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors group">
+            <i class="fa-solid fa-right-from-bracket w-6 text-center mr-2 text-lg group-hover:text-red-600"></i>
+            <span>Đăng xuất</span>
+        </button>
+    </div>
+</aside>

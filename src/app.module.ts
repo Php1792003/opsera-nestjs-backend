@@ -25,6 +25,7 @@ import { ReportModule } from './report/report.module';
 import { IncidentModule } from './incident/incident.module';
 import { ChatModule } from './chat/chat.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '',
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

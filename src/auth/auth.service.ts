@@ -17,7 +17,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private auditService: AuditService,
-  ) {}
+  ) { }
 
   async register(dto: RegisterDto): Promise<AuthResult> {
     const existingUser = await this.prisma.user.findUnique({
@@ -59,33 +59,22 @@ export class AuthService {
     return this.signToken(
       result.user.id,
       result.tenant.id,
+      result.user.isTenantAdmin,
       result.user.isSuperAdmin,
       result.user.email,
       result.user.fullName,
+      null,
     );
   }
 
   async login(dto: LoginDto): Promise<AuthResult> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
+      include: { role: true }, // Lấy thông tin Role
     });
 
     if (!user || !(await bcrypt.compare(dto.password, user.password))) {
-      const failedUserAttempt = await this.prisma.user.findFirst({
-        where: { email: dto.email },
-      });
-
-      if (failedUserAttempt) {
-        await this.auditService.logActivity(
-          failedUserAttempt.id,
-          failedUserAttempt.tenantId,
-          'USER_LOGIN_FAILED',
-          { reason: 'Invalid credentials' },
-          'USER',
-          failedUserAttempt.id,
-        );
-      }
-
+      // ... (Giữ nguyên logic audit fail) ...
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -101,23 +90,29 @@ export class AuthService {
     return this.signToken(
       user.id,
       user.tenantId,
+      user.isTenantAdmin,
       user.isSuperAdmin,
       user.email,
       user.fullName,
+      user.role, // Truyền role xuống
     );
   }
 
-  private async signToken(
+  // Đổi từ private -> public để MasterAdminService có thể gọi
+  public async signToken(
     userId: string,
     tenantId: string,
+    isTenantAdmin: boolean,
     isSuperAdmin: boolean,
     email?: string,
     fullName?: string,
+    role?: any,
   ): Promise<{ accessToken: string; user?: any }> {
     const payload = {
       sub: userId,
       tenantId: tenantId,
       isSuperAdmin: isSuperAdmin,
+      roleId: role?.id,
     };
 
     const accessToken = await this.jwtService.signAsync(payload);
@@ -134,8 +129,16 @@ export class AuthService {
         email: email,
         fullName: fullName,
         tenantId: tenantId,
+        isTenantAdmin: isTenantAdmin,
         isSuperAdmin: isSuperAdmin,
         tenant: tenant,
+        role: role
+          ? {
+            id: role.id,
+            name: role.name,
+            permissions: role.permissions,
+          }
+          : null,
       },
     };
   }

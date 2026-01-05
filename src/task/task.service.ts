@@ -13,8 +13,6 @@ import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
 import { CreateTaskAttachmentDto } from './dto/create-task-attachment.dto';
 import { TimeTrackingDto } from './dto/time-tracking.dto';
 import { Prisma } from '@prisma/client';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class TaskService {
@@ -24,6 +22,7 @@ export class TaskService {
     private notificationService: NotificationService,
   ) { }
 
+  // --- CREATE TASK ---
   async create(createTaskDto: CreateTaskDto, tenantId: string, userId: string) {
     const {
       title,
@@ -36,32 +35,34 @@ export class TaskService {
       estimatedHours,
     } = createTaskDto;
 
+    // 1. Validate Project
     const project = await this.prisma.project.findFirst({
       where: { id: projectId, tenantId },
     });
+    if (!project) throw new NotFoundException('Project not found or access denied');
 
-    if (!project) throw new NotFoundException('Project not found');
-
-    // Kiểm tra assignee nếu có
+    // 2. Validate Assignee (if provided)
     if (assigneeId) {
       const assignee = await this.prisma.user.findFirst({
         where: { id: assigneeId, tenantId },
       });
-      if (!assignee) throw new NotFoundException('Assignee not found');
+      if (!assignee) throw new NotFoundException('Assignee not found in this tenant');
     }
 
+    // 3. Create Task
     const task = await this.prisma.task.create({
       data: {
         title,
         description,
         projectId,
         creatorId: userId,
-        assigneeId: assigneeId || null, // Đảm bảo null nếu undefined
+        assigneeId: assigneeId || null,
         deadline: deadline ? new Date(deadline) : null,
         priority: priority || 'MEDIUM',
         tags: tags ? JSON.stringify(tags) : null,
-        estimatedHours,
+        estimatedHours: estimatedHours ? Number(estimatedHours) : null,
         tenantId,
+        status: assigneeId ? 'IN_PROGRESS' : 'PENDING', // Auto set status if assigned
       },
       include: {
         project: { select: { id: true, name: true } },
@@ -70,8 +71,17 @@ export class TaskService {
       },
     });
 
-    await this.auditService.logActivity(userId, tenantId, 'CREATE_TASK', { taskId: task.id }, 'TASK', task.id);
+    // 4. Log Audit
+    await this.auditService.logActivity(
+      userId,
+      tenantId,
+      'CREATE_TASK',
+      { taskId: task.id, title: task.title },
+      'TASK',
+      task.id,
+    );
 
+    // 5. Send Notification if assigned
     if (task.assigneeId && task.creatorId !== task.assigneeId) {
       const assignee = await this.prisma.user.findUnique({ where: { id: task.assigneeId } });
       const assigner = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -83,23 +93,31 @@ export class TaskService {
     return task;
   }
 
-
+  // --- FIND ALL (List & Filter) ---
   async findAll(tenantId: string, filters: any) {
     const { projectId, assigneeId, status, search, page = 1, limit = 20 } = filters;
+
+    // Build Dynamic Where Clause
     const where: Prisma.TaskWhereInput = { tenantId };
 
     if (projectId) where.projectId = projectId;
     if (assigneeId) where.assigneeId = assigneeId;
-    if (status) where.status = status;
-    if (search) where.OR = [{ title: { contains: search } }, { description: { contains: search } }];
+    if (status && status !== 'ALL') where.status = status;
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search } }, // Case-insensitive in some DBs
+        { description: { contains: search } }
+      ];
+    }
 
     const [tasks, total] = await Promise.all([
       this.prisma.task.findMany({
         where,
         include: {
           assignee: { select: { id: true, fullName: true, email: true, avatar: true } },
-          project: { select: { name: true } },
-          creator: { select: { fullName: true } }
+          project: { select: { id: true, name: true } },
+          creator: { select: { id: true, fullName: true } }
         },
         skip: (Number(page) - 1) * Number(limit),
         take: Number(limit),
@@ -108,79 +126,113 @@ export class TaskService {
       this.prisma.task.count({ where }),
     ]);
 
-    return { tasks, total, page, limit, totalPages: Math.ceil(total / Number(limit)) };
+    return {
+      data: tasks, // Return standard pagination format
+      meta: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / Number(limit))
+      }
+    };
   }
 
+  // --- GET ONE ---
   async findOne(id: string, tenantId: string) {
     const task = await this.prisma.task.findFirst({
       where: { id, tenantId },
       include: {
         attachments: true,
-        comments: { include: { user: true }, orderBy: { createdAt: 'desc' } },
-        assignee: true,
-        creator: true
+        comments: {
+          include: { user: { select: { id: true, fullName: true, avatar: true } } },
+          orderBy: { createdAt: 'desc' }
+        },
+        assignee: { select: { id: true, fullName: true, email: true, avatar: true } },
+        creator: { select: { id: true, fullName: true, email: true } },
+        project: { select: { id: true, name: true } }
       }
     });
     if (!task) throw new NotFoundException('Task not found');
     return task;
   }
 
+  // --- ACCEPT TASK (Self-Assign) ---
   async acceptTask(taskId: string, tenantId: string, userId: string) {
+    // 1. Get Task
     const task = await this.prisma.task.findFirst({ where: { id: taskId, tenantId } });
     if (!task) throw new NotFoundException('Task not found');
-    if (task.assigneeId) throw new BadRequestException('Task already assigned');
+    if (task.assigneeId) throw new BadRequestException('Task already assigned to someone else');
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, include: { role: true } });
+    // 2. Get User & Role
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true }
+    });
+    if (!user) throw new NotFoundException('User not found');
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    // Check Role trong Tags
+    // 3. Check Role Restriction (Optional: If task has tag "Role:Manager")
     let requiredRoleName = '';
     if (task.tags) {
       try {
-        const tags = JSON.parse(task.tags);
-        const roleTag = tags.find((t: string) => t.startsWith('Role:'));
-        if (roleTag) requiredRoleName = roleTag.split(':')[1];
-      } catch (e) { }
+        const tags = JSON.parse(task.tags); // Assuming tags is JSON string array
+        if (Array.isArray(tags)) {
+          const roleTag = tags.find((t: string) => t.startsWith('Role:'));
+          if (roleTag) requiredRoleName = roleTag.split(':')[1];
+        }
+      } catch (e) { /* ignore parse error */ }
     }
 
     if (requiredRoleName && (!user.role || user.role.name !== requiredRoleName) && !user.isTenantAdmin) {
-      throw new ForbiddenException('Bạn không thuộc diện xử lý công việc này.');
+      throw new ForbiddenException(`Task requires role: ${requiredRoleName}`);
     }
 
-    const updated = await this.prisma.task.update({
+    // 4. Update Task
+    const updatedTask = await this.prisma.task.update({
       where: { id: taskId },
-      data: { assigneeId: userId, status: 'IN_PROGRESS' },
+      data: {
+        assigneeId: userId,
+        status: 'IN_PROGRESS',
+        // actualHours: 0, // Reset tracking if needed
+      },
       include: { assignee: true }
     });
 
-    // Update Incident nếu có
-    await this.prisma.incident.updateMany({ where: { taskId }, data: { status: 'IN_PROGRESS' } });
+    // 5. Sync with Incident (if this task was created from an incident)
+    await this.prisma.incident.updateMany({
+      where: { taskId },
+      data: { status: 'IN_PROGRESS' }
+    });
 
-    await this.notificationService.notifyUser(
-      task.creatorId,
-      tenantId,
-      'Công việc được tiếp nhận',
-      `Nhân viên ${user.fullName} đã bắt đầu xử lý task: "${task.title}".`,
-      'SUCCESS'
-    );
+    // 6. Notify Creator
+    if (task.creatorId !== userId) {
+      await this.notificationService.notifyUser(
+        task.creatorId,
+        tenantId,
+        'Công việc được tiếp nhận',
+        `${user.fullName} đã nhận task: "${task.title}"`,
+        'SUCCESS'
+      );
+    }
 
-    return updated;
+    // 7. Audit
+    await this.auditService.logActivity(userId, tenantId, 'ACCEPT_TASK', { taskId }, 'TASK', taskId);
+
+    return updatedTask;
   }
 
+  // --- UPDATE TASK ---
   async update(id: string, updateTaskDto: UpdateTaskDto, tenantId: string, userId: string) {
     const task = await this.findOne(id, tenantId);
 
-    if (task.creatorId !== userId && task.assigneeId !== userId) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (!user?.isTenantAdmin) throw new ForbiddenException('Permission denied');
-    }
+    // Check Permission: Creator, Assignee, or Tenant Admin
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const canEdit = task.creatorId === userId || task.assigneeId === userId || user?.isTenantAdmin;
+
+    if (!canEdit) throw new ForbiddenException('You do not have permission to edit this task');
 
     const data: Prisma.TaskUpdateInput = {
       ...updateTaskDto,
-      deadline: updateTaskDto.deadline ? new Date(updateTaskDto.deadline) : updateTaskDto.deadline,
+      deadline: updateTaskDto.deadline ? new Date(updateTaskDto.deadline) : undefined,
       tags: updateTaskDto.tags ? JSON.stringify(updateTaskDto.tags) : undefined,
     };
 
@@ -190,41 +242,59 @@ export class TaskService {
       include: { assignee: true }
     });
 
-    await this.auditService.logActivity(userId, tenantId, 'UPDATE_TASK', { taskId: id }, 'TASK', id);
+    await this.auditService.logActivity(userId, tenantId, 'UPDATE_TASK', { taskId: id, updates: Object.keys(updateTaskDto) }, 'TASK', id);
     return updatedTask;
   }
 
+  // --- ASSIGN TASK (Manager assigns to someone) ---
   async assignTask(taskId: string, assigneeId: string, tenantId: string, userId: string) {
     const task = await this.findOne(taskId, tenantId);
 
-    if (task.creatorId !== userId) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (!user?.isTenantAdmin) throw new ForbiddenException('Permission denied');
+    // Lấy thông tin người thực hiện thao tác (Assigner)
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+    // Kiểm tra user tồn tại trước khi check quyền
+    if (!user) {
+      throw new NotFoundException('Assigner user not found');
+    }
+
+    // Only Creator or Admin can assign
+    if (task.creatorId !== userId && !user.isTenantAdmin) {
+      throw new ForbiddenException('Only creator or admin can assign tasks');
     }
 
     const updatedTask = await this.prisma.task.update({
       where: { id: taskId },
-      data: { assigneeId },
+      data: {
+        assigneeId,
+        status: 'IN_PROGRESS' // Auto switch status
+      },
       include: { assignee: true }
     });
 
     const assignee = await this.prisma.user.findUnique({ where: { id: assigneeId } });
-    const assigner = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (assignee && assigner) await this.notificationService.sendTaskAssignedNotification(assignee, updatedTask, assigner);
+
+    if (assignee) {
+      await this.notificationService.sendTaskAssignedNotification(assignee, updatedTask, user);
+    }
 
     return updatedTask;
   }
-
-
+  // --- COMMENTS & ATTACHMENTS ---
   async addComment(taskId: string, dto: CreateTaskCommentDto, tenantId: string, userId: string) {
-    const comment = await this.prisma.taskComment.create({
+    const task = await this.prisma.task.findFirst({ where: { id: taskId, tenantId } });
+    if (!task) throw new NotFoundException('Task not found');
+
+    return this.prisma.taskComment.create({
       data: { content: dto.content, taskId, userId, tenantId },
-      include: { user: { select: { id: true, fullName: true, email: true } } },
+      include: { user: { select: { id: true, fullName: true, avatar: true } } },
     });
-    return comment;
   }
 
   async addAttachment(taskId: string, dto: CreateTaskAttachmentDto, tenantId: string, userId: string) {
+    const task = await this.prisma.task.findFirst({ where: { id: taskId, tenantId } });
+    if (!task) throw new NotFoundException('Task not found');
+
     return this.prisma.taskAttachment.create({
       data: { ...dto, taskId, userId, tenantId },
     });
@@ -235,14 +305,15 @@ export class TaskService {
       data: {
         taskId, userId, tenantId,
         description: dto.description,
-        duration: dto.duration,
+        duration: Number(dto.duration),
         startTime: new Date(dto.startTime),
         endTime: dto.endTime ? new Date(dto.endTime) : null,
       },
-      include: { user: true }
+      include: { user: { select: { fullName: true } } }
     });
   }
 
+  // --- STATS ---
   async getTaskStats(tenantId: string, projectId?: string) {
     const where: Prisma.TaskWhereInput = { tenantId };
     if (projectId) where.projectId = projectId;
@@ -258,36 +329,26 @@ export class TaskService {
     return { total, pending, inProgress, completed, overdue };
   }
 
-  async getMyTasks(tenantId: string, userId: string, filters: any) {
-    return this.prisma.task.findMany({
-      where: {
-        tenantId,
-        OR: [{ assigneeId: userId }, { creatorId: userId }]
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-  }
-
-  async findAllByProject(projectId: string, tenantId: string) {
-    return this.prisma.task.findMany({
-      where: { projectId, tenantId },
-      orderBy: { createdAt: 'desc' }
-    });
-  }
-
+  // --- DELETE ---
   async remove(id: string, tenantId: string, userId: string) {
     const task = await this.findOne(id, tenantId);
-    if (task.creatorId !== userId) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (!user?.isTenantAdmin) throw new ForbiddenException('Cannot delete task');
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+    // Strict delete policy: Only Admin or Creator
+    if (task.creatorId !== userId && !user?.isTenantAdmin) {
+      throw new ForbiddenException('Cannot delete task created by others');
     }
 
+    // Unlink incidents before delete to avoid constraint error
     await this.prisma.incident.updateMany({
       where: { taskId: id },
-      data: { taskId: null, status: 'OPEN' }
+      data: { taskId: null, status: 'OPEN' } // Re-open incident if task is deleted
     });
 
     await this.prisma.task.delete({ where: { id } });
-    return { message: 'Deleted', id };
+
+    await this.auditService.logActivity(userId, tenantId, 'DELETE_TASK', { taskId: id, title: task.title }, 'TASK', id);
+
+    return { message: 'Task deleted successfully', id };
   }
 }

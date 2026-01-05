@@ -16,7 +16,7 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 @Controller('master-admin')
 @UseGuards(JwtAuthGuard, SuperAdminGuard)
 export class MasterAdminController {
-  constructor(private readonly masterAdminService: MasterAdminService) {}
+  constructor(private readonly masterAdminService: MasterAdminService) { }
 
   @Get('tenants')
   findAllTenants() {
@@ -37,7 +37,7 @@ export class MasterAdminController {
   }
 
   @Post('impersonate/:userId')
-  impersonate(@Param('userId', ParseUUIDPipe) userId: string) {
-    return this.masterAdminService.impersonate(userId);
+  async impersonate(@Param('userId') userId: string) {
+    return this.masterAdminService.impersonateUser(userId);
   }
 }

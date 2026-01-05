@@ -31,7 +31,6 @@
 <body class="bg-gray-50 text-gray-800" x-data="billingApp()" x-init="init()">
 
     <div class="flex h-screen overflow-hidden" x-cloak>
-        <!-- Sidebar -->
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-center h-20 border-b border-gray-100">
@@ -54,7 +53,6 @@
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         Nhân sự & Phân quyền
                     </a>
-                    <!-- Active Link: Billing -->
                     <a href="#" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg font-semibold transition-colors mt-4">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         Thanh toán & Hóa đơn
@@ -69,10 +67,8 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             
-            <!-- Top Header -->
             <header class="flex justify-between items-center py-4 px-6 bg-white border-b border-gray-200 shadow-sm">
                 <div class="flex items-center">
                     <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
@@ -92,10 +88,8 @@
                 </div>
             </header>
 
-            <!-- Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
                 
-                <!-- 1. Plan Overview -->
                 <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-8 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full z-0"></div>
                     <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -118,7 +112,6 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
-                    <!-- 2. Payment Methods -->
                     <div class="lg:col-span-2 space-y-8">
                         <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
                             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
@@ -126,7 +119,6 @@
                                 <button class="text-sm text-opsera-primary font-medium hover:underline">+ Thêm mới</button>
                             </div>
                             <div class="p-6 space-y-4">
-                                <!-- Saved Card 1 -->
                                 <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex items-center">
                                         <div class="h-10 w-16 bg-white border border-gray-200 rounded flex items-center justify-center">
@@ -140,7 +132,6 @@
                                     <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-bold rounded">Mặc định</span>
                                 </div>
                                 
-                                <!-- Transfer Info -->
                                 <div class="flex items-center justify-between p-4 border border-dashed border-gray-300 rounded-lg">
                                     <div class="flex items-center">
                                         <div class="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
@@ -158,7 +149,6 @@
                             </div>
                         </div>
 
-                        <!-- 3. Invoice History -->
                         <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                             <div class="px-6 py-4 border-b border-gray-100">
                                 <h3 class="font-bold text-gray-800">Lịch sử hóa đơn</h3>
@@ -198,7 +188,6 @@
                         </div>
                     </div>
 
-                    <!-- Right Column: Usage Summary -->
                     <div class="lg:col-span-1">
                         <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sticky top-6">
                             <h3 class="font-bold text-gray-800 mb-4">Thống kê sử dụng</h3>
@@ -248,7 +237,6 @@
             </main>
         </div>
 
-        <!-- Upgrade Modal -->
         <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" style="display: none;">
             <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm" @click="showModal = false"></div>
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
@@ -258,7 +246,6 @@
                 </div>
                 <div class="p-8 overflow-y-auto bg-gray-50">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Starter -->
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                             <h4 class="text-lg font-bold text-gray-800">Starter</h4>
                             <p class="text-3xl font-extrabold text-gray-900 mt-2">Liên hệ</p>
@@ -269,7 +256,6 @@
                             </ul>
                             <button class="mt-8 w-full py-2 border border-gray-300 rounded-lg font-bold text-gray-600 hover:bg-gray-50">Chọn</button>
                         </div>
-                        <!-- Professional -->
                         <div class="bg-white p-6 rounded-xl border-2 border-opsera-primary shadow-lg relative transform md:-translate-y-2">
                             <div class="absolute top-0 right-0 bg-opsera-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">ĐỀ XUẤT</div>
                             <h4 class="text-lg font-bold text-opsera-primary">Professional</h4>
@@ -282,7 +268,6 @@
                             </ul>
                             <button class="mt-8 w-full py-2 bg-opsera-primary text-white rounded-lg font-bold hover:bg-blue-700 shadow-md">Đang sử dụng</button>
                         </div>
-                        <!-- Enterprise -->
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                             <h4 class="text-lg font-bold text-indigo-900">Enterprise</h4>
                             <p class="text-3xl font-extrabold text-gray-900 mt-2">1.5tr+ <span class="text-sm font-normal text-gray-500">/tháng</span></p>
@@ -308,7 +293,6 @@
                 user: { name: 'Loading...', avatar: '', role: 'User' },
                 showModal: false,
                 
-                // Mock Invoices
                 invoices: [
                     { id: 'INV-2025-001', date: '20/11/2025', amount: '599.000 đ', status: 'PAID' },
                     { id: 'INV-2025-002', date: '20/10/2025', amount: '599.000 đ', status: 'PAID' },
