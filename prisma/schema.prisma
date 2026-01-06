@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
-  url      = "sqlserver://52.220.122.42:1433;database=AegismDB;user=sa;password=Phphcm179;encrypt=false;trustServerCertificate=true"
+  url      = "DATABASE_URL="sqlserver://172.31.32.84:1433;database=AegismDB;user=sa;password=Phphcm179;encrypt=false;trustServerCertificate=true;connectionTimeout=60000""
 }
 
 // ==========================================
