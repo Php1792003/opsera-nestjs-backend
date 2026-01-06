@@ -333,6 +333,10 @@
     <script>
         function reportApp() {
             return {
+                apiUrl: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+                    ? 'http://localhost:3000' 
+                    : 'https://aegism.online',
+
                 sidebarOpen: false,
                 currentPlan: 'starter',
                 user: { name: 'User', avatar: '', role: 'User', isSuperAdmin: false, isTenantAdmin: false },
@@ -384,7 +388,7 @@
 
                 async fetchProjects() {
                     try {
-                        const res = await fetch('http://localhost:3000/api/projects', {
+                        const res = await fetch(`${this.apiUrl}/api/projects`, {
                             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
                         });
                         if (res.ok) {
@@ -410,7 +414,7 @@
                     });
 
                     try {
-                        const res = await fetch(`http://localhost:3000/api/reports/dashboard?${params.toString()}`, {
+                        const res = await fetch(`${this.apiUrl}/api/reports/dashboard?${params.toString()}`, {
                             headers: { 'Authorization': `Bearer ${token}` }
                         });
                         
@@ -486,7 +490,7 @@
                         endDate: this.dateRange.end
                     });
                     try {
-                        const res = await fetch(`http://localhost:3000/api/reports/export?${params.toString()}`, {
+                        const res = await fetch(`${this.apiUrl}/api/reports/export?${params.toString()}`, {
                             method: 'GET', headers: { 'Authorization': `Bearer ${token}` }
                         });
                         if (res.ok) {
@@ -506,7 +510,7 @@
                         endDate: this.dateRange.end
                     });
                     try {
-                        const res = await fetch(`http://localhost:3000/api/reports/ai-analyze?${params.toString()}`, {
+                        const res = await fetch(`${this.apiUrl}/api/reports/ai-analyze?${params.toString()}`, {
                             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
                         });
                         if (res.ok) {

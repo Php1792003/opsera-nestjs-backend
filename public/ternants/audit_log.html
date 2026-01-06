@@ -238,6 +238,10 @@
     </div>
 
     <script>
+        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                    ? 'http://localhost:3000'
+                    : 'https://aegism.online';
+
         function auditApp() {
             return {
                 sidebarOpen: false, currentPlan: 'starter', 
@@ -277,7 +281,7 @@
 
                 async fetchProjects() {
                     try {
-                        const res = await fetch('http://localhost:3000/api/projects', {
+                        const res = await fetch(`${API_URL}/api/projects`, {
                             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
                         });
                         if (res.ok) this.projects = await res.json();
@@ -291,7 +295,7 @@
                         if (this.searchQuery) params.append('action', this.searchQuery);
                         if (this.selectedProjectId) params.append('projectId', this.selectedProjectId); // Gửi projectId nếu có
 
-                        const res = await fetch(`http://localhost:3000/api/audit/tenant-activities?${params.toString()}`, {
+                        const res = await fetch(`${API_URL}/api/audit/tenant-activities?${params.toString()}`, {
                             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
                         });
                         if (res.ok) {

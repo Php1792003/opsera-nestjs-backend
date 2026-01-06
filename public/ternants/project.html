@@ -556,6 +556,11 @@
     <script>
         function projectApp() {
             return {
+                // --- Cấu hình tự động chọn URL API ---
+                apiUrl: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                    ? 'http://localhost:3000'
+                    : 'https://aegism.online',
+
                 sidebarOpen: false,
                 currentPlan: 'starter',
                 searchQuery: '',
@@ -605,7 +610,7 @@
 
                 async fetchUserProfile() {
                     try {
-                        const res = await fetch('http://localhost:3000/api/users/profile', { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        const res = await fetch(`${this.apiUrl}/api/users/profile`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
                         if (res.ok) {
                             const u = await res.json();
                             localStorage.setItem('user', JSON.stringify(u));
@@ -633,7 +638,7 @@
                         } catch (e) { permissions = []; }
                     }
                     let avatarUrl = u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName)}&background=2563EB&color=fff`;
-                    if (avatarUrl.startsWith('/uploads')) avatarUrl = 'http://localhost:3000' + avatarUrl;
+                    if (avatarUrl.startsWith('/uploads')) avatarUrl = `${this.apiUrl}${avatarUrl}`;
 
                     this.user = {
                         id: u.id, name: u.fullName || 'User', email: u.email, avatar: avatarUrl,
@@ -663,7 +668,7 @@
                 async fetchProjects() {
                     try {
                         const token = localStorage.getItem('accessToken');
-                        const res = await fetch('http://localhost:3000/api/projects', {
+                        const res = await fetch(`${this.apiUrl}/api/projects`, {
                             headers: { 'Authorization': `Bearer ${token}` }
                         });
 
@@ -820,8 +825,8 @@
                     const token = localStorage.getItem('accessToken');
                     const isUpdate = !!this.editingProject.id;
                     const url = isUpdate 
-                        ? `http://localhost:3000/api/projects/${this.editingProject.id}`
-                        : 'http://localhost:3000/api/projects';
+                        ? `${this.apiUrl}/api/projects/${this.editingProject.id}`
+                        : `${this.apiUrl}/api/projects`;
                     const method = isUpdate ? 'PUT' : 'POST';
 
                     try {
@@ -866,7 +871,7 @@
                     if (result.isConfirmed) {
                         try {
                             const token = localStorage.getItem('accessToken');
-                            const res = await fetch(`http://localhost:3000/api/projects/${project.id}`, {
+                            const res = await fetch(`${this.apiUrl}/api/projects/${project.id}`, {
                                 method: 'DELETE',
                                 headers: { 'Authorization': `Bearer ${token}` }
                             });
