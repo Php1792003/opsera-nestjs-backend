@@ -4,111 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký - AEGISM</title>
-    <!-- Tải Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tải Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Sử dụng font Nunito -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-        }
+        body { font-family: 'Nunito', sans-serif; }
+        [x-cloak] { display: none !important; }
     </style>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'aegism-blue': '#2563EB', // Màu xanh dương từ hình
+                        'aegism-blue': '#2563EB',
                         'aegism-dark': '#1F2937',
-                        'aegism-input-bg': '#F3F4F6', // Màu nền ô input
+                        'aegism-input-bg': '#F3F4F6',
                     },
                 },
             },
         }
     </script>
 </head>
-<body class="bg-white">
+
+<body class="bg-white" x-data="signupForm()">
 
     <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
         
-        <!-- Cột bên trái: Form đăng ký -->
         <div class="flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24">
             <div class="mx-auto w-full max-w-md">
-                <!-- Logo -->
                 <div class="flex items-center mb-10">
                     <a href="index.html"><img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/></a>
                 </div>
 
-                <!-- Tiêu đề -->
                 <h1 class="text-3xl font-extrabold text-aegism-dark">Bắt đầu với AEGISM</h1>
                 <p class="mt-2 text-base text-gray-600">
                     Tạo tài khoản để tối ưu hóa vận hành và giám sát an ninh.
                 </p>
 
-                <!-- Form -->
-                <form class="mt-8 space-y-6" action="#" method="POST" x-data="{ showPassword: false }">
-                    <!-- Họ và Tên -->
-                    <div>
-                        <label for="ho-va-ten" class="block text-sm font-medium text-gray-700 mb-2">Họ và Tên</label>
-                        <input id="ho-va-ten" name="ho-va-ten" type="text" required
-                               placeholder="Nhập họ và tên của bạn"
-                               class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
-                    </div>
+                <div class="mt-8">
+                    <form class="space-y-6" @submit.prevent="submitForm">
+                        
+                        <div>
+                            <label for="fullname" class="block text-sm font-medium text-gray-700 mb-2">Họ và Tên</label>
+                            <input id="fullname" type="text" x-model="formData.fullname" 
+                                   :class="{'border-red-500 focus:ring-red-500': errors.fullname}"
+                                   class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent"
+                                   placeholder="Nhập họ và tên của bạn">
+                            <p x-show="errors.fullname" x-text="errors.fullname" class="mt-1 text-sm text-red-600"></p>
+                        </div>
 
-                    <!-- Địa chỉ Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ Email</label>
-                        <input id="email" name="email" type="email" autocomplete="email" required
-                               placeholder="Nhập địa chỉ email"
-                               class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
-                    </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Địa chỉ Email</label>
+                            <input id="email" type="email" x-model="formData.email" 
+                                   :class="{'border-red-500 focus:ring-red-500': errors.email}"
+                                   class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent"
+                                   placeholder="Nhập địa chỉ email">
+                            <p x-show="errors.email" x-text="errors.email" class="mt-1 text-sm text-red-600"></p>
+                        </div>
 
-                    <!-- Mật khẩu -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
-                        <div class="relative">
-                            <input id="password" name="password" :type="showPassword ? 'text' : 'password'" required
-                                   placeholder="Tạo mật khẩu của bạn"
-                                   class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent">
-                            
-                            <!-- Nút JS để hiện/ẩn mật khẩu -->
-                            <button type="button" @click="showPassword = !showPassword"
-                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 hover:text-aegism-dark focus:outline-none">
-                                <!-- Icon mắt (đang đóng) -->
-                                <svg x-show="!showPassword" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <!-- Icon mắt (đang mở) -->
-                                <svg x-show="showPassword" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="display: none;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.996 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.575M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                        <div>
+                            <label for="companyName" class="block text-sm font-medium text-gray-700 mb-2">Tên Công ty / Tổ chức</label>
+                            <input id="companyName" type="text" x-model="formData.companyName" 
+                                   class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent"
+                                   placeholder="Ví dụ: Công ty AEGISM">
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
+                            <div class="relative">
+                                <input id="password" :type="showPassword ? 'text' : 'password'" x-model="formData.password"
+                                       :class="{'border-red-500 focus:ring-red-500': errors.password}"
+                                       class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent"
+                                       placeholder="Tạo mật khẩu của bạn">
+                                
+                                <button type="button" @click="showPassword = !showPassword"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 hover:text-aegism-dark focus:outline-none">
+                                    <svg x-show="!showPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                    <svg x-show="showPassword" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.996 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.575M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                </button>
+                            </div>
+                            <p x-show="errors.password" x-text="errors.password" class="mt-1 text-sm text-red-600"></p>
+                            <p class="mt-1 text-xs text-gray-500">Tối thiểu 6 ký tự, 1 chữ hoa, 1 ký tự đặc biệt.</p>
+                        </div>
+
+                        <div>
+                            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">Nhập lại Mật khẩu</label>
+                            <div class="relative">
+                                <input id="confirmPassword" :type="showPassword ? 'text' : 'password'" x-model="formData.confirmPassword"
+                                       :class="{'border-red-500 focus:ring-red-500': errors.confirmPassword}"
+                                       class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aegism-blue focus:border-transparent"
+                                       placeholder="Xác nhận mật khẩu">
+                            </div>
+                            <p x-show="errors.confirmPassword" x-text="errors.confirmPassword" class="mt-1 text-sm text-red-600"></p>
+                        </div>
+
+                        <div>
+                            <button type="submit" :disabled="isLoading"
+                                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-aegism-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aegism-blue disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span x-show="!isLoading">Tạo tài khoản</span>
+                                <span x-show="isLoading" x-cloak>Đang xử lý...</span>
                             </button>
                         </div>
-                    </div>
 
-                    <!-- Nút Submit -->
-                    <div>
-                        <button type="submit"
-                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-aegism-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aegism-blue">
-                            Tạo tài khoản
-                        </button>
-                    </div>
+                        <p class="text-center text-sm text-gray-500">
+                            Bằng việc đăng ký, bạn đồng ý với
+                            <a href="#" class="font-medium text-aegism-blue hover:text-blue-700">Điều khoản dịch vụ</a> và
+                            <a href="policy.html" class="font-medium text-aegism-blue hover:text-blue-700">Chính sách bảo mật</a> của chúng tôi.
+                        </p>
+                    </form>
+                </div>
 
-                    <!-- Điều khoản -->
-                    <p class="text-center text-sm text-gray-500">
-                        Bằng việc đăng ký, bạn đồng ý với
-                        <a href="#" class="font-medium text-aegism-blue hover:text-blue-700">Điều khoản dịch vụ</a> và
-                        <a href="policy.html" class="font-medium text-aegism-blue hover:text-blue-700">Chính sách bảo mật</a> của chúng tôi.
-                    </p>
-                </form>
-
-                <!-- Link Đăng nhập -->
                 <p class="mt-10 text-center text-sm text-gray-600">
                     Đã có tài khoản?
                     <a href="/login.html" class="font-medium text-aegism-blue hover:text-blue-700">
@@ -124,9 +129,7 @@
                         background-size: cover; 
                         background-position: center;">
             </div>
-            
             <div class="absolute inset-0 bg-gray-900 bg-opacity-60"></div>
-
             <div class="absolute bottom-16 left-10 right-10">
                 <h2 class="text-3xl font-bold text-white">
                     Tối ưu vận hành. Giám sát an toàn.
@@ -138,5 +141,126 @@
         </div>
     </div>
 
+    <div x-show="showSuccessModal" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-75 transition-opacity"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+        <div class="bg-white rounded-lg px-8 pt-8 pb-6 overflow-hidden shadow-xl transform transition-all sm:max-w-md sm:w-full">
+            <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                        Đăng ký thành công!
+                    </h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500">
+                            Chúc mừng bạn đã tạo tài khoản AEGISM thành công!
+                            Email xác nhận đã được gửi đến địa chỉ của bạn.
+                        </p>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Vui lòng đăng nhập để bắt đầu trải nghiệm.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                <button type="button" @click="redirectToLogin"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-aegism-blue text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-aegism-blue sm:ml-3 sm:w-auto sm:text-sm">
+                    Đăng nhập ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:3000' 
+            : 'http://52.220.122.42:3000';
+
+        function signupForm() {
+            return {
+                formData: {
+                    fullname: '',
+                    companyName: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: ''
+                },
+                errors: {},
+                showPassword: false,
+                isLoading: false,
+                showSuccessModal: false,
+                isValidatingEmail: false,
+
+                async submitForm() {
+                    this.errors = {};
+                    
+                    // --- Validation ---
+                    if (!this.formData.fullname.trim()) this.errors.fullname = "Họ và tên là bắt buộc.";
+                    if (!this.formData.companyName.trim()) this.errors.companyName = "Tên công ty là bắt buộc.";
+                    
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!this.formData.email) this.errors.email = "Email là bắt buộc.";
+                    else if (!emailRegex.test(this.formData.email)) this.errors.email = "Email không đúng định dạng.";
+
+                    const passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{6,}$/;
+                    if (!this.formData.password) this.errors.password = "Mật khẩu là bắt buộc.";
+                    else if (!passwordRegex.test(this.formData.password)) this.errors.password = "Mật khẩu yếu (Cần chữ hoa, ký tự đặc biệt, min 6 ký tự).";
+
+                    if (this.formData.password !== this.formData.confirmPassword) this.errors.confirmPassword = "Mật khẩu xác nhận không khớp.";
+
+                    if (Object.keys(this.errors).length > 0) return;
+
+                    this.isLoading = true;
+
+                    try {
+                        const response = await fetch(`${API_URL}/api/auth/register`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                fullName: this.formData.fullname,
+                                companyName: this.formData.companyName,
+                                email: this.formData.email,
+                                password: this.formData.password
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            if (response.status === 409) {
+                                this.errors.email = "Email này đã được sử dụng.";
+                            } else {
+                                alert(data.message || "Đăng ký thất bại. Vui lòng thử lại.");
+                            }
+                            return; 
+                        }
+
+                        // Khi Backend trả về 200/201, Modal sẽ hiện lên nhờ scope đã sửa
+                        this.showSuccessModal = true; 
+                        
+                    } catch (error) {
+                        console.error("Lỗi mạng:", error);
+                        alert("Không thể kết nối đến máy chủ. Hãy kiểm tra Backend.");
+                    } finally {
+                        this.isLoading = false; 
+                    }
+                },
+
+                redirectToLogin() {
+                    this.showSuccessModal = false; 
+                    window.location.href = '/login.html'; 
+                }
+            }
+        }
+    </script>
 </body>
 </html>

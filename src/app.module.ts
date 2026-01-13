@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 // Core Modules
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { AppMailerModule } from './mailer/mailer.module'; // Dùng module này, xóa cấu hình inline
 
 // Feature Modules
 import { AuthModule } from './auth/auth.module';
@@ -24,7 +25,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { ReportModule } from './report/report.module';
 import { IncidentModule } from './incident/incident.module';
 import { ChatModule } from './chat/chat.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -32,26 +32,18 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
 
-    MailerModule.forRootAsync({
-      useFactory: () => ({
-        transport: {
-          host: 'smtp.ethereal.email',
-          port: 587,
-          secure: false,
-          auth: {
-            user: 'paul.krajcik15@ethereal.email',
-            pass: 'EyjczQTbxy3qkBmD5F',
-          },
-        },
-        defaults: {
-          from: '"Opsera Notifier" <no-reply@opsera.com>',
-        },
-      }),
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
+    ServeStaticModule.forRoot(
+      {
+        rootPath: join(__dirname, '..', 'uploads'),
+        serveRoot: '/uploads',
+      },
+      {
+        rootPath: join(__dirname, '..', 'public'),
+      }
+    ),
+
+    AppMailerModule,
+
     AuthModule,
     ProjectModule,
     RoleModule,
@@ -67,11 +59,6 @@ import { UsersModule } from './users/users.module';
     ReportModule,
     IncidentModule,
     ChatModule,
-
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      serveRoot: '',
-    }),
     UsersModule,
   ],
   controllers: [AppController],

@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, Matches } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
@@ -6,15 +6,18 @@ export class RegisterDto {
   fullName: string;
 
   @IsNotEmpty()
-  @IsString()
-  companyName: string;
-
-  @IsNotEmpty()
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @MinLength(6)
+  @Matches(/^(?=.*[A-Z])(?=.*[\W_]).*$/, {
+    message: 'Password must contain at least 1 uppercase letter and 1 special character',
+  })
   password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  companyName: string; // Tên công ty/Tổ chức (Tenant)
 }

@@ -23,7 +23,9 @@
     ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "prisma/seed-admin.ts",
+    "test-db.js"
   ],
   "exclude": [
     "node_modules",

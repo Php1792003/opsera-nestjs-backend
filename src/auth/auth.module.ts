@@ -5,10 +5,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { AuditModule } from '../audit/audit.module';
+import { AppMailerModule } from 'src/mailer/mailer.module';
 
 @Module({
   imports: [
     PassportModule,
+    AppMailerModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' },
@@ -19,4 +21,4 @@ import { AuditModule } from '../audit/audit.module';
   providers: [AuthService, JwtStrategy],
   exports: [AuthService, JwtStrategy, JwtStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

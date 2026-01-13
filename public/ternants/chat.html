@@ -297,8 +297,8 @@
                                         <span x-show="msg.senderId !== user.id && currentConv.type === 'GROUP'" class="text-[10px] text-slate-400 ml-1 mb-0.5 font-bold" x-text="msg.sender?.fullName"></span>
                                         <div class="relative group flex items-center gap-2" :class="msg.senderId === user.id ? 'flex-row-reverse' : 'flex-row'">
                                             <div class="relative">
-                                                <template x-if="msg.type === 'IMAGE'"><div class="rounded-xl overflow-hidden border-2 border-white shadow-sm mb-1 cursor-pointer hover:shadow-md transition-shadow"><img :src="'http://localhost:3000' + msg.content" class="max-w-[240px] max-h-[300px] object-cover" @click="window.open('http://localhost:3000' + msg.content, '_blank')"></div></template>
-                                                <template x-if="msg.type === 'FILE'"><a :href="'http://localhost:3000' + msg.content" target="_blank" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm mb-1 min-w-[200px]"><div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="ph-fill ph-file-text text-2xl"></i></div><div class="flex-1 min-w-0"><p class="text-xs font-bold text-slate-700 truncate">File đính kèm</p><p class="text-[10px] text-blue-500 font-semibold">Nhấn để tải về</p></div></a></template>
+                                                <template x-if="msg.type === 'IMAGE'"><div class="rounded-xl overflow-hidden border-2 border-white shadow-sm mb-1 cursor-pointer hover:shadow-md transition-shadow"><img :src="'https://aegism.online' + msg.content" class="max-w-[240px] max-h-[300px] object-cover" @click="window.open('https://aegism.online' + msg.content, '_blank')"></div></template>
+                                                <template x-if="msg.type === 'FILE'"><a :href="'https://aegism.online' + msg.content" target="_blank" class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm mb-1 min-w-[200px]"><div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="ph-fill ph-file-text text-2xl"></i></div><div class="flex-1 min-w-0"><p class="text-xs font-bold text-slate-700 truncate">File đính kèm</p><p class="text-[10px] text-blue-500 font-semibold">Nhấn để tải về</p></div></a></template>
                                                 <template x-if="msg.type === 'TEXT'"><div class="py-2 px-4 rounded-[18px] text-sm leading-relaxed shadow-sm border msg-bubble" :class="msg.senderId === user.id ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white' : 'bg-white text-slate-700'"><p x-text="msg.content"></p></div></template>
                                                 <div class="absolute -bottom-3 flex gap-1 z-10" :class="msg.senderId === user.id ? 'right-0' : 'left-0'"><template x-for="r in getUniqueReactions(msg.reactions)" :key="r.type"><div class="bg-white border border-slate-100 rounded-full px-1.5 py-0.5 shadow-sm text-[10px] flex items-center gap-0.5 cursor-help" :title="r.users"><span x-text="r.icon"></span><span class="font-bold text-slate-600" x-text="r.count"></span></div></template></div>
                                             </div>
@@ -384,7 +384,7 @@
         const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
                     ? 'http://localhost:3000'
                     : 'https://aegism.online';
-                    
+
         function chatSystem() {
             return {
                 sidebarOpen: false, isMobileChatOpen: false, activeTab: 'chat', showCreateGroupModal: false,

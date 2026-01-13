@@ -1,4 +1,6 @@
-const GLOBAL_API_URL = 'http://localhost:3000';
+const GLOBAL_API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000'
+    : 'https://aegism.online';
 
 document.addEventListener('alpine:init', () => {
 
@@ -99,9 +101,7 @@ document.addEventListener('alpine:init', () => {
                     }
                 });
 
-                // --- 2. XỬ LÝ CUỘC GỌI (WebRTC) ---
 
-                // Khi có người gọi đến
                 this.socket.on('call-made', async (data) => {
                     if (this.isInCall) {
                         this.socket.emit('call-busy', { toUser: data.fromUserId });
@@ -110,7 +110,6 @@ document.addEventListener('alpine:init', () => {
                     console.log("📞 Incoming Call:", data);
                     this.incomingCall = data;
 
-                    // [UPDATE] Phát âm thanh cuộc gọi đến
                     this.playSound('ringtone');
                 });
 
@@ -144,7 +143,6 @@ document.addEventListener('alpine:init', () => {
 
                 this.socket.on('call-ended', () => {
                     this.endCall(true);
-                    // [UPDATE] Đã xóa thông báo hệ thống "Cuộc gọi đã kết thúc"
                 });
 
             } catch (e) { console.warn("Socket Error:", e); }

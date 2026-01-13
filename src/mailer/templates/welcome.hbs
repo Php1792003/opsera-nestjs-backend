@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #2563EB;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+
+        .header img {
+            max-height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #2563EB;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.8em;
+            color: #777;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://aegism.online/img/aegism_logo_mini.png" alt="AEGISM Logo">
+            <h2>Chào mừng đến với AEGISM!</h2>
+        </div>
+        <div class="content">
+            <p>Xin chào <strong>{{name}}</strong>,</p>
+            <p>Bạn đã đăng ký tài khoản AEGISM thành công! Chúng tôi rất vui mừng chào đón bạn đến với nền tảng quản lý
+                vận hành tòa nhà và giám sát an ninh tiên tiến của chúng tôi.</p>
+            <p>Với AEGISM, bạn có thể dễ dàng quản lý các dự án, theo dõi nhân sự, báo cáo sự cố và giao tiếp nội bộ một
+                cách hiệu quả.</p>
+            <p>Hãy đăng nhập ngay để bắt đầu trải nghiệm:</p>
+            <p style="text-align: center;">
+                <a href="{{loginLink}}" class="button">Đăng nhập vào AEGISM</a>
+            </p>
+            <p>Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với đội ngũ hỗ trợ của chúng tôi.</p>
+            <p>Trân trọng,</p>
+            <p>Đội ngũ AEGISM</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 AEGISM. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</body>
+
+</html>
