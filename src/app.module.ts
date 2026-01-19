@@ -26,6 +26,7 @@ import { ReportModule } from './report/report.module';
 import { IncidentModule } from './incident/incident.module';
 import { ChatModule } from './chat/chat.module';
 import { UsersModule } from './users/users.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { UsersModule } from './users/users.module';
     IncidentModule,
     ChatModule,
     UsersModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

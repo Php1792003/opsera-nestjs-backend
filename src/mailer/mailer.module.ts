@@ -12,7 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             useFactory: async (config: ConfigService) => ({
                 transport: {
                     host: config.get('MAIL_HOST'),
-                    port: 465, // Sửa từ 456 thành 465 (SSL port của Gmail)
+                    port: 465,
                     secure: true,
                     auth: {
                         user: config.get('MAIL_USER'),
@@ -25,7 +25,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                     from: '"AEGISM Support" <psaigon179@gmail.com>',
                 },
                 template: {
-                    dir: join(process.cwd(), 'src/mailer/templates'), // Trỏ thẳng vào src
+                    dir: join(process.cwd(), 'src/mailer/templates'),
                     adapter: new HandlebarsAdapter(),
                     options: {
                         strict: true,

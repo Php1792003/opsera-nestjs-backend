@@ -22,10 +22,10 @@ import { RequestWithUser } from '../auth/interfaces/request-with-user.interface'
 @Controller('scans')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class ScanController {
-  constructor(private readonly scanService: ScanService) {}
+  constructor(private readonly scanService: ScanService) { }
 
   @Post()
-  @Permissions(Permission.SCAN_QRCODE, Permission.CREATE_SCAN_LOG)
+  @Permissions(Permission.SCAN_QR, Permission.CREATE_SCAN_LOG)
   async create(
     @Body() createScanDto: CreateScanDto,
     @Request() req: RequestWithUser,
@@ -46,7 +46,7 @@ export class ScanController {
   }
 
   @Get('my-history')
-  @Permissions(Permission.SCAN_QRCODE, Permission.VIEW_SCAN_LOGS)
+  @Permissions(Permission.SCAN_QR, Permission.VIEW_SCAN_LOGS)
   async findMyScans(@Request() req: RequestWithUser) {
     const { userId, tenantId } = req.user;
     return this.scanService.findMyScans(userId, tenantId);

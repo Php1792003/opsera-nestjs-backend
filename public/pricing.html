@@ -7,38 +7,27 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script src="../js/global-notification.js"></script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-        }
+        body { font-family: 'Nunito', sans-serif; }
         [x-cloak] { display: none !important; }
         
-        .toggle-checkbox {
-            appearance: none;
-            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
+        .toggle-checkbox:checked { right: 0; border-color: #4F46E5; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #4F46E5; }
         
-        .toggle-checkbox:checked {
-            transform: translateX(100%);
-            border-color: #4F46E5;
+        /* Animation cho Loader */
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
         }
-        
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #4F46E5;
-        }
-        
-        .toggle-label {
-            width: 3rem; 
-            height: 1.5rem;
-            transition: background-color 0.3s;
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
     
@@ -59,13 +48,17 @@
         }
     </script>
 </head>
-<body class="bg-white text-gray-800" x-data="{ isAnnual: false }">
 
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+<body class="bg-white text-gray-800" x-data="app()">
+
+    <header class="bg-white shadow-sm sticky top-0 z-40">
         <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" x-data="{ open: false }">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="index.html"><img src="img/aegism_logo.png" alt="Logo AEGISM" class="h-[210px] w-auto"/></a>
+                    <a href="index.html" class="flex items-center gap-2">
+                        <img src="img/aegism_logo_mini.png" alt="Logo" class="h-8 w-auto"/>
+                        <span class="text-xl font-bold text-aegism-blue">AEGISM</span>
+                    </a>
                 </div>
                 <nav class="hidden md:flex md:items-center md:space-x-10">
                     <a href="index.html" class="font-medium text-gray-600 hover:text-aegism-blue">Trang chủ</a>
@@ -75,31 +68,22 @@
                     <a href="contact.html" class="font-medium text-gray-600 hover:text-aegism-blue">Liên hệ</a>
                 </nav>
                 <div class="flex items-center gap-2">
-                    <a href="request_demo.html" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
-                         <span class="truncate">Dùng thử miễn phí</span>
+                    <button @click="openModal('starter')" class="hidden md:inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-aegism-blue hover:bg-blue-700">
+                         Dùng thử miễn phí
+                    </button>
+                    <a href="login.html" class="hidden h-10 px-4 cursor-pointer items-center justify-center rounded-lg bg-neutral-100 text-sm font-bold text-neutral-700 hover:bg-neutral-200 sm:flex">
+                        Đăng nhập
                     </a>
-                    <a href="login.html" class="hidden h-10 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-neutral-100 px-4 text-sm font-bold leading-normal tracking-[0.015em] text-neutral-700 transition-colors hover:bg-neutral-200 sm:flex">
-                        <span class="truncate">Đăng nhập</span>
-                    </a>
-                    <button @click="open = !open" type="button" class="ml-2 md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aegism-blue">
-                        <span class="sr-only">Mở menu</span>
-                        <svg x-show="!open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" /></svg>
-                        <svg x-show="open" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <button @click="open = !open" type="button" class="ml-2 md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400">
+                        <i class="fa-solid fa-bars text-xl" x-show="!open"></i>
+                        <i class="fa-solid fa-xmark text-xl" x-show="open"></i>
                     </button>
                 </div>
             </div>
-
-            <div x-show="open" class="md:hidden border-t border-gray-100" x-cloak>
+            <div x-show="open" class="md:hidden border-t border-gray-100 pb-4" x-cloak>
                 <div class="pt-2 pb-3 space-y-1">
-                     <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Trang chủ</a>
-                     <a href="about.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Giới thiệu</a>
-                     <a href="pricing.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Bảng giá</a>
-                     <a href="features.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Tính năng</a>
-                    <a href="contact.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Liên hệ</a>
-                     <a href="login.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-aegism-blue hover:bg-gray-50">Đăng nhập</a>
-                     <a href="request_demo.html" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white bg-aegism-blue hover:bg-blue-700">
-                         Dùng thử miễn phí
-                     </a>
+                     <a href="#" class="block px-3 py-2 font-medium text-gray-700 hover:bg-gray-50">Trang chủ</a>
+                     <a href="#" class="block px-3 py-2 font-medium text-gray-700 hover:bg-gray-50">Bảng giá</a>
                 </div>
             </div>
         </div>
@@ -115,13 +99,14 @@
                 <p class="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
                     Chọn gói phù hợp nhất với nhu cầu của bạn. Nâng cấp, hạ cấp hoặc hủy bỏ bất cứ lúc nào.
                 </p>
-                <div class="mt-10 flex justify-center items-center space-x-4 cursor-pointer" @click="isAnnual = !isAnnual">
-                    <span class="font-medium transition-colors duration-300" :class="{ 'text-aegism-dark': !isAnnual, 'text-gray-400': isAnnual }">Hàng tháng</span>
-                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
-                        <input type="checkbox" id="toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300" style="top: 0; left: 0;" x-model="isAnnual"/>
-                        <label for="toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                
+                <div class="mt-10 flex justify-center items-center space-x-4 cursor-pointer" @click="toggleCycle()">
+                    <span class="font-medium transition-colors duration-300" :class="{ 'text-aegism-dark': cycle === 'monthly', 'text-gray-400': cycle === 'yearly' }">Hàng tháng</span>
+                    <div class="relative inline-block w-14 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 transition-all duration-300 top-0" :class="cycle === 'yearly' ? 'right-0 border-aegism-blue' : 'left-0'" />
+                        <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" :class="cycle === 'yearly' ? '!bg-aegism-blue' : ''"></label>
                     </div>
-                    <span class="font-medium transition-colors duration-300" :class="{ 'text-aegism-blue': isAnnual, 'text-gray-400': !isAnnual }">Hàng năm <span class="text-green-500 text-sm font-bold ml-1">(Tiết kiệm 20%)</span></span>
+                    <span class="font-medium transition-colors duration-300" :class="{ 'text-aegism-blue': cycle === 'yearly', 'text-gray-400': cycle === 'monthly' }">Hàng năm <span class="text-green-500 text-sm font-bold ml-1">(-20%)</span></span>
                 </div>
             </div>
         </section>
@@ -129,95 +114,73 @@
         <section class="py-16 md:py-24">
             <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 
-                <div class="grid gap-px items-stretch" :class="isAnnual ? 'grid-cols-1 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-5'">
+                <div class="grid gap-px items-stretch" :class="cycle === 'yearly' ? 'grid-cols-1 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-5'">
                     
                     <div class="px-6 py-8 hidden md:block">
                         <h2 class="text-2xl font-bold text-aegism-dark">So sánh các gói</h2>
                         <p class="text-sm text-gray-500 mt-2">Tìm gói phù hợp với bạn với bảng so sánh chi tiết của chúng tôi.</p>
                     </div>
 
-                    <template x-if="!isAnnual">
+                    <template x-if="cycle === 'monthly'">
                         <div class="bg-white rounded-t-lg px-6 py-8 text-center border md:border-none mb-4 md:mb-0 flex flex-col">
                             <h3 class="text-xl font-semibold text-aegism-dark">Free</h3>
                             <div class="mt-4 h-12 flex items-center justify-center">
-                                <p class="text-4xl font-extrabold text-aegism-dark">$0<span class="text-base font-medium text-gray-500">/tháng</span></p>
+                                <p class="text-4xl font-extrabold text-aegism-dark">0đ<span class="text-base font-medium text-gray-500">/tháng</span></p>
                             </div>
-                            <a href="payment.html" class="mt-6 block w-full px-4 py-2 border border-aegism-blue rounded-lg text-aegism-blue bg-white hover:bg-indigo-50 font-medium transition-colors">
+                            <button class="mt-6 block w-full px-4 py-2 border border-aegism-blue rounded-lg text-aegism-blue bg-white hover:bg-indigo-50 font-medium transition-colors">
                                 Bắt đầu miễn phí
-                            </a>
-                            <div class="md:hidden mt-4 text-left text-sm text-gray-600 space-y-2 border-t pt-4">
-                                <p><strong>1</strong> người dùng</p>
-                                <p>Giám sát giới hạn</p>
-                                <p>Hỗ trợ: Cộng đồng</p>
-                            </div>
+                            </button>
                         </div>
                     </template>
 
                     <div class="bg-white rounded-t-lg px-6 py-8 text-center border md:border-none mb-4 md:mb-0 flex flex-col">
                         <h3 class="text-xl font-semibold text-aegism-dark">Starter</h3>
                         <div class="mt-4 h-12 flex items-center justify-center">
-                            <p class="text-4xl font-extrabold text-aegism-dark transition-all duration-300">
-                                <span x-text="isAnnual ? '$15' : '$19'"></span>
+                            <p class="text-3xl font-extrabold text-aegism-dark transition-all duration-300">
+                                <span x-text="formatMoney(plans.starter[cycle])"></span>
                                 <span class="text-base font-medium text-gray-500">/tháng</span>
                             </p>
                         </div>
-                        <p x-show="isAnnual" class="text-xs text-green-600 font-semibold mb-2">Thanh toán $180/năm</p>
-
-                         <a href="payment.html" class="mt-auto block w-full px-4 py-2 border border-aegism-blue rounded-lg text-aegism-blue bg-white hover:bg-indigo-50 font-medium transition-colors">
+                        <p x-show="cycle === 'yearly'" class="text-xs text-green-600 font-semibold mb-2">Thanh toán <span x-text="formatMoney(plans.starter.yearly * 12)"></span> /năm</p>
+                        
+                        <button @click="openModal('starter')" class="mt-auto block w-full px-4 py-2 border border-aegism-blue rounded-lg text-aegism-blue bg-white hover:bg-indigo-50 font-medium transition-colors">
                             Dùng thử
-                        </a>
-                        <div class="md:hidden mt-4 text-left text-sm text-gray-600 space-y-2 border-t pt-4">
-                             <p><strong>5</strong> người dùng</p>
-                             <p>Giám sát cơ bản</p>
-                             <p>Hỗ trợ: Email</p>
-                        </div>
+                        </button>
                     </div>
 
-                    <div class="bg-white rounded-t-lg px-6 py-8 text-center border-2 border-aegism-blue relative mb-4 md:mb-0 shadow-lg md:shadow-none z-10 md:z-auto scale-100 md:scale-100 transform origin-top flex flex-col">
+                    <div class="bg-white rounded-t-lg px-6 py-8 text-center border-2 border-aegism-blue relative mb-4 md:mb-0 shadow-lg md:shadow-none z-10 md:z-auto scale-100 md:scale-105 transform origin-top flex flex-col">
                         <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-aegism-blue text-white text-xs font-semibold rounded-full">Phổ biến</span>
                         <h3 class="text-xl font-semibold text-aegism-dark">Business</h3>
-                        
                         <div class="mt-4 h-12 flex items-center justify-center">
-                            <p class="text-4xl font-extrabold text-aegism-dark transition-all duration-300">
-                                <span x-text="isAnnual ? '$39' : '$49'"></span>
+                            <p class="text-3xl font-extrabold text-aegism-dark transition-all duration-300">
+                                <span x-text="formatMoney(plans.business[cycle])"></span>
                                 <span class="text-base font-medium text-gray-500">/tháng</span>
                             </p>
                         </div>
-                        <p x-show="isAnnual" class="text-xs text-green-600 font-semibold mb-2">Thanh toán $468/năm</p>
+                        <p x-show="cycle === 'yearly'" class="text-xs text-green-600 font-semibold mb-2">Thanh toán <span x-text="formatMoney(plans.business.yearly * 12)"></span> /năm</p>
 
-                        <a href="payment.html" class="mt-auto block w-full px-4 py-2 border border-transparent rounded-lg text-white bg-aegism-blue hover:bg-indigo-700 font-medium transition-colors shadow-md hover:shadow-lg">
-                            Bắt đầu
-                        </a>
-                        <div class="md:hidden mt-4 text-left text-sm text-gray-600 space-y-2 border-t pt-4">
-                             <p><strong>20</strong> người dùng</p>
-                             <p>Giám sát nâng cao</p>
-                             <p>Hỗ trợ: Ưu tiên</p>
-                        </div>
+                        <button @click="openModal('business')" class="mt-auto block w-full px-4 py-2 border border-transparent rounded-lg text-white bg-aegism-blue hover:bg-indigo-700 font-medium transition-colors shadow-md hover:shadow-lg">
+                            Bắt đầu ngay
+                        </button>
                     </div>
 
                     <div class="bg-white rounded-t-lg px-6 py-8 text-center border md:border-none flex flex-col">
                         <h3 class="text-xl font-semibold text-aegism-dark">Enterprise</h3>
-                        
                         <div class="mt-4 h-12 flex items-center justify-center">
-                            <p class="text-4xl font-extrabold text-aegism-dark">Liên hệ</p>
+                            <p class="text-3xl font-extrabold text-aegism-dark">Liên hệ</p>
                         </div>
-                        <p x-show="isAnnual" class="text-xs text-transparent mb-2">Placeholder</p> <!-- Giữ layout -->
+                        <p x-show="cycle === 'yearly'" class="text-xs text-transparent mb-2">Placeholder</p>
 
-                        <a href="#" class="mt-auto block w-full px-4 py-2 border border-aegism-blue rounded-lg text-aegism-blue bg-white hover:bg-indigo-50 font-medium transition-colors">
-                            Liên hệ
+                        <a href="contact.html" class="mt-auto block w-full px-4 py-2 border border-aegism-blue rounded-lg text-aegism-blue bg-white hover:bg-indigo-50 font-medium transition-colors">
+                            Liên hệ tư vấn
                         </a>
-                        <div class="md:hidden mt-4 text-left text-sm text-gray-600 space-y-2 border-t pt-4">
-                             <p><strong>Không giới hạn</strong> người dùng</p>
-                             <p>Giám sát toàn diện</p>
-                             <p>Hỗ trợ: Chuyên dụng</p>
-                        </div>
                     </div>
                 </div>
 
-                <div class="hidden md:grid gap-px bg-gray-200 border-t border-gray-200" :class="isAnnual ? 'grid-cols-4' : 'grid-cols-5'">
+                <div class="hidden md:grid gap-px bg-gray-200 border-t border-gray-200" :class="cycle === 'yearly' ? 'grid-cols-4' : 'grid-cols-5'">
                     
                     <div class="bg-white p-6 font-semibold text-aegism-dark flex items-center">Số người dùng</div>
-                    <template x-if="!isAnnual">
+                    <template x-if="cycle === 'monthly'">
                         <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">1 người dùng</div>
                     </template>
                     <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">5 người dùng</div>
@@ -225,47 +188,15 @@
                     <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">Không giới hạn</div>
 
                     <div class="bg-white p-6 font-semibold text-aegism-dark flex items-center">Giám sát và cảnh báo</div>
-                    <template x-if="!isAnnual">
+                    <template x-if="cycle === 'monthly'">
                         <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">Giới hạn</div>
                     </template>
-                    <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
-                    <div class="bg-aegism-highlight-bg p-6 text-center text-gray-700 border-l-2 border-r-2 border-aegism-blue flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
-                    <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
-
-                    <div class="bg-white p-6 font-semibold text-aegism-dark flex items-center">Tối ưu hóa vận hành</div>
-                    <template x-if="!isAnnual">
-                        <div class="bg-white p-6 text-center text-gray-400 flex items-center justify-center">—</div>
-                    </template>
-                    <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
-                    <div class="bg-aegism-highlight-bg p-6 text-center text-gray-700 border-l-2 border-r-2 border-aegism-blue flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
-                    <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
-
-                    <div class="bg-white p-6 font-semibold text-aegism-dark flex items-center">Giải pháp tùy chỉnh</div>
-                    <template x-if="!isAnnual">
-                        <div class="bg-white p-6 text-center text-gray-400 flex items-center justify-center">—</div>
-                    </template>
-                    <div class="bg-white p-6 text-center text-gray-400 flex items-center justify-center">—</div>
-                    <div class="bg-aegism-highlight-bg p-6 text-center text-gray-700 border-l-2 border-r-2 border-aegism-blue flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
-                    <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">
-                        <i class="fa-solid fa-check text-green-500 text-xl"></i>
-                    </div>
+                    <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center"><i class="fa-solid fa-check text-green-500 text-xl"></i></div>
+                    <div class="bg-aegism-highlight-bg p-6 text-center text-gray-700 border-l-2 border-r-2 border-aegism-blue flex items-center justify-center"><i class="fa-solid fa-check text-green-500 text-xl"></i></div>
+                    <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center"><i class="fa-solid fa-check text-green-500 text-xl"></i></div>
 
                     <div class="bg-white rounded-bl-lg p-6 font-semibold text-aegism-dark flex items-center">Hỗ trợ</div>
-                    <template x-if="!isAnnual">
+                    <template x-if="cycle === 'monthly'">
                         <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">Cộng đồng</div>
                     </template>
                     <div class="bg-white p-6 text-center text-gray-700 flex items-center justify-center">Email</div>
@@ -279,52 +210,27 @@
         <section class="bg-white py-16 md:py-24 border-t border-gray-100">
             <div class="container mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl font-extrabold text-aegism-dark">
-                        Câu hỏi thường gặp
-                    </h2>
-                    <p class="mt-4 text-lg text-gray-600">
-                        Mọi thứ bạn cần biết về các gói dịch vụ và thanh toán.
-                    </p>
+                    <h2 class="text-3xl font-extrabold text-aegism-dark">Câu hỏi thường gặp</h2>
                 </div>
                 
                 <div class="space-y-4">
                     <div x-data="{ open: false }" class="border border-gray-200 rounded-lg overflow-hidden">
                         <button @click="open = !open" class="flex justify-between items-center w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none">
-                            <span class="text-lg font-medium text-aegism-dark">Làm thế nào để nâng cấp hoặc hạ cấp gói dịch vụ?</span>
+                            <span class="text-lg font-medium text-aegism-dark">Làm thế nào để nâng cấp gói dịch vụ?</span>
                             <i :class="{'rotate-180': open}" class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-200"></i>
                         </button>
                         <div x-show="open" x-collapse class="px-6 py-4 text-base text-gray-600 bg-white border-t border-gray-200">
-                            Bạn có thể dễ dàng nâng cấp hoặc hạ cấp gói dịch vụ của mình bất cứ lúc nào trong phần 'Cài đặt Tài khoản'. Khi nâng cấp, bạn sẽ bị tính phí theo tỷ lệ. Khi hạ cấp, các thay đổi sẽ có hiệu lực từ chu kỳ thanh toán tiếp theo.
+                            Bạn có thể nâng cấp bất cứ lúc nào, hệ thống sẽ tự động tính phí chênh lệch.
                         </div>
                     </div>
                     
                     <div x-data="{ open: false }" class="border border-gray-200 rounded-lg overflow-hidden">
                         <button @click="open = !open" class="flex justify-between items-center w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none">
-                            <span class="text-lg font-medium text-aegism-dark">Chính sách hoàn tiền của bạn là gì?</span>
+                            <span class="text-lg font-medium text-aegism-dark">Chính sách hoàn tiền?</span>
                             <i :class="{'rotate-180': open}" class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-200"></i>
                         </button>
                         <div x-show="open" x-collapse class="px-6 py-4 text-base text-gray-600 bg-white border-t border-gray-200">
-                            Chúng tôi cung cấp chính sách hoàn tiền trong 14 ngày cho các gói đăng ký mới. Nếu bạn không hài lòng với dịch vụ vì bất kỳ lý do gì, chỉ cần liên hệ với chúng tôi trong vòng 14 ngày đầu tiên và chúng tôi sẽ hoàn lại đầy đủ tiền cho bạn.
-                        </div>
-                    </div>
-
-                    <div x-data="{ open: false }" class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button @click="open = !open" class="flex justify-between items-center w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none">
-                            <span class="text-lg font-medium text-aegism-dark">AEGISM có hỗ trợ kỹ thuật không?</span>
-                            <i :class="{'rotate-180': open}" class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-200"></i>
-                        </button>
-                        <div x-show="open" x-collapse class="px-6 py-4 text-base text-gray-600 bg-white border-t border-gray-200">
-                            Có, tất cả các gói trả phí của chúng tôi đều bao gồm hỗ trợ kỹ thuật. Gói Starter bao gồm hỗ trợ qua email, trong khi gói Business và Enterprise có các tùy chọn hỗ trợ ưu tiên và chuyên dụng. Gói Free được hỗ trợ qua diễn đàn cộng đồng của chúng tôi.
-                        </div>
-                    </div>
-
-                    <div x-data="{ open: false }" class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button @click="open = !open" class="flex justify-between items-center w-full text-left px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none">
-                            <span class="text-lg font-medium text-aegism-dark">Tôi có thể hủy đăng ký bất cứ lúc nào không?</span>
-                            <i :class="{'rotate-180': open}" class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-200"></i>
-                        </button>
-                        <div x-show="open" x-collapse class="px-6 py-4 text-base text-gray-600 bg-white border-t border-gray-200">
-                            Vâng, bạn có thể hủy đăng ký của mình bất cứ lúc nào. Việc hủy bỏ sẽ có hiệu lực vào cuối chu kỳ thanh toán hiện tại của bạn. Bạn sẽ tiếp tục có quyền truy cập vào các tính năng của gói cho đến lúc đó.
+                            Chúng tôi hoàn tiền trong 14 ngày đầu nếu bạn không hài lòng.
                         </div>
                     </div>
                 </div>
@@ -337,56 +243,280 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="col-span-1 md:col-span-1">
                     <a href="index.html" class="flex items-center gap-2">
-                         <img src="img/aegism_logo_mini.png" alt="Logo AEGISM" class="h-[30px] w-auto"/>
+                         <img src="img/aegism_logo_mini.png" alt="Logo" class="h-6 w-auto"/>
                          <span class="font-bold text-xl tracking-tight text-aegism-dark">AEGISM</span>
                     </a>
                     <p class="mt-4 text-sm text-gray-500 leading-relaxed">
-                        Giải pháp toàn diện cho vận hành và giám sát an ninh, giúp doanh nghiệp tối ưu hóa quy trình và nâng cao hiệu quả.
+                        Giải pháp toàn diện cho vận hành và giám sát an ninh.
                     </p>
                     <div class="flex space-x-4 mt-6">
                         <a href="#" class="text-gray-400 hover:text-gray-500"><i class="fa-brands fa-facebook fa-lg"></i></a>
                         <a href="#" class="text-gray-400 hover:text-gray-500"><i class="fa-brands fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-gray-500"><i class="fa-brands fa-linkedin fa-lg"></i></a>
                     </div>
-                    <p class="mt-8 text-sm text-gray-400">
-                        &copy; 2024 AEGISM. Đã đăng ký bản quyền.
-                    </p>
                 </div>
-                
                 <div>
-                    <h4 class="text-sm font-bold text-gray-900 tracking-wider uppercase mb-4">Nền tảng</h4>
+                    <h4 class="text-sm font-bold text-gray-900 uppercase mb-4">Nền tảng</h4>
                     <ul class="space-y-3">
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Vận hành</a></li>
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Giám sát</a></li>
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">An ninh</a></li>
-                        <li><a href="pricing.html" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Bảng giá</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue">Vận hành</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue">An ninh</a></li>
                     </ul>
                 </div>
-                
                 <div>
-                    <h4 class="text-sm font-bold text-gray-900 tracking-wider uppercase mb-4">Công ty</h4>
+                    <h4 class="text-sm font-bold text-gray-900 uppercase mb-4">Công ty</h4>
                     <ul class="space-y-3">
-                        <li><a href="about.html" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Về chúng tôi</a></li>
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Tuyển dụng</a></li>
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Blog</a></li>
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Đối tác</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue">Về chúng tôi</a></li>
+                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue">Liên hệ</a></li>
                     </ul>
                 </div>
-                
                 <div>
-                    <h4 class="text-sm font-bold text-gray-900 tracking-wider uppercase mb-4">Liên hệ</h4>
+                    <h4 class="text-sm font-bold text-gray-900 uppercase mb-4">Liên hệ</h4>
                     <ul class="space-y-3">
-                        <li><a href="contact.html" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Hỗ trợ</a></li>
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Bán hàng</a></li>
-                        <li><a href="#" class="text-base text-gray-500 hover:text-aegism-blue transition-colors">Liên hệ báo chí</a></li>
-                        <li class="flex items-center gap-2 text-gray-500 mt-2">
-                             <i class="fa-solid fa-envelope text-xs"></i> support@aegism.com
-                        </li>
+                        <li class="flex items-center gap-2 text-gray-500"><i class="fa-solid fa-envelope text-xs"></i> support@aegism.com</li>
                     </ul>
                 </div>
             </div>
         </div>
     </footer>
 
+    <div x-show="isModalOpen" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="closeModal()">
+                <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+            </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full relative">
+                
+                <button @click="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 h-full lg:min-h-[600px]">
+                    
+                    <div class="lg:col-span-4 bg-gray-50 p-6 border-r border-gray-200 flex flex-col">
+                        <h3 class="text-lg font-bold text-gray-900 mb-6">Đơn hàng của bạn</h3>
+                        
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm mb-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase font-bold">Gói dịch vụ</p>
+                                    <h4 class="text-xl font-bold text-aegism-blue capitalize" x-text="selectedPlan"></h4>
+                                </div>
+                                <span class="px-2 py-1 bg-blue-100 text-aegism-blue text-xs font-bold rounded uppercase" x-text="cycle === 'yearly' ? 'Năm' : 'Tháng'"></span>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 text-sm">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-gray-600">Đơn giá:</span>
+                                    <span class="font-medium" x-text="formatMoney(getPlanPrice())"></span>
+                                </div>
+                                <div class="flex justify-between" x-show="cycle === 'yearly'">
+                                    <span class="text-gray-600">Thời hạn:</span>
+                                    <span class="font-medium">12 Tháng</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 mb-auto">
+                            <p class="text-xs text-gray-500 mb-2 font-medium">Thay đổi chu kỳ:</p>
+                            <div class="flex gap-2">
+                                <button @click="cycle = 'monthly'" class="flex-1 py-1 text-sm rounded border" :class="cycle === 'monthly' ? 'bg-aegism-blue text-white border-aegism-blue' : 'bg-gray-50 text-gray-600 border-gray-200'">Tháng</button>
+                                <button @click="cycle = 'yearly'" class="flex-1 py-1 text-sm rounded border" :class="cycle === 'yearly' ? 'bg-aegism-blue text-white border-aegism-blue' : 'bg-gray-50 text-gray-600 border-gray-200'">Năm (-20%)</button>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 mt-6">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Tạm tính:</span>
+                                <span class="font-medium" x-text="formatMoney(calculateSubTotal())"></span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-4">
+                                <span class="text-gray-600">VAT (10%):</span>
+                                <span class="font-medium" x-text="formatMoney(calculateSubTotal() * 0.1)"></span>
+                            </div>
+                            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                                <span class="font-bold text-gray-900">Tổng cộng:</span>
+                                <span class="text-2xl font-bold text-aegism-blue" x-text="formatMoney(calculateSubTotal() * 1.1)"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-8 p-6 lg:p-8 relative">
+                        
+                        <div x-show="gatewayState === 'input'" x-transition:enter="transition ease-out duration-300">
+                            <h3 class="text-xl font-bold text-gray-900 mb-6">Thông tin thanh toán</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên Doanh nghiệp / Cá nhân</label>
+                                    <input type="text" x-model="billing.name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-aegism-blue focus:border-aegism-blue outline-none" placeholder="Nhập tên...">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" x-model="billing.email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-aegism-blue focus:border-aegism-blue outline-none" placeholder="email@example.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                                    <input type="tel" x-model="billing.phone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-aegism-blue focus:border-aegism-blue outline-none" placeholder="090...">
+                                </div>
+                            </div>
+
+                            <h4 class="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide border-b pb-2">Phương thức thanh toán</h4>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div @click="paymentMethod = 'card'" class="cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center transition-all hover:shadow-md relative" :class="paymentMethod === 'card' ? 'border-aegism-blue bg-blue-50 ring-1 ring-aegism-blue' : 'border-gray-200'">
+                                    <img src="data:image/png;base64,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" class="h-6 object-contain mb-2">
+                                    <span class="font-bold text-sm">Thẻ Quốc tế</span>
+                                    <div x-show="paymentMethod === 'card'" class="absolute top-2 right-2 text-aegism-blue"><i class="fa-solid fa-circle-check"></i></div>
+                                </div>
+                                <div @click="paymentMethod = 'momo'" class="cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center transition-all hover:shadow-md relative" :class="paymentMethod === 'momo' ? 'border-[#A50064] bg-pink-50 ring-1 ring-[#A50064]' : 'border-gray-200'">
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP0AAADECAMAAABjnterAAAAaVBMVEWlAGT////SgLKpDWu4N4XrxtzpwNnHYJ6xJHm1LoC7QIuvHXW9RI325O7ZlL7v0ePQeq7eocbw0+TATpPUhrX46/Pgp8njsM/EWZr68PbXjrrz3uvMbqfmt9OsFHD89fnGXZzOdavcnMNTQrnjAAAD8UlEQVR4nO3c52KqQBCGYRCUZg3RqDGW3P9FHhXUGYpSPLqa9/m5soRPEQZwYlkAAAAAAAAAAAAAAAAAAAAAAAAAzOH4gRsGvqOHQlcPlYnccC9Y/6+t+6/85chODYbRcSicTU9Do6V/bXI07tnn2bPtI7b3noIvW5msLXekh75K8897ekl7cf29Ms3KzprOckO2Vzg3/s4veXz7XkVB0kLD/FSnbO6i//gcjYwrhi/49KOP8oXHz8hSm1s5vL0J9NRgem3pyXPy1FP4vS0xUjP9q+ELvymm8WqEt+1YTr2y2yfmzwpV2aBWevnhf95cemH6kT+sFd62L2dyv8LSpn/1b3+A2uo8M1vjFHKfGK0CVdHtovVcH8kGsROpM+LPaWJ2p5ltA2ftjjMV4s+1v/18clOPhzR/I0YWx4pfHhgHp4k/Ont0Gu/rA4nZNa/Y0GkyIkv+9Hsr35B03lpllOe2SMXvPDJMXY7Y0G4yJI8En8mQ3J3TD1mdKLtqnap8+nhgmNoK0nfyn1xXDKXHMVXfZ3bvpXzN5JNe4/Ry987WdGv5TQkflqW+punlvPxpTR46iq+LzdA0fSBGNrm1rvKrMNI90n/n1hqLV02+1LlH+vxhXR71Z4+K0kDT9LLIH+TW2hevmlzqN02vip3cWmUx8I57vqqQcye1iXjR5BtcjdPL8u83u9KFeNHkOxyN0w/lhx/plaqrZpMvcxqnn8uEPbVOVedPHximtsbpVbGn9v1gUPaKcRqnzzwCGZ3vde/UuNFlfov02ccAs3ngrMNx5j5vt/CvmqJ5+szNnRJmP89qkb7KPd2vZ2SqrkX6CreDN1HBnzRIm/S3n+WYfG1/0Cr9red4Rp/tDlqlt1xZ0uaYfHWXaJfe8l/7+X3L9JaT+cHP2dTsc12ibfp9wV/4/P/X5BvZZ+3TF/xma/pp8oWd4PQu0rswnhjaJkNDMRQUrMXvXN6f70lcsMSbc8JxZ29ueH0DAIBlrfvz1djryyot6nvj1bZfpXBzd4cznvcidU4G3QkX+7LP/8PdCaNdbojuhBy6E0q8wN0Ni+6E6uhOuKA74Sq6E4xGd8LZjxcPM5s/jD31sPZ9uxOWh4FYbf2xZvkVA2/bnZD+3lbu0ckTaPUrlXTe23UnpMdz+ev6tDtBntrSw/hf6E5Iq1X5NCMt9+hOOKE7QaE7IbMKI9Gd0DY93Qka3Qkn77jn051wRneCRHfCCd0JxqI7oVl6uhNuM/t5Ft0JDdPTnXCDydf2B3QnNE5Pd0J5eJMvb1J0J7RJT3fCC3cn3CE93Qn7dyA8/ifpKv90GgAAAAAAAAAAAAAAAAAAAAAAAMBD/QME3zldES6vtwAAAABJRU5ErkJggg==" class="h-6 mb-2">
+                                    <span class="font-bold text-sm">Ví MoMo</span>
+                                    <div x-show="paymentMethod === 'momo'" class="absolute top-2 right-2 text-[#A50064]"><i class="fa-solid fa-circle-check"></i></div>
+                                </div>
+                                <div @click="paymentMethod = 'vnpay'" class="cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center transition-all hover:shadow-md relative" :class="paymentMethod === 'vnpay' ? 'border-[#005BAA] bg-blue-50 ring-1 ring-[#005BAA]' : 'border-gray-200'">
+                                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png" class="h-6 object-contain mb-2">
+                                    <span class="font-bold text-sm">VNPAY-QR</span>
+                                    <div x-show="paymentMethod === 'vnpay'" class="absolute top-2 right-2 text-[#005BAA]"><i class="fa-solid fa-circle-check"></i></div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+                                <div x-show="paymentMethod === 'card'">
+                                    <div class="mb-3">
+                                        <input type="text" placeholder="Số thẻ (Demo: 4242...)" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-aegism-blue">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <input type="text" placeholder="MM/YY" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-aegism-blue">
+                                        <input type="text" placeholder="CVC" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-aegism-blue">
+                                    </div>
+                                </div>
+                                <div x-show="paymentMethod !== 'card'" class="text-center text-sm text-gray-600">
+                                    <p>Sau khi bấm <span class="font-bold">Thanh toán</span>, mã QR sẽ hiển thị để bạn quét.</p>
+                                </div>
+                            </div>
+
+                            <button @click="processPayment()" class="w-full py-4 bg-aegism-blue text-white rounded-lg font-bold text-lg hover:bg-blue-700 shadow-lg transition-transform active:scale-95 flex items-center justify-center">
+                                Thanh toán <span x-text="formatMoney(calculateSubTotal() * 1.1)" class="ml-2 bg-blue-800 px-2 py-0.5 rounded text-sm"></span>
+                            </button>
+                        </div>
+
+                        <div x-show="gatewayState !== 'input'" class="absolute inset-0 bg-white z-10 flex flex-col items-center justify-center p-8 text-center" x-transition:enter="transition ease-out duration-300">
+                            
+                            <div x-show="gatewayState === 'processing'">
+                                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-16 w-16 mb-6 mx-auto"></div>
+                                <h3 class="text-xl font-bold text-gray-900">Đang kết nối cổng thanh toán...</h3>
+                                <p class="text-gray-500 mt-2">Vui lòng không tắt trình duyệt.</p>
+                            </div>
+
+                            <div x-show="gatewayState === 'action'" class="w-full max-w-sm mx-auto">
+                                <div x-show="paymentMethod !== 'card'">
+                                    <h3 class="text-lg font-bold mb-4">Quét mã để thanh toán</h3>
+                                    <div class="border-2 border-dashed border-gray-300 p-2 rounded-lg inline-block mb-4">
+                                        <img :src="getQRLink()" class="w-48 h-48 object-contain">
+                                    </div>
+                                    <p class="font-bold text-xl text-aegism-blue mb-2" x-text="formatMoney(calculateSubTotal() * 1.1)"></p>
+                                    <div class="bg-yellow-50 text-yellow-800 text-sm py-2 px-4 rounded mb-6">
+                                        Hết hạn trong: <span class="font-mono font-bold" x-text="countdown + 's'"></span>
+                                    </div>
+                                    <button @click="simulateSuccess()" class="text-xs text-gray-400 underline hover:text-gray-600">(Giả lập: Đã quét xong)</button>
+                                </div>
+                                <div x-show="paymentMethod === 'card'" class="text-left">
+                                    <div class="flex justify-center mb-4"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" class="h-6"></div>
+                                    <h3 class="text-center font-bold mb-2">Xác thực 3D Secure</h3>
+                                    <p class="text-center text-sm text-gray-500 mb-6">Nhập mã OTP gửi về số điện thoại.</p>
+                                    <input type="text" class="w-full text-center text-2xl tracking-[0.5em] font-bold border rounded-lg py-3 mb-4 focus:ring-aegism-blue focus:border-aegism-blue" placeholder="000000">
+                                    <button @click="simulateSuccess()" class="w-full py-3 bg-aegism-blue text-white font-bold rounded-lg">Xác nhận</button>
+                                </div>
+                            </div>
+
+                            <div x-show="gatewayState === 'success'">
+                                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                                    <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-900 mb-2">Thanh toán thành công!</h3>
+                                <p class="text-gray-600 mb-8">Gói dịch vụ <span class="font-bold text-aegism-blue" x-text="selectedPlan"></span> đã được kích hoạt.</p>
+                                <button @click="window.location.href='dashboard.html'" class="px-8 py-3 bg-aegism-blue text-white font-bold rounded-lg shadow hover:bg-blue-700">Vào Dashboard</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function app() {
+            return {
+                cycle: 'monthly',
+                isModalOpen: false,
+                selectedPlan: '',
+                paymentMethod: 'card',
+                gatewayState: 'input',
+                countdown: 300,
+                timer: null,
+                billing: { name: '', email: '', phone: '' },
+                plans: {
+                    starter: { monthly: 475000, yearly: 375000 },
+                    business: { monthly: 1225000, yearly: 975000 }
+                },
+                toggleCycle() {
+                    this.cycle = this.cycle === 'monthly' ? 'yearly' : 'monthly';
+                },
+                openModal(plan) {
+                    this.selectedPlan = plan;
+                    this.isModalOpen = true;
+                    this.gatewayState = 'input';
+                    this.billing.name = ''; 
+                },
+                closeModal() {
+                    this.isModalOpen = false;
+                    clearInterval(this.timer);
+                },
+                getPlanPrice() {
+                    if (!this.selectedPlan) return 0;
+                    return this.plans[this.selectedPlan][this.cycle];
+                },
+                calculateSubTotal() {
+                    const price = this.getPlanPrice();
+                    return this.cycle === 'yearly' ? price * 12 : price;
+                },
+                formatMoney(amount) {
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+                },
+                getQRLink() {
+                    const total = this.calculateSubTotal() * 1.1;
+                    const desc = `AEGISM ${this.selectedPlan.toUpperCase()}`;
+                    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PAYMENT|${total}|${desc}`;
+                },
+                processPayment() {
+                    if(!this.billing.name || !this.billing.email) {
+                        alert("Vui lòng nhập thông tin hóa đơn!");
+                        return;
+                    }
+                    this.gatewayState = 'processing';
+                    setTimeout(() => {
+                        this.gatewayState = 'action';
+                        if(this.paymentMethod !== 'card') {
+                            this.countdown = 300;
+                            this.timer = setInterval(() => {
+                                this.countdown--;
+                                if(this.countdown <= 0) clearInterval(this.timer);
+                            }, 1000);
+                        }
+                    }, 1500);
+                },
+                simulateSuccess() {
+                    this.gatewayState = 'processing';
+                    clearInterval(this.timer);
+                    setTimeout(() => {
+                        this.gatewayState = 'success';
+                    }, 1500);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
