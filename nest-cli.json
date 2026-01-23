@@ -5,7 +5,11 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      "public/**/*",
+      {
+        "include": "public/**/*",
+        "outDir": "dist/public",
+        "watchAssets": true
+      },
       {
         "include": "mailer/templates/**/*",
         "outDir": "dist/mailer/templates",

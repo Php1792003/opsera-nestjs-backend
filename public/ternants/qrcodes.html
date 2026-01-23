@@ -5,30 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ thống Quản lý Tuần tra - Opsera</title>
     
-    <!-- CSS Libraries -->
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- JS Libraries -->
+    <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- QR Code Libs -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Custom JS -->
     <script src="../js/global-notification.js"></script>
     
-    <!-- Fonts -->
+    <link rel="icon" type="image/png" href="../img/logo_header.png">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style> 
         body { font-family: 'Nunito', sans-serif; } 
         [x-cloak] { display: none !important; } 
         
+        /* Tùy chỉnh font cho SweetAlert2 */
         div:where(.swal2-container) div:where(.swal2-popup) { font-family: 'Nunito', sans-serif !important; }
 
-        /* Scanner Styles */
         #reader { width: 100%; height: 100%; background: #000; border-radius: 0.5rem; overflow: hidden; }
         #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
         
@@ -50,7 +54,6 @@
 <body class="bg-gray-50 text-gray-800" x-data="scanApp()" x-init="init()">
 
     <div class="flex h-screen overflow-hidden" x-cloak>
-       <!-- SIDEBAR -->
        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 border-r border-gray-200 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shadow-lg flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-center h-20 border-b border-gray-100">
@@ -70,7 +73,7 @@
                         </a>
                     </template>
 
-                    <!-- QR MENU: Luôn hiện -->
+                    <!-- QR Menu: Luôn hiện (Sửa theo yêu cầu) -->
                     <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
                         <i class="fa-solid fa-qrcode w-6 text-center mr-2 text-lg"></i> Mã QR & Điểm quét
                     </a>
@@ -81,9 +84,9 @@
                         </a>
                     </template>
 
-                    <a href="../ternants/task.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
-                        <i class="fa-solid fa-list-check w-6 text-center mr-2 text-lg"></i> Công việc & Task
-                    </a>
+                        <a href="../ternants/task.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                            <i class="fa-solid fa-list-check w-6 text-center mr-2 text-lg"></i> Công việc & Task
+                        </a>
 
                     <a href="/ternants/chat.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors group">
                         <i class="fa-solid fa-comments w-6 text-center mr-2 text-lg group-hover:text-opsera-primary"></i>
@@ -123,7 +126,6 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="flex justify-between items-center py-4 px-6 bg-white border-b border-gray-200 shadow-sm">
                 <div class="flex items-center">
@@ -138,16 +140,19 @@
                         <span class="text-xs font-medium text-gray-500 px-2">Gói:</span>
                         <span class="text-sm font-bold text-blue-600 uppercase px-2" x-text="currentPlan"></span>
                      </div>
+
                      <button class="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
                         <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-500 rounded-full">3</span>
                         <i class="fa-regular fa-bell text-xl"></i>
                     </button>
+
                     <div class="flex items-center cursor-pointer group relative">
                         <div class="text-right mr-3 hidden sm:block">
                             <div class="text-sm font-semibold text-gray-800" x-text="user.name">Loading...</div>
                             <div class="text-xs text-gray-500 uppercase font-bold text-opsera-primary" x-text="user.roleName">User</div>
                         </div>
                         <img class="h-9 w-9 rounded-full object-cover border border-gray-200" :src="user.avatar" alt="User Avatar">
+                        
                          <div class="absolute right-0 top-full mt-2 w-48 bg-white border rounded shadow-lg p-3 hidden group-hover:block z-50">
                             <p class="text-xs text-gray-500 truncate" x-text="user.email"></p>
                         </div>
@@ -166,8 +171,10 @@
                     <div class="flex items-center space-x-2">
                         <div class="flex bg-gray-100 rounded-lg p-1">
                             <button @click="switchView('list')" :class="currentView==='list'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Danh sách</button>
-                            <!-- QR SCAN BUTTON -->
+                            
+                            <!-- Nút Scan: Ai cũng thấy -->
                             <button @click="switchView('scan')" :class="currentView==='scan'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Quét QR</button>
+
                             <button @click="switchView('incidents')" :class="currentView==='incidents'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Sự cố</button>
                         </div>
 
@@ -181,7 +188,6 @@
 
                 <div x-show="!isLoading && selectedProjectId">
                     
-                    <!-- View: LIST -->
                     <div x-show="currentView === 'list'" class="space-y-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <template x-for="point in currentProjectQrPoints" :key="point.id">
@@ -193,11 +199,12 @@
                                         </button>
                                     </template>
 
+                                    <!-- QR Image -->
                                     <div>
                                         <div :id="'qrcode-' + point.id" class="mb-4 p-2 bg-white border rounded"></div>
                                         <div x-init="$nextTick(() => { generateQrCode(point.id, point.data || point.id) })"></div>
                                     </div>
-                                    
+
                                     <h4 class="font-bold text-lg truncate w-full" x-text="point.name"></h4>
                                     <p class="text-sm text-gray-500 mb-2 truncate w-full" x-text="point.location || 'Chưa cập nhật'"></p>
                                     
@@ -206,6 +213,7 @@
                                             <button @click="openEditModal(point)" class="flex-1 bg-gray-50 text-gray-600 py-2 rounded text-sm font-bold hover:bg-gray-100 transition">Sửa</button>
                                         </template>
                                         
+                                        <!-- Tải về: Luôn hiện -->
                                         <button @click="downloadQr(point.id, point.name)" class="flex-1 bg-blue-50 text-blue-600 py-2 rounded text-sm font-bold hover:bg-blue-100 transition">Tải về</button>
                                     </div>
                                 </div>
@@ -216,10 +224,9 @@
                             </div>
                         </div>
 
-                        <!-- Logs Table -->
                         <div class="bg-white rounded-lg shadow-sm border overflow-hidden mt-8">
                             <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
-                                <h3 class="font-bold text-gray-800">Nhật ký quét</h3>
+                                <h3 class="font-bold text-gray-800">Nhật ký quét (Bao gồm Sự cố)</h3>
                                 <button @click="fetchLogs" class="text-sm text-blue-600 hover:underline flex items-center">
                                     <i class="fa-solid fa-rotate mr-1"></i> Làm mới
                                 </button>
@@ -257,7 +264,6 @@
                         </div>
                     </div>
 
-                    <!-- View: SCANNER -->
                     <div x-show="currentView === 'scan'" class="flex flex-col items-center justify-center h-[500px]">
                         <div class="relative w-full max-w-md aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-gray-800">
                             <div id="reader"></div>
@@ -272,14 +278,13 @@
                         </div>
                         <p class="mt-4 text-gray-500 text-sm">Sử dụng camera thiết bị để quét mã QR tại điểm tuần tra.</p>
                         
-                        <!-- GPS Indicator -->
-                        <div class="mt-2 text-xs font-mono px-3 py-1 bg-gray-200 rounded-full flex items-center" :class="userLocation ? 'text-green-600' : 'text-red-500'">
+                        <!-- GPS Debug -->
+                        <div class="mt-2 text-xs font-mono px-3 py-1 bg-white border rounded-full flex items-center shadow-sm" :class="userLocation ? 'text-green-600' : 'text-orange-500'">
                             <i class="fa-solid fa-satellite-dish mr-1"></i>
-                            <span x-text="userLocation ? 'GPS: Đã bật (' + userLocation.lat.toFixed(5) + ')' : 'GPS: Đang tìm...'"></span>
+                            <span x-text="userLocation ? 'GPS: ' + userLocation.lat.toFixed(5) + ', ' + userLocation.lng.toFixed(5) + ' (±' + Math.round(userLocation.accuracy) + 'm)' : 'Đang lấy tọa độ GPS...'"></span>
                         </div>
                     </div>
 
-                    <!-- View: INCIDENTS -->
                     <div x-show="currentView === 'incidents'" class="bg-white rounded-lg shadow border overflow-hidden">
                         <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
                             <h3 class="font-bold text-gray-800">Quản lý Sự cố</h3>
@@ -354,7 +359,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: GPS ERROR -->
+    <!-- MODAL 2: GPS ERROR (NEW) -->
     <div x-show="showGpsErrorModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-red-900/80 backdrop-blur-sm"></div>
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
@@ -414,7 +419,6 @@
         </div>
     </div>
 
-    <!-- MODAL 4: ASSIGN -->
     <div x-show="showAssignModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm" @click="showAssignModal = false"></div>
         <div class="bg-white rounded-xl p-6 w-full max-w-md relative z-10">
@@ -435,7 +439,6 @@
         </div>
     </div>
 
-    <!-- MODAL 5: CREATE QR -->
     <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm" @click="showModal = false"></div>
         <div class="bg-white rounded-xl p-6 w-full max-w-lg relative z-10">
@@ -467,7 +470,6 @@
         </div>
     </div>
 
-    <!-- MODAL 6: UNAUTHORIZED -->
     <div x-show="showUnauthorizedModal" class="fixed inset-0 z-[110] flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm"></div>
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
@@ -480,7 +482,6 @@
         </div>
     </div>
 
-    <!-- MODAL 7: IMAGE PREVIEW -->
     <div x-show="showImageModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm" @click="showImageModal = false" x-cloak>
         <img :src="previewImageSrc" class="max-w-full max-h-full rounded shadow-2xl">
         <button class="absolute top-4 right-4 text-white hover:text-gray-300">
@@ -498,18 +499,30 @@
                 sidebarOpen: false, currentView: 'list',
                 projects: [], roles: [], issues: [], scanLogs: [], currentProjectQrPoints: [], allQrPoints: [],
                 selectedProjectId: '', 
-                user: { name: 'Loading...', roleName: 'User', permissions: [] },
+                
+                user: { name: 'Loading...', email: '', avatar: '', roleName: 'User', isSuperAdmin: false, isTenantAdmin: false, permissions: [] },
+                
                 currentPlan: 'starter',
                 plans: { starter: { limits: { qr: 100 } }, professional: { limits: { qr: 500 } }, enterprise: { limits: { qr: 2000 } } },
 
-                scannerActive: false, html5QrCode: null, pendingScanData: null, scanResult: null, isProcessing: false, isLoading: false,
+                scannerActive: false, html5QrCode: null, pendingScanData: null, scanResult: null, isProcessing: false,
+                showIssueModal: false, isSubmitting: false, incidentForm: { description: '', images: [] },
+                showAssignModal: false, selectedIssue: null, tempAssign: '',
+                showModal: false, isEdit: false, formData: { id: null, name: '', location: '' },
+                showUnauthorizedModal: false, showImageModal: false, previewImageSrc: '',
+                isLoading: false,
                 
                 // GPS State
-                userLocation: null, showGpsErrorModal: false, distanceToTarget: 0, lastScanTime: 0, 
+                userLocation: null, 
+                showGpsErrorModal: false,
+                distanceToTarget: 0,
+                lastScanTime: 0, 
                 
-                incidentForm: { description: '', images: [] }, showIssueModal: false, isSubmitting: false, errors: {},
-                showAssignModal: false, selectedIssue: null, tempAssign: '', showModal: false, isEdit: false, formData: { id: null, name: '', location: '' },
-                showUnauthorizedModal: false, showImageModal: false, previewImageSrc: '',
+                errors: {
+                    name: null,
+                    location: null,
+                    description: null
+                },
 
                 async init() {
                     const token = localStorage.getItem('accessToken');
@@ -537,10 +550,17 @@
                             (position) => {
                                 this.userLocation = {
                                     lat: position.coords.latitude,
-                                    lng: position.coords.longitude
+                                    lng: position.coords.longitude,
+                                    accuracy: position.coords.accuracy 
                                 };
                             },
-                            (error) => { console.warn("GPS Error:", error); },
+                            (error) => { 
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Yêu cầu quyền GPS',
+                                    text: 'Vui lòng cho phép truy cập vị trí để sử dụng tính năng quét QR.',
+                                });
+                            },
                             { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
                         );
                     }
@@ -623,7 +643,7 @@
                             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
                             body: JSON.stringify({ 
                                 qrCodeData: qrData, location, status,
-                                latitude: this.userLocation?.lat, longitude: this.userLocation?.lng 
+                                latitude: this.userLocation?.lat, longitude: this.userLocation?.lng
                             })
                         });
 
@@ -632,7 +652,8 @@
                                 Swal.fire({ icon: 'success', title: 'Check-in thành công!', timer: 1500, showConfirmButton: false });
                                 this.lastScanTime = Date.now(); // Reset timer 30s
                             }
-                            this.fetchLogs(); this.resumeScanning(); 
+                            this.fetchLogs(); 
+                            this.resumeScanning(); 
                         } else { 
                             const err = await res.json(); 
                             Swal.fire('Lỗi', err.message, 'error'); this.resumeScanning(); 
@@ -644,8 +665,15 @@
                 },
 
                 resumeScanning() {
-                    this.scanResult = null; this.pendingScanData = null; this.isProcessing = false; this.showGpsErrorModal = false;
-                    if (this.html5QrCode) this.html5QrCode.resume();
+                    this.scanResult = null; 
+                    this.pendingScanData = null; 
+                    this.isProcessing = false; 
+                    this.showGpsErrorModal = false;
+                    this.distanceToTarget = 0;
+                    
+                    if (this.html5QrCode) {
+                        this.html5QrCode.resume();
+                    }
                 },
 
                 calculateDistance(lat1, lon1, lat2, lon2) {
@@ -861,69 +889,6 @@
                 },
 
                 viewImage(path) { if(path) { this.previewImageSrc = path.startsWith('http') ? path : (this.apiUrl + path); this.showImageModal = true; } },
-                openAssignModal(issue) { 
-                    if (!this.checkPermissionAction('ASSIGN_TASK') && !this.checkPermissionAction('MANAGE_TASK')) return;
-                    this.selectedIssue = issue; this.tempAssign = ''; this.showAssignModal = true; 
-                },
-                async confirmAssign() {
-                    if (!this.tempAssign) return;
-                    try {
-                        const res = await fetch(`${this.apiUrl}/api/incidents/${this.selectedIssue.id}/assign`, {
-                            method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
-                            body: JSON.stringify({ department: this.tempAssign })
-                        });
-                        if (res.ok) {
-                            Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã phân công!', timer: 1500, showConfirmButton: false });
-                            this.showAssignModal = false; this.fetchIncidents();
-                        } else {
-                            const err = await res.json();
-                            Swal.fire('Lỗi', err.message, 'error');
-                        }
-                    } catch (e) { Swal.fire('Lỗi', 'Lỗi khi phân công', 'error'); }
-                },
-
-                openReportModal() { 
-                    this.scanResult = null; this.incidentForm = { description: '', images: [] }; this.errors = {}; 
-                    this.showIssueModal = true; 
-                },
-                handleImageSelect(e) {
-                    const files = Array.from(e.target.files);
-                    if (this.incidentForm.images.length + files.length > 5) return Swal.fire('Lỗi', 'Tối đa 5 ảnh', 'warning');
-                    files.forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = (ev) => this.incidentForm.images.push(ev.target.result);
-                        reader.readAsDataURL(file);
-                    });
-                },
-                removeImage(i) { this.incidentForm.images.splice(i, 1); },
-                
-                async submitIncident() {
-                    if (!this.validateIncidentForm()) return;
-
-                    this.isSubmitting = true;
-                    try {
-                        const res = await fetch(`${this.apiUrl}/api/incidents`, {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
-                            body: JSON.stringify({
-                                projectId: this.selectedProjectId,
-                                qrCode: this.pendingScanData,
-                                description: this.incidentForm.description,
-                                images: this.incidentForm.images
-                            })
-                        });
-                        const data = await res.json();
-                        this.showIssueModal = false; this.isSubmitting = false;
-                        if (res.ok) {
-                            const hasPermission = (this.user.role === data.assignedRoleName) || this.user.isTenantAdmin || this.user.isSuperAdmin;
-                            if (!hasPermission) this.showUnauthorizedModal = true;
-                            else Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã báo cáo sự cố.', timer: 1500, showConfirmButton: false });
-                            
-                            this.fetchLogs(); this.resumeScanning();
-                        } else {
-                            Swal.fire('Lỗi', data.message, 'error');
-                        }
-                    } catch (e) { this.isSubmitting = false; Swal.fire('Lỗi mạng', 'Không thể kết nối server', 'error'); }
-                },
                 
                 logout() {
                     Swal.fire({

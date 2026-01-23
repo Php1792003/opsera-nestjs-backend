@@ -199,12 +199,14 @@ model ScanLog {
   userId      String
   tenantId    String
   location    String?    @db.NVarChar(Max)
+  latitude    Float?     @default(0)
+  longitude   Float?     @default(0)
+  accuracy    Float?     @default(0)
   status      String?    @default("VALID")
   incidents   Incident[]
   qrCode      QRCode     @relation(fields: [qrCodeId], references: [id], onUpdate: NoAction)
   tenant      Tenant     @relation(fields: [tenantId], references: [id], onUpdate: NoAction)
   user        User       @relation(fields: [userId], references: [id], onUpdate: NoAction)
-
   @@index([qrCodeId])
   @@index([userId])
 }

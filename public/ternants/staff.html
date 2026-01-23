@@ -10,7 +10,7 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/global-notification.js"></script>
-    
+    <link rel="icon" type="image/png" href="../img/logo_header.png">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -666,7 +666,7 @@
                 apiUrl: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
                     ? 'http://localhost:3000' 
                     : 'https://aegism.online',
-                    
+
                 sidebarOpen: false,
                 currentPlan: 'starter',
                 user: { name: 'Loading...', email: '', avatar: '', roleName: 'User', isSuperAdmin: false, isTenantAdmin: false, permissions: [] },
