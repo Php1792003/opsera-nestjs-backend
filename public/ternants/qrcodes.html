@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Tuần tra - Opsera</title>
+    <title>Quản lý QR & Tuần tra - Opsera</title>
     
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,17 +11,13 @@
     
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     
-    <!-- QR Code Libs -->
+    <!-- QR Code Libraries -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- Custom JS -->
-    <script src="../js/global-notification.js"></script>
     
     <link rel="icon" type="image/png" href="../img/logo_header.png">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,9 +26,9 @@
         body { font-family: 'Nunito', sans-serif; } 
         [x-cloak] { display: none !important; } 
         
-        /* Tùy chỉnh font cho SweetAlert2 */
         div:where(.swal2-container) div:where(.swal2-popup) { font-family: 'Nunito', sans-serif !important; }
 
+        /* Scanner Styles */
         #reader { width: 100%; height: 100%; background: #000; border-radius: 0.5rem; overflow: hidden; }
         #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
         
@@ -64,43 +60,50 @@
 
                 <nav class="mt-6 px-4 space-y-2">
                     <a href="../ternants/dashboard.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
-                        <i class="fa-solid fa-gauge-high w-6 text-center mr-2 text-lg"></i> Tổng quan
+                        <i class="fa-solid fa-gauge-high w-6 text-center mr-2 text-lg"></i>
+                        Tổng quan (Dashboard)
                     </a>
                     
                     <template x-if="hasPermission('VIEW_PROJECTS') || hasPermission('MANAGE_PROJECT')">
                         <a href="../ternants/project.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
-                            <i class="fa-solid fa-building-user w-6 text-center mr-2 text-lg"></i> Quản lý Dự án
+                            <i class="fa-solid fa-building-user w-6 text-center mr-2 text-lg"></i>
+                            Quản lý Dự án
                         </a>
                     </template>
 
-                    <!-- QR Menu: Luôn hiện (Sửa theo yêu cầu) -->
-                    <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
-                        <i class="fa-solid fa-qrcode w-6 text-center mr-2 text-lg"></i> Mã QR & Điểm quét
-                    </a>
+                    <template x-if="hasPermission('VIEW_QR') || hasPermission('SCAN_QR') || hasPermission('CREATE_QR')">
+                        <a href="../ternants/qrcodes.html" class="flex items-center px-4 py-3 bg-blue-50 text-opsera-primary rounded-lg transition-colors font-semibold">
+                            <i class="fa-solid fa-qrcode w-6 text-center mr-2 text-lg"></i>
+                            Mã QR & Điểm quét
+                        </a>
+                    </template>
 
                     <template x-if="hasPermission('VIEW_USERS') || hasPermission('MANAGE_USER')">
                         <a href="../ternants/staff.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
-                            <i class="fa-solid fa-users-gear w-6 text-center mr-2 text-lg"></i> Nhân sự & Phân quyền
+                            <i class="fa-solid fa-users-gear w-6 text-center mr-2 text-lg"></i>
+                            Nhân sự & Phân quyền
                         </a>
                     </template>
 
-                        <a href="../ternants/task.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
-                            <i class="fa-solid fa-list-check w-6 text-center mr-2 text-lg"></i> Công việc & Task
-                        </a>
-
-                    <a href="/ternants/chat.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors group">
-                        <i class="fa-solid fa-comments w-6 text-center mr-2 text-lg group-hover:text-opsera-primary"></i>
-                        <span>Trò chuyện</span>
+                    <a href="../ternants/task.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                        <i class="fa-solid fa-list-check w-6 text-center mr-2 text-lg"></i>
+                        Công việc & Task
+                    </a>
+                    <a href="/ternants/chat.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-opsera-primary rounded-lg transition-colors">
+                        <i class="fa-solid fa-comments w-6 text-center mr-2 text-lg"></i>
+                        Trò chuyện
                     </a>
 
                     <template x-if="['professional', 'enterprise'].includes(currentPlan) && (hasPermission('VIEW_REPORT') || user.isTenantAdmin)">
                         <div class="pt-2 mt-2 border-t border-gray-100">
                             <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nâng cao</p>
                             <a href="../ternants/report.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-purple-600 rounded-lg transition-colors">
-                                <i class="fa-solid fa-chart-line w-6 text-center mr-2 text-lg"></i> Báo cáo Thống kê
+                                <i class="fa-solid fa-chart-line w-6 text-center mr-2 text-lg"></i>
+                                Báo cáo Thống kê
                             </a>
                             <a href="../ternants/audit_log.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-purple-600 rounded-lg transition-colors">
-                                <i class="fa-solid fa-clock-rotate-left w-6 text-center mr-2 text-lg"></i> Nhật ký Hoạt động
+                                <i class="fa-solid fa-clock-rotate-left w-6 text-center mr-2 text-lg"></i>
+                                Nhật ký Hoạt động
                             </a>
                         </div>
                     </template>
@@ -109,10 +112,12 @@
                         <div class="pt-2 mt-2 border-t border-gray-100">
                             <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doanh nghiệp</p>
                             <a href="../ternants/api_integration.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-indigo-600 rounded-lg transition-colors">
-                                <i class="fa-solid fa-code w-6 text-center mr-2 text-lg"></i> Tích hợp API
+                                <i class="fa-solid fa-code w-6 text-center mr-2 text-lg"></i>
+                                Tích hợp API
                             </a>
                             <a href="../ternants/branding.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-indigo-600 rounded-lg transition-colors">
-                                <i class="fa-solid fa-paint-roller w-6 text-center mr-2 text-lg"></i> Tùy chỉnh Thương hiệu
+                                <i class="fa-solid fa-paint-roller w-6 text-center mr-2 text-lg"></i>
+                                Tùy chỉnh Thương hiệu
                             </a>
                         </div>
                     </template>
@@ -121,7 +126,8 @@
             
             <div class="p-4 border-t border-gray-200">
                 <button @click="logout" class="flex items-center w-full px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors">
-                    <i class="fa-solid fa-right-from-bracket w-6 text-center mr-2 text-lg"></i> Đăng xuất
+                    <i class="fa-solid fa-right-from-bracket w-6 text-center mr-2 text-lg"></i>
+                    Đăng xuất
                 </button>
             </div>
         </aside>
@@ -151,8 +157,7 @@
                             <div class="text-sm font-semibold text-gray-800" x-text="user.name">Loading...</div>
                             <div class="text-xs text-gray-500 uppercase font-bold text-opsera-primary" x-text="user.roleName">User</div>
                         </div>
-                        <img class="h-9 w-9 rounded-full object-cover border border-gray-200" :src="user.avatar" alt="User Avatar">
-                        
+                        <img class="h-9 w-9 rounded-full object-cover border border-gray-200" :src="user.avatar" alt="User Avatar" onerror="this.src='https://ui-avatars.com/api/?name=User'">
                          <div class="absolute right-0 top-full mt-2 w-48 bg-white border rounded shadow-lg p-3 hidden group-hover:block z-50">
                             <p class="text-xs text-gray-500 truncate" x-text="user.email"></p>
                         </div>
@@ -161,79 +166,81 @@
             </header>
 
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                <!-- Toolbar -->
                 <div class="bg-white p-4 rounded-lg shadow-sm border mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center w-full sm:w-auto">
                         <span class="mr-3 font-medium">Dự án:</span>
-                        <select x-model="selectedProjectId" @change="changeProject()" class="border rounded-lg px-3 py-2 w-full sm:w-64 focus:ring-2 focus:ring-blue-500">
+                        <select x-model="selectedProjectId" @change="changeProject()" class="border rounded-lg px-3 py-2 w-full sm:w-64 focus:ring-2 focus:ring-blue-500 outline-none">
                             <template x-for="p in projects" :key="p.id"><option :value="p.id" x-text="p.name"></option></template>
                         </select>
                     </div>
-                    <div class="flex items-center space-x-2">
+                    
+                    <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
                         <div class="flex bg-gray-100 rounded-lg p-1">
-                            <button @click="switchView('list')" :class="currentView==='list'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Danh sách</button>
-                            
-                            <!-- Nút Scan: Ai cũng thấy -->
-                            <button @click="switchView('scan')" :class="currentView==='scan'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Quét QR</button>
-
-                            <button @click="switchView('incidents')" :class="currentView==='incidents'?'bg-white shadow text-blue-600':''" class="px-4 py-1.5 rounded-md text-sm font-bold transition">Sự cố</button>
+                            <button @click="switchView('list')" :class="currentView==='list'?'bg-white shadow text-opsera-primary font-bold':'text-gray-500'" class="px-4 py-1.5 rounded-md text-sm transition-all duration-200">Danh sách</button>
+                            <button @click="switchView('scan')" :class="currentView==='scan'?'bg-white shadow text-opsera-primary font-bold':'text-gray-500'" class="px-4 py-1.5 rounded-md text-sm transition-all duration-200">Quét QR</button>
+                            <button @click="switchView('incidents')" :class="currentView==='incidents'?'bg-white shadow text-opsera-primary font-bold':'text-gray-500'" class="px-4 py-1.5 rounded-md text-sm transition-all duration-200">Sự cố</button>
                         </div>
-
+                        
                         <button x-show="currentView === 'list' && (hasPermission('CREATE_QR') || hasPermission('MANAGE_QRCODE'))" 
                                 @click="openCreateModal" 
-                                class="bg-opsera-primary text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-blue-700 flex items-center transform hover:-translate-y-0.5 transition">
+                                class="bg-opsera-primary text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-blue-700 flex items-center transform hover:-translate-y-0.5 transition duration-200">
                             <i class="fa-solid fa-plus mr-2"></i> Thêm QR
                         </button>
                     </div>
                 </div>
 
-                <div x-show="!isLoading && selectedProjectId">
+                <div x-show="!isLoading && selectedProjectId" x-transition.opacity>
                     
+                    <!-- VIEW 1: LIST -->
                     <div x-show="currentView === 'list'" class="space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <template x-for="point in currentProjectQrPoints" :key="point.id">
-                                <div class="bg-white p-5 rounded-lg shadow-sm border hover:border-blue-500 transition relative group flex flex-col items-center text-center">
+                                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:border-blue-500 hover:shadow-md transition duration-200 relative group flex flex-col items-center text-center">
                                     
                                     <template x-if="hasPermission('DELETE_QR') || hasPermission('MANAGE_QRCODE')">
-                                        <button @click="deleteQr(point.id)" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition p-1">
-                                            <i class="fa-solid fa-trash-can"></i>
+                                        <button @click="deleteQr(point.id)" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition p-1">
+                                            <i class="fa-solid fa-trash-can text-lg"></i>
                                         </button>
                                     </template>
 
-                                    <!-- QR Image -->
-                                    <div>
-                                        <div :id="'qrcode-' + point.id" class="mb-4 p-2 bg-white border rounded"></div>
+                                    <div class="mb-4">
+                                        <div :id="'qrcode-' + point.id" class="p-2 bg-white border border-gray-100 rounded-lg shadow-inner"></div>
                                         <div x-init="$nextTick(() => { generateQrCode(point.id, point.data || point.id) })"></div>
                                     </div>
 
-                                    <h4 class="font-bold text-lg truncate w-full" x-text="point.name"></h4>
+                                    <h4 class="font-bold text-lg truncate w-full px-2" x-text="point.name"></h4>
                                     <p class="text-sm text-gray-500 mb-2 truncate w-full" x-text="point.location || 'Chưa cập nhật'"></p>
                                     
                                     <div class="flex w-full gap-2 mt-auto">
                                         <template x-if="hasPermission('EDIT_QR') || hasPermission('UPDATE_QRCODE') || hasPermission('MANAGE_QRCODE')">
-                                            <button @click="openEditModal(point)" class="flex-1 bg-gray-50 text-gray-600 py-2 rounded text-sm font-bold hover:bg-gray-100 transition">Sửa</button>
+                                            <button @click="openEditModal(point)" class="flex-1 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-bold hover:bg-gray-100 hover:text-gray-800 transition">Sửa</button>
                                         </template>
-                                        
-                                        <!-- Tải về: Luôn hiện -->
-                                        <button @click="downloadQr(point.id, point.name)" class="flex-1 bg-blue-50 text-blue-600 py-2 rounded text-sm font-bold hover:bg-blue-100 transition">Tải về</button>
+                                        <button @click="downloadQr(point.id, point.name)" class="flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition">Tải về</button>
                                     </div>
                                 </div>
                             </template>
-                            <div x-show="currentProjectQrPoints.length === 0" class="col-span-full text-center py-16 text-gray-500 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
-                                <i class="fa-solid fa-qrcode text-4xl mb-3 text-gray-400"></i>
-                                <p>Chưa có điểm quét nào.</p>
+                            
+                            <div x-show="currentProjectQrPoints.length === 0" class="col-span-full text-center py-16 text-gray-500 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                                <i class="fa-regular fa-folder-open text-4xl text-gray-300 mb-3 block"></i>
+                                <span class="font-medium">Chưa có điểm quét nào.</span>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-lg shadow-sm border overflow-hidden mt-8">
-                            <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
-                                <h3 class="font-bold text-gray-800">Nhật ký quét (Bao gồm Sự cố)</h3>
-                                <button @click="fetchLogs" class="text-sm text-blue-600 hover:underline flex items-center">
+                        <!-- Logs Table -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-8">
+                            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                                <h3 class="font-bold text-gray-800 flex items-center">
+                                    <i class="fa-solid fa-clock-rotate-left mr-2 text-opsera-primary"></i>
+                                    Nhật ký quét gần đây
+                                </h3>
+                                <button @click="fetchLogs" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center transition">
                                     <i class="fa-solid fa-rotate mr-1"></i> Làm mới
                                 </button>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
-                                    <thead class="bg-gray-100 text-xs uppercase text-gray-500">
+                                    <thead class="bg-gray-100 text-xs uppercase text-gray-500 font-semibold">
                                         <tr>
                                             <th class="px-6 py-3">Thời gian</th>
                                             <th class="px-6 py-3">Điểm quét</th>
@@ -242,13 +249,13 @@
                                             <th class="px-6 py-3">Trạng thái</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y text-sm">
+                                    <tbody class="divide-y divide-gray-100 text-sm">
                                         <template x-for="log in scanLogs" :key="log.id">
-                                            <tr class="hover:bg-gray-50 transition">
+                                            <tr class="hover:bg-blue-50/30 transition duration-150">
                                                 <td class="px-6 py-4 text-gray-500 font-mono" x-text="new Date(log.scannedAt).toLocaleString('vi-VN')"></td>
-                                                <td class="px-6 py-4 font-bold" x-text="log.qrCode?.name || 'Unknown'"></td>
+                                                <td class="px-6 py-4 font-bold text-gray-700" x-text="log.qrCode?.name || 'Unknown'"></td>
                                                 <td class="px-6 py-4 text-gray-500" x-text="log.location || 'N/A'"></td>
-                                                <td class="px-6 py-4 font-bold text-blue-600" x-text="log.user?.fullName || 'N/A'"></td>
+                                                <td class="px-6 py-4 font-medium text-opsera-primary" x-text="log.user?.fullName || 'N/A'"></td>
                                                 <td class="px-6 py-4">
                                                     <span class="px-2 py-1 rounded text-xs font-bold" 
                                                           :class="log.status === 'VALID' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
@@ -257,37 +264,43 @@
                                                 </td>
                                             </tr>
                                         </template>
-                                        <tr x-show="scanLogs.length === 0"><td colspan="5" class="p-6 text-center text-gray-500 italic">Chưa có dữ liệu.</td></tr>
+                                        <tr x-show="scanLogs.length === 0"><td colspan="5" class="p-8 text-center text-gray-400 italic">Chưa có dữ liệu nhật ký.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <div x-show="currentView === 'scan'" class="flex flex-col items-center justify-center h-[500px]">
-                        <div class="relative w-full max-w-md aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-gray-800">
+                    <!-- VIEW 2: SCANNER -->
+                    <div x-show="currentView === 'scan'" class="flex flex-col items-center justify-center py-10">
+                        <div class="relative w-full max-w-md aspect-square bg-black rounded-3xl overflow-hidden shadow-2xl border-4 border-gray-800">
                             <div id="reader"></div>
-                            <div x-show="scannerActive" class="absolute inset-0 pointer-events-none border-2 border-white/30 rounded-2xl">
-                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-blue-500 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
-                                    <div class="absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_10px_#2563EB] animate-scan"></div>
+                            <div x-show="scannerActive" class="absolute inset-0 pointer-events-none border-2 border-white/20 rounded-3xl">
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-opsera-primary rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]">
+                                    <div class="absolute top-0 left-0 w-full h-0.5 bg-opsera-primary shadow-[0_0_15px_#2563EB] animate-scan"></div>
                                 </div>
+                                <div class="absolute bottom-6 left-0 w-full text-center text-white/80 text-sm font-medium">Đang tìm mã QR...</div>
                             </div>
                             <div x-show="!scannerActive" class="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
-                                <button @click="startScanner" class="px-6 py-3 bg-opsera-primary text-white rounded-full font-bold shadow-lg hover:bg-blue-600 transform hover:-translate-y-1 transition">Bắt đầu Quét</button>
+                                <button @click="startScanner" class="px-8 py-3 bg-opsera-primary text-white rounded-full font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transform hover:-translate-y-1 transition duration-200 flex items-center">
+                                    <i class="fa-solid fa-camera mr-2"></i> Bắt đầu Quét
+                                </button>
                             </div>
                         </div>
-                        <p class="mt-4 text-gray-500 text-sm">Sử dụng camera thiết bị để quét mã QR tại điểm tuần tra.</p>
-                        
-                        <!-- GPS Debug -->
+                        <p class="mt-6 text-gray-500 text-sm font-medium">Sử dụng camera thiết bị để quét mã QR tại điểm tuần tra.</p>
                         <div class="mt-2 text-xs font-mono px-3 py-1 bg-white border rounded-full flex items-center shadow-sm" :class="userLocation ? 'text-green-600' : 'text-orange-500'">
                             <i class="fa-solid fa-satellite-dish mr-1"></i>
                             <span x-text="userLocation ? 'GPS: ' + userLocation.lat.toFixed(5) + ', ' + userLocation.lng.toFixed(5) + ' (±' + Math.round(userLocation.accuracy) + 'm)' : 'Đang lấy tọa độ GPS...'"></span>
                         </div>
                     </div>
 
-                    <div x-show="currentView === 'incidents'" class="bg-white rounded-lg shadow border overflow-hidden">
-                        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
-                            <h3 class="font-bold text-gray-800">Quản lý Sự cố</h3>
+                    <!-- VIEW 3: INCIDENTS -->
+                    <div x-show="currentView === 'incidents'" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-gray-800 flex items-center">
+                                <i class="fa-solid fa-triangle-exclamation mr-2 text-red-500"></i>
+                                Quản lý Sự cố
+                            </h3>
                             <button @click="fetchIncidents" class="text-sm text-blue-600 hover:underline flex items-center">
                                 <i class="fa-solid fa-rotate mr-1"></i> Làm mới
                             </button>
@@ -295,8 +308,9 @@
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
-                                    <tr class="bg-gray-100 text-xs uppercase text-gray-500">
+                                    <tr class="bg-gray-50 text-xs uppercase text-gray-500 font-semibold">
                                         <th class="px-6 py-3">Hình ảnh</th>
+                                        <th class="px-6 py-3">Thời gian</th>
                                         <th class="px-6 py-3">Điểm quét</th>
                                         <th class="px-6 py-3">Mô tả</th>
                                         <th class="px-6 py-3">Người báo cáo</th>
@@ -304,34 +318,60 @@
                                         <th class="px-6 py-3">Hành động</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y text-sm">
+                                <tbody class="divide-y divide-gray-100 text-sm">
                                     <template x-for="issue in issues" :key="issue.id">
-                                        <tr class="hover:bg-gray-50 transition">
+                                        <tr class="hover:bg-red-50/20 transition">
+                                            <!-- Image -->
                                             <td class="px-6 py-4">
-                                                <div class="h-12 w-16 bg-gray-200 rounded overflow-hidden border cursor-pointer hover:opacity-80" @click="viewImage(issue.image)">
-                                                    <img :src="issue.image ? (apiUrl + issue.image) : 'https://via.placeholder.com/150'" class="w-full h-full object-cover">
+                                                <div class="h-12 w-16 bg-gray-200 rounded overflow-hidden border cursor-pointer hover:opacity-80 transition" @click="viewImage(issue.thumbnail)">
+                                                    <img :src="getImageUrl(issue.thumbnail)" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=No+Img'">
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4">
-                                                <div class="font-bold text-gray-800" x-text="issue.qrCode"></div>
-                                                <div class="text-xs text-gray-500" x-text="issue.location"></div>
+                                            
+                                            <!-- Date/Time (NEW) -->
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-700" x-text="new Date(issue.reportedAt).toLocaleDateString('vi-VN')"></div>
+                                                <div class="text-xs text-gray-500" x-text="new Date(issue.reportedAt).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})"></div>
                                             </td>
-                                            <td class="px-6 py-4 text-gray-600 truncate max-w-xs" x-text="issue.description"></td>
-                                            <td class="px-6 py-4 text-gray-500" x-text="issue.reporter"></td>
+
+                                            <!-- QR Name -->
                                             <td class="px-6 py-4">
-                                                <span class="px-2 py-1 rounded text-xs font-bold border" 
-                                                      :class="issue.department !== 'Unassigned' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'"
-                                                      x-text="issue.department === 'Unassigned' ? 'Chưa phân công' : issue.department"></span>
+                                                <div class="font-bold text-gray-800" x-text="issue.qrCodeName || 'Điểm chưa định danh'"></div>
+                                                <div class="text-xs text-gray-500 flex items-center mt-0.5">
+                                                    <i class="fa-solid fa-location-dot mr-1 text-[10px]"></i>
+                                                    <span x-text="issue.location || 'N/A'"></span>
+                                                </div>
                                             </td>
+
+                                            <!-- Desc -->
+                                            <td class="px-6 py-4 text-gray-600 truncate max-w-xs" x-text="issue.description" :title="issue.description"></td>
+                                            
+                                            <!-- Reporter -->
+                                            <td class="px-6 py-4 text-gray-500" x-text="issue.reporterName || 'N/A'"></td>
+                                            
+                                            <!-- Department -->
                                             <td class="px-6 py-4">
+                                                <span class="px-2.5 py-1 rounded-full text-xs font-bold border" 
+                                                      :class="issue.department !== 'Unassigned' ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-yellow-50 text-yellow-700 border-yellow-100'"
+                                                      x-text="issue.department !== 'Unassigned' ? issue.department : 'Chưa phân công'"></span>
+                                            </td>
+
+                                            <!-- Action -->
+                                            <td class="px-6 py-4">
+                                                <!-- If no task created yet, allow assign -->
                                                 <template x-if="!issue.hasTask && (hasPermission('ASSIGN_TASK') || hasPermission('MANAGE_TASK'))">
-                                                    <button @click="openAssignModal(issue)" class="text-blue-600 border border-blue-200 hover:bg-blue-50 px-3 py-1 rounded text-xs font-bold transition">Phân công</button>
+                                                    <button @click="openAssignModal(issue)" class="text-blue-600 border border-blue-200 hover:bg-blue-50 hover:border-blue-300 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                                        Phân công
+                                                    </button>
                                                 </template>
-                                                <span x-show="issue.hasTask" class="text-green-600 bg-green-50 px-2 py-1 rounded text-xs font-bold border border-green-200">Đã tạo Task</span>
+                                                <!-- If task exists -->
+                                                <span x-show="issue.hasTask" class="text-green-600 bg-green-50 px-2.5 py-1 rounded-full text-xs font-bold border border-green-200 flex items-center w-fit">
+                                                    <i class="fa-solid fa-check mr-1"></i> Đã tạo Task
+                                                </span>
                                             </td>
                                         </tr>
                                     </template>
-                                    <tr x-show="issues.length === 0"><td colspan="6" class="p-6 text-center text-gray-500 italic">Không có sự cố nào.</td></tr>
+                                    <tr x-show="issues.length === 0"><td colspan="7" class="p-8 text-center text-gray-400 italic">Tuyệt vời! Không có sự cố nào cần xử lý.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -344,135 +384,142 @@
 
     <!-- MODAL 1: SCAN RESULT -->
     <div x-show="scanResult" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
-        <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" @click="resumeScanning"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" @click="resumeScanning"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center transform transition-all scale-100">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                 <i class="fa-solid fa-check text-2xl text-green-600"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">Đã tìm thấy mã!</h3>
             <p class="text-sm font-mono bg-gray-100 p-2 rounded mb-4 break-all" x-text="pendingScanData"></p>
-            <div class="grid grid-cols-2 gap-4">
-                <button @click="confirmCheckIn" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition">Check-in</button>
-                <button @click="openReportModal" class="w-full py-3 bg-white border-2 border-red-500 text-red-600 rounded-xl font-bold hover:bg-red-50 transition">Báo Sự cố</button>
+            <div class="grid grid-cols-2 gap-3">
+                <button @click="confirmCheckIn" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition shadow-lg shadow-green-500/20">
+                    Check-in
+                </button>
+                <button @click="openReportModal" class="w-full py-3 bg-white border-2 border-red-100 text-red-500 rounded-xl font-bold hover:bg-red-50 hover:border-red-200 transition">
+                    Báo Sự cố
+                </button>
             </div>
-            <button @click="resumeScanning" class="mt-4 text-gray-400 underline text-sm">Bỏ qua</button>
+            <button @click="resumeScanning" class="mt-6 text-gray-400 hover:text-gray-600 text-sm font-medium transition">Bỏ qua, tiếp tục quét</button>
         </div>
     </div>
 
-    <!-- MODAL 2: GPS ERROR (NEW) -->
+    <!-- MODAL 2: GPS ERROR -->
     <div x-show="showGpsErrorModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4" x-cloak>
-        <div class="fixed inset-0 bg-red-900/80 backdrop-blur-sm"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
-            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-location-dot text-2xl text-red-600"></i>
+        <div class="fixed inset-0 bg-red-900/70 backdrop-blur-md transition-opacity"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative z-10 p-6 text-center transform transition-all scale-100">
+            <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <i class="fa-solid fa-location-crosshairs text-4xl text-red-600"></i>
             </div>
-            <h3 class="text-xl font-bold text-red-600 mb-2">Sai vị trí!</h3>
-            <p class="text-gray-600 mb-4">Bạn đang ở quá xa điểm quét quy định. Vui lòng di chuyển đến đúng vị trí để Check-in.</p>
-            <p class="text-xs text-gray-400 mb-6 font-mono">
-                Khoảng cách: <span x-text="distanceToTarget + 'm'"></span> (Cho phép: 10m)
-            </p>
-            <button @click="showGpsErrorModal = false; resumeScanning()" class="w-full py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-bold transition">Đã hiểu</button>
+            <h3 class="text-2xl font-bold text-red-600 mb-3">⚠️ Vị trí không hợp lệ!</h3>
+            <p class="text-gray-700 mb-6 leading-relaxed text-base">Bạn đang ở <b class="text-red-600" x-text="distanceToTarget + ' mét'"></b> cách điểm quét. Vui lòng di chuyển gần hơn để có thể quét mã.</p>
+            <div class="flex gap-3">
+                <button @click="showGpsErrorModal = false; resumeScanning()" class="flex-1 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl font-bold transition shadow-lg transform hover:scale-105">Tiếp tục Quét</button>
+                <button @click="showGpsErrorModal = false; switchView('list')" class="flex-1 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition">Xem Danh sách</button>
+            </div>
         </div>
     </div>
 
-    <!-- MODAL 3: INCIDENT -->
+    <!-- MODAL 3: REPORT INCIDENT -->
     <div x-show="showIssueModal" class="fixed inset-0 z-[60] flex items-center justify-center px-4" x-cloak>
-        <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" @click="showIssueModal = false"></div>
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative z-10 flex flex-col max-h-[90vh]">
-            <div class="p-4 border-b bg-red-50 rounded-t-xl flex justify-between items-center">
-                <h3 class="font-bold text-red-600 flex items-center">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="showIssueModal = false"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative z-10 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-gray-100 bg-red-50 rounded-t-2xl flex justify-between items-center">
+                <h3 class="font-bold text-red-600 flex items-center text-lg">
                     <i class="fa-solid fa-triangle-exclamation mr-2"></i> Báo cáo Sự cố
                 </h3>
-                <button @click="showIssueModal = false" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+                <button @click="showIssueModal = false" class="text-red-400 hover:text-red-600 text-xl font-bold">&times;</button>
             </div>
             <div class="p-6 overflow-y-auto">
-                <div class="mb-4">
-                    <label class="block text-sm font-bold mb-1">Mô tả sự cố <span class="text-red-500">*</span></label>
+                <div class="mb-5">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Mô tả chi tiết <span class="text-red-500">*</span></label>
                     <textarea x-model="incidentForm.description" 
                               @input="errors.description = null"
-                              :class="errors.description ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'"
-                              rows="3" 
-                              class="w-full border rounded p-2 focus:ring-2 focus:outline-none transition" 
-                              placeholder="Chi tiết về sự cố..."></textarea>
-                    <p x-show="errors.description" x-text="errors.description" class="text-red-500 text-xs mt-1 font-semibold"></p>
+                              :class="errors.description ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'"
+                              rows="4" 
+                              class="w-full border rounded-xl p-3 focus:ring-2 focus:outline-none transition resize-none bg-gray-50 focus:bg-white" 
+                              placeholder="Mô tả hiện trạng sự cố..."></textarea>
+                    <p x-show="errors.description" x-text="errors.description" class="text-red-500 text-xs mt-1.5 font-semibold"></p>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-bold mb-2">Hình ảnh (Tối đa 5)</label>
-                    <div class="grid grid-cols-3 gap-2 mb-2">
+                <div class="mb-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Hình ảnh minh chứng (Tối đa 5)</label>
+                    <div class="grid grid-cols-3 gap-3">
                         <template x-for="(img, idx) in incidentForm.images" :key="idx">
-                            <div class="relative aspect-square border rounded overflow-hidden group">
+                            <div class="relative aspect-square border border-gray-200 rounded-xl overflow-hidden group shadow-sm">
                                 <img :src="img" class="w-full h-full object-cover">
-                                <button @click="removeImage(idx)" class="absolute top-0 right-0 bg-red-500 text-white w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-xmark"></i></button>
+                                <button @click="removeImage(idx)" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-md">&times;</button>
                             </div>
                         </template>
-                        <label class="flex items-center justify-center border-2 border-dashed h-full rounded cursor-pointer min-h-[80px] hover:bg-gray-50 transition" x-show="incidentForm.images.length < 5">
-                            <span class="text-2xl text-gray-400">+</span>
+                        <label class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 h-full rounded-xl cursor-pointer min-h-[80px] hover:bg-gray-50 hover:border-blue-400 transition group" x-show="incidentForm.images.length < 5">
+                            <i class="fa-solid fa-camera text-2xl text-gray-300 group-hover:text-blue-400 transition mb-1"></i>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase">Thêm ảnh</span>
                             <input type="file" multiple accept="image/*" class="hidden" @change="handleImageSelect">
                         </label>
                     </div>
                 </div>
             </div>
-            <div class="p-4 border-t flex justify-end gap-2 bg-gray-50 rounded-b-xl">
-                <button @click="showIssueModal = false" class="px-4 py-2 border border-gray-300 rounded hover:bg-white transition">Hủy</button>
-                <button @click="submitIncident" :disabled="isSubmitting" class="px-4 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700 transition disabled:opacity-50">Gửi Báo Cáo</button>
+            <div class="p-5 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-2xl">
+                <button @click="showIssueModal = false" class="px-5 py-2.5 border border-gray-300 text-gray-600 rounded-xl font-bold hover:bg-white transition">Hủy bỏ</button>
+                <button @click="submitIncident" :disabled="isSubmitting" class="px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition disabled:opacity-50 shadow-lg shadow-red-500/20 flex items-center">
+                    <span x-show="isSubmitting"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i></span>
+                    Gửi Báo Cáo
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- MODALS: Assign, Create, Preview -->
     <div x-show="showAssignModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm" @click="showAssignModal = false"></div>
-        <div class="bg-white rounded-xl p-6 w-full max-w-md relative z-10">
-            <h3 class="text-xl font-bold mb-4">Phân công xử lý</h3>
-            <div class="space-y-2 mb-4 max-h-60 overflow-y-auto">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md relative z-10 shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Phân công xử lý</h3>
+            <div class="space-y-2 mb-6 max-h-60 overflow-y-auto">
                 <template x-for="role in roles" :key="role.id">
-                    <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-blue-50 transition" :class="tempAssign === role.name ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-gray-200'">
+                    <label class="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-blue-50 transition" :class="tempAssign === role.name ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-gray-200'">
                         <input type="radio" name="dept" :value="role.name" x-model="tempAssign" class="h-4 w-4 text-blue-600">
                         <span class="ml-3 font-medium text-gray-700" x-text="role.name"></span>
                     </label>
                 </template>
                 <div x-show="roles.length === 0" class="text-center text-gray-500 italic">Không tìm thấy bộ phận nào.</div>
             </div>
-            <div class="flex justify-end gap-2 pt-4 border-t">
-                <button @click="showAssignModal = false" class="px-4 py-2 border rounded hover:bg-gray-50 transition">Hủy</button>
-                <button @click="confirmAssign" :disabled="!tempAssign" class="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 disabled:opacity-50 transition">Xác nhận</button>
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <button @click="showAssignModal = false" class="px-5 py-2.5 text-gray-500 font-bold hover:text-gray-800 transition">Hủy</button>
+                <button @click="confirmAssign" :disabled="!tempAssign" class="px-6 py-2.5 bg-opsera-primary text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 transition">Xác nhận</button>
             </div>
         </div>
     </div>
 
     <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center px-4" x-cloak>
-        <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm" @click="showModal = false"></div>
-        <div class="bg-white rounded-xl p-6 w-full max-w-lg relative z-10">
-            <h3 class="text-lg font-bold mb-4 text-gray-800" x-text="isEdit ? 'Cập nhật Điểm Quét' : 'Tạo Điểm Quét Mới'"></h3>
-            <div class="space-y-4">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="showModal = false"></div>
+        <div class="bg-white rounded-2xl p-6 w-full max-w-lg relative z-10 shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-gray-800" x-text="isEdit ? 'Cập nhật Điểm Quét' : 'Tạo Điểm Quét Mới'"></h3>
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tên điểm quét <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Tên điểm quét <span class="text-red-500">*</span></label>
                     <input type="text" x-model="formData.name" 
                            @input="errors.name = null"
                            :class="errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'"
-                           class="w-full px-3 py-2 border rounded focus:ring-2 focus:outline-none transition" 
-                           placeholder="Ví dụ: Cổng chính, Tầng 1...">
-                    <p x-show="errors.name" x-text="errors.name" class="text-red-500 text-xs mt-1 font-semibold"></p>
+                           class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:outline-none transition bg-gray-50 focus:bg-white" placeholder="Ví dụ: Cổng chính...">
+                    <p x-show="errors.name" x-text="errors.name" class="text-red-500 text-xs mt-1.5 font-semibold"></p>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Vị trí <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Vị trí <span class="text-red-500">*</span></label>
                     <input type="text" x-model="formData.location" 
                            @input="errors.location = null"
                            :class="errors.location ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'"
-                           class="w-full px-3 py-2 border rounded focus:ring-2 focus:outline-none transition" 
-                           placeholder="Ví dụ: Khu vực A, Tòa nhà B...">
-                    <p x-show="errors.location" x-text="errors.location" class="text-red-500 text-xs mt-1 font-semibold"></p>
+                           class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:outline-none transition bg-gray-50 focus:bg-white" placeholder="Ví dụ: Tòa nhà A...">
+                    <p x-show="errors.location" x-text="errors.location" class="text-red-500 text-xs mt-1.5 font-semibold"></p>
                 </div>
             </div>
-            <div class="mt-6 flex justify-end gap-2 pt-4 border-t">
-                <button @click="showModal = false" class="px-4 py-2 border rounded hover:bg-gray-50 transition">Hủy</button>
-                <button @click="saveQr" class="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 transition">Lưu Thông Tin</button>
+            <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-gray-100">
+                <button @click="showModal = false" class="px-5 py-2.5 text-gray-600 font-bold hover:bg-gray-100 rounded-xl transition">Hủy</button>
+                <button @click="saveQr" class="px-6 py-2.5 bg-opsera-primary text-white rounded-xl font-bold hover:bg-blue-700 transition">Lưu Thông Tin</button>
             </div>
         </div>
     </div>
 
     <div x-show="showUnauthorizedModal" class="fixed inset-0 z-[110] flex items-center justify-center px-4" x-cloak>
         <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm"></div>
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-6 text-center">
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
                 <i class="fa-solid fa-ban text-red-600 text-xl"></i>
             </div>
@@ -482,7 +529,7 @@
         </div>
     </div>
 
-    <div x-show="showImageModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm" @click="showImageModal = false" x-cloak>
+    <div x-show="showImageModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md" @click="showImageModal = false" x-cloak>
         <img :src="previewImageSrc" class="max-w-full max-h-full rounded shadow-2xl">
         <button class="absolute top-4 right-4 text-white hover:text-gray-300">
             <i class="fa-solid fa-xmark text-2xl"></i>
@@ -505,24 +552,13 @@
                 currentPlan: 'starter',
                 plans: { starter: { limits: { qr: 100 } }, professional: { limits: { qr: 500 } }, enterprise: { limits: { qr: 2000 } } },
 
-                scannerActive: false, html5QrCode: null, pendingScanData: null, scanResult: null, isProcessing: false,
-                showIssueModal: false, isSubmitting: false, incidentForm: { description: '', images: [] },
-                showAssignModal: false, selectedIssue: null, tempAssign: '',
-                showModal: false, isEdit: false, formData: { id: null, name: '', location: '' },
+                scannerActive: false, html5QrCode: null, pendingScanData: null, scanResult: null, isProcessing: false, isLoading: false,
+                
+                userLocation: null, showGpsErrorModal: false, distanceToTarget: 0, lastScanTime: 0, 
+                
+                incidentForm: { description: '', images: [] }, showIssueModal: false, isSubmitting: false, errors: {},
+                showAssignModal: false, selectedIssue: null, tempAssign: '', showModal: false, isEdit: false, formData: { id: null, name: '', location: '' },
                 showUnauthorizedModal: false, showImageModal: false, previewImageSrc: '',
-                isLoading: false,
-                
-                // GPS State
-                userLocation: null, 
-                showGpsErrorModal: false,
-                distanceToTarget: 0,
-                lastScanTime: 0, 
-                
-                errors: {
-                    name: null,
-                    location: null,
-                    description: null
-                },
 
                 async init() {
                     const token = localStorage.getItem('accessToken');
@@ -538,12 +574,9 @@
 
                     await this.fetchUserProfile();
                     await this.fetchProjects();
-
-                    // Bật GPS ngầm
                     this.watchLocation();
                 },
 
-                // --- GPS LOGIC ---
                 watchLocation() {
                     if (navigator.geolocation) {
                         navigator.geolocation.watchPosition(
@@ -566,7 +599,6 @@
                     }
                 },
 
-                // --- SCAN LOGIC (Rate Limit 30s & GPS 10m) ---
                 async startScanner() {
                     if (!this.userLocation) {
                         Swal.fire({
@@ -598,7 +630,6 @@
                 async onScanSuccess(txt) {
                     if (this.isProcessing) return;
 
-                    // 1. Rate Limit 30s
                     const now = Date.now();
                     if (now - this.lastScanTime < 30000) {
                         const remain = Math.ceil((30000 - (now - this.lastScanTime)) / 1000);
@@ -612,7 +643,6 @@
 
                     const targetPoint = this.currentProjectQrPoints.find(p => p.data === txt || p.id === txt);
                     
-                    // 2. Check GPS 10m
                     if (targetPoint && targetPoint.latitude && targetPoint.longitude && this.userLocation) {
                         const dist = this.calculateDistance(
                             this.userLocation.lat, this.userLocation.lng,
@@ -622,7 +652,6 @@
                         
                         if (dist > 10) {
                             this.showGpsErrorModal = true;
-                            // Ghi log lỗi ngầm
                             this.submitScanLog(txt, "INVALID_LOCATION");
                             return; 
                         }
@@ -650,7 +679,7 @@
                         if (res.ok) { 
                             if (status === 'VALID') {
                                 Swal.fire({ icon: 'success', title: 'Check-in thành công!', timer: 1500, showConfirmButton: false });
-                                this.lastScanTime = Date.now(); // Reset timer 30s
+                                this.lastScanTime = Date.now();
                             }
                             this.fetchLogs(); 
                             this.resumeScanning(); 
@@ -676,6 +705,25 @@
                     }
                 },
 
+                stopScanner() {
+                    if (this.html5QrCode) {
+                        try {
+                            this.html5QrCode.stop().then(() => {
+                                this.html5QrCode.clear();
+                                this.html5QrCode = null;
+                            }).catch(err => {
+                                console.error("Error stopping scanner:", err);
+                            });
+                        } catch(e) {
+                            console.error("Error in stopScanner:", e);
+                        }
+                    }
+                    this.scannerActive = false;
+                    this.scanResult = null;
+                    this.pendingScanData = null;
+                    this.isProcessing = false;
+                },
+
                 calculateDistance(lat1, lon1, lat2, lon2) {
                     const R = 6371e3;
                     const φ1 = lat1 * Math.PI/180;
@@ -684,6 +732,69 @@
                     const Δλ = (lon2-lon1) * Math.PI/180;
                     const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
                     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                },
+
+                openReportModal() {
+                    this.showIssueModal = true;
+                    this.scanResult = null;
+                },
+
+                removeImage(idx) {
+                    this.incidentForm.images.splice(idx, 1);
+                },
+
+                handleImageSelect(event) {
+                    const files = Array.from(event.target.files);
+                    const remaining = 5 - this.incidentForm.images.length;
+                    
+                    files.slice(0, remaining).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.incidentForm.images.push(e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    event.target.value = '';
+                },
+
+                async submitIncident() {
+                    if (!this.validateIncidentForm()) return;
+                    
+                    this.isSubmitting = true;
+                    
+                    try {
+                        const res = await fetch(`${this.apiUrl}/api/scans`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+                            body: JSON.stringify({
+                                qrCodeData: this.pendingScanData,
+                                status: 'ISSUE',
+                                location: this.userLocation ? `${this.userLocation.lat},${this.userLocation.lng}` : '',
+                                latitude: this.userLocation?.lat,
+                                longitude: this.userLocation?.lng,
+                                issueDescription: this.incidentForm.description,
+                                images: this.incidentForm.images
+                            })
+                        });
+
+                        if (res.ok) {
+                            Swal.fire({ icon: 'success', title: 'Đã báo cáo sự cố!', timer: 1500, showConfirmButton: false });
+                            this.showIssueModal = false;
+                            this.incidentForm = { description: '', images: [] };
+                            this.fetchLogs();
+                            this.fetchIncidents();
+                            this.resumeScanning();
+                        } else {
+                            const err = await res.json();
+                            Swal.fire('Lỗi', err.message, 'error');
+                        }
+                    } catch(e) {
+                        console.error(e);
+                        Swal.fire('Lỗi', 'Không thể gửi báo cáo', 'error');
+                    } finally {
+                        this.isSubmitting = false;
+                    }
                 },
 
                 async fetchUserProfile() {
@@ -727,9 +838,7 @@
                 },
 
                 hasPermission(perm) {
-                    // Logic mới: Ai cũng được quét (SCAN_QR) và xem (VIEW_QR)
                     if (perm === 'SCAN_QR' || perm === 'VIEW_QR') return true; 
-
                     if (this.user.isSuperAdmin || this.user.isTenantAdmin) return true;
                     if (this.user.permissions.includes('ALL')) return true;
                     return this.user.permissions.includes(perm);
@@ -793,7 +902,12 @@
 
                 async fetchRoles() {
                     try {
-                        const res = await fetch(`${this.apiUrl}/api/roles?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
+                        // FIX: Ensure we don't send "undefined" string to backend
+                        const url = this.selectedProjectId 
+                            ? `${this.apiUrl}/api/roles?projectId=${this.selectedProjectId}` 
+                            : `${this.apiUrl}/api/roles`;
+                            
+                        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
                         this.roles = res.ok ? await res.json() : [];
                     } catch (e) { this.roles = []; }
                 },
@@ -813,13 +927,18 @@
                     try {
                         const resLogs = await fetch(`${this.apiUrl}/api/qrcodes/logs`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
                         const logs = resLogs.ok ? await resLogs.json() : [];
-                        const projectLogs = logs.filter(l => l.qrCode && l.qrCode.projectId === this.selectedProjectId);
+                        // Handle potential { logs: [], total: ... } response structure
+                        const logsArray = Array.isArray(logs) ? logs : (logs.logs || []);
+                        
+                        const projectLogs = logsArray.filter(l => l.qrCode && l.qrCode.projectId === this.selectedProjectId);
 
                         const resInc = await fetch(`${this.apiUrl}/api/incidents?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
                         const incidents = resInc.ok ? await resInc.json() : [];
 
                         const mappedIncidents = incidents.map(inc => ({
-                            id: inc.id, scannedAt: inc.reportedAt || new Date().toISOString(),
+                            id: inc.id, 
+                            // FIX: Use reportedAt from backend (which is mapped to createdAt)
+                            scannedAt: inc.reportedAt || inc.createdAt || new Date().toISOString(),
                             qrCode: { name: inc.qrCode, projectId: this.selectedProjectId },
                             location: inc.location, user: { fullName: inc.reporter }, status: 'ISSUE'
                         }));
@@ -830,16 +949,56 @@
 
                 async fetchIncidents() {
                     try {
-                        const res = await fetch(`${this.apiUrl}/api/incidents?projectId=${this.selectedProjectId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
-                        this.issues = res.ok ? await res.json() : [];
-                    } catch (e) {}
+                        const res = await fetch(`${this.apiUrl}/api/incidents?projectId=${this.selectedProjectId}`, { 
+                            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } 
+                        });
+                        
+                        if (res.ok) {
+                            const rawIncidents = await res.json();
+                            
+                            this.issues = rawIncidents.map(inc => {
+                                return {
+                                    id: inc.id,
+                                    qrCodeName: inc.qrCode, 
+                                    location: inc.location,
+                                    description: inc.description || 'Không có mô tả',
+                                    reporterName: inc.reporter, 
+                                    department: inc.department || 'Unassigned',
+                                    hasTask: inc.hasTask, 
+                                    thumbnail: inc.image, 
+                                    images: inc.images || [],
+                                    // FIX: Prioritize backend timestamp
+                                    reportedAt: inc.reportedAt || inc.createdAt || new Date().toISOString()
+                                };
+                            });
+                        }
+                    } catch (e) { 
+                        console.error("Lỗi fetch incidents:", e); 
+                        this.issues = [];
+                    }
+                },
+
+                getImageUrl(imagePath) {
+                    if (!imagePath) return 'https://via.placeholder.com/150';
+                    if (imagePath.startsWith('data:')) return imagePath;
+                    if (imagePath.startsWith('http')) return imagePath;
+                    return this.apiUrl + imagePath;
                 },
 
                 switchView(view) {
-                    if (this.currentView === 'scan' && view !== 'scan') this.stopScanner();
+                    if (this.currentView === 'scan' && view !== 'scan') {
+                        this.stopScanner();
+                    }
+                    
                     this.currentView = view;
-                    if (view === 'list') { this.fetchQrCodes(); this.fetchLogs(); }
-                    if (view === 'incidents') this.fetchIncidents();
+                    
+                    if (view === 'list') { 
+                        this.fetchQrCodes(); 
+                        this.fetchLogs(); 
+                    }
+                    if (view === 'incidents') {
+                        this.fetchIncidents();
+                    }
                 },
 
                 openCreateModal() { 
@@ -847,6 +1006,7 @@
                     this.isEdit = false; this.formData = { id: null, name: '', location: '' }; this.errors = {};
                     this.showModal = true; 
                 },
+                
                 openEditModal(pt) { 
                     if (!this.hasPermission('EDIT_QR') && !this.hasPermission('UPDATE_QRCODE') && !this.hasPermission('MANAGE_QRCODE')) {
                         return Swal.fire({ icon: 'error', title: 'Từ chối', text: 'Bạn không có quyền sửa.' });
@@ -854,6 +1014,7 @@
                     this.isEdit = true; this.formData = { id: pt.id, name: pt.name, location: pt.location }; this.errors = {};
                     this.showModal = true; 
                 },
+                
                 async saveQr() {
                     if (!this.validateQrForm()) return;
                     const url = this.isEdit ? `${this.apiUrl}/api/qrcodes/${this.formData.id}` : `${this.apiUrl}/api/qrcodes`;
@@ -864,6 +1025,7 @@
                         this.showModal = false; this.fetchQrCodes();
                     } catch (e) { Swal.fire('Lỗi', 'Không thể lưu.', 'error'); }
                 },
+                
                 async deleteQr(id) {
                     if (!this.checkPermissionAction('DELETE_QR') && !this.checkPermissionAction('MANAGE_QRCODE')) return;
                     const result = await Swal.fire({
@@ -879,16 +1041,52 @@
                         } catch (e) { Swal.fire('Lỗi', 'Không thể xóa.', 'error'); }
                     }
                 },
+                
                 downloadQr(id, name) {
                     const img = document.querySelector(`#qrcode-${id} img`);
                     if(img) { const a = document.createElement('a'); a.download = `QR-${name}.png`; a.href = img.src; a.click(); }
                 },
+                
                 generateQrCode(elId, text) {
                     const el = document.getElementById('qrcode-'+elId);
                     if(el) { el.innerHTML = ''; new QRCode(el, { text: text, width: 100, height: 100 }); }
                 },
 
-                viewImage(path) { if(path) { this.previewImageSrc = path.startsWith('http') ? path : (this.apiUrl + path); this.showImageModal = true; } },
+                openAssignModal(issue) {
+                    this.selectedIssue = issue;
+                    this.tempAssign = '';
+                    this.showAssignModal = true;
+                },
+
+                async confirmAssign() {
+                    if (!this.tempAssign || !this.selectedIssue) return;
+                    
+                    try {
+                        const res = await fetch(`${this.apiUrl}/api/incidents/${this.selectedIssue.id}/assign`, {
+                            method: 'PUT', // Changed to PUT per backend controller (Update: backend used PUT)
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
+                            body: JSON.stringify({ department: this.tempAssign })
+                        });
+
+                        if (res.ok) {
+                            Swal.fire({ icon: 'success', title: 'Đã phân công!', timer: 1500, showConfirmButton: false });
+                            this.showAssignModal = false;
+                            this.fetchIncidents();
+                        } else {
+                            const err = await res.json();
+                            Swal.fire('Lỗi', err.message, 'error');
+                        }
+                    } catch(e) {
+                        Swal.fire('Lỗi', 'Không thể phân công', 'error');
+                    }
+                },
+
+                viewImage(path) { 
+                    if(path) { 
+                        this.previewImageSrc = this.getImageUrl(path);
+                        this.showImageModal = true; 
+                    } 
+                },
                 
                 logout() {
                     Swal.fire({

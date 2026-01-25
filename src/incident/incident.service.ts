@@ -50,6 +50,7 @@ export class IncidentService {
 
             for (let i = 0; i < imagesToProcess.length; i++) {
                 const base64String = imagesToProcess[i];
+                // Check if it's base64
                 const matches = base64String.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
 
                 if (matches && matches.length === 3) {
@@ -60,6 +61,9 @@ export class IncidentService {
                     const filePath = path.join(uploadDir, fileName);
                     fs.writeFileSync(filePath, buffer);
                     savedImageUrls.push(`/uploads/${fileName}`);
+                } else {
+                    // If it's already a URL or path (unlikely for create but safe to handle)
+                    savedImageUrls.push(base64String);
                 }
             }
         }
@@ -72,7 +76,7 @@ export class IncidentService {
                 tenantId: tenantId,
                 reporterId: userId,
                 qrCodeId: qrRecord ? qrRecord.id : null,
-
+                // reportedAt is set automatically by @default(now())
                 images: {
                     create: savedImageUrls.map(url => ({ url }))
                 }
@@ -110,12 +114,12 @@ export class IncidentService {
                 qrCode: { select: { name: true, location: true, data: true } },
                 task: { select: { id: true, status: true, assigneeId: true } }
             },
+            // Ensure we order by creation time (using reportedAt instead of createdAt)
             orderBy: { reportedAt: 'desc' },
         });
 
         return incidents.map(inc => {
             const qrName = inc.qrCode ? inc.qrCode.name : 'Điểm chưa định danh';
-
             const imageUrls = inc.images.map(img => img.url);
 
             return {
@@ -123,28 +127,31 @@ export class IncidentService {
                 description: inc.description,
                 status: inc.status,
 
+                // --- KEY FIXES FOR FRONTEND ---
+                // 1. Time: Return reportedAt explicitly so FE doesn't use new Date()
+                reportedAt: inc.reportedAt,
+
                 qrCode: qrName,
                 location: inc.qrCode ? inc.qrCode.location : 'Chưa cập nhật vị trí',
 
                 reporter: inc.reporter ? inc.reporter.fullName : 'Ẩn danh',
+
+                // 2. Images: Return all images and a primary thumbnail
                 images: imageUrls,
                 image: imageUrls.length > 0 ? imageUrls[0] : null,
+
                 department: inc.department || 'Unassigned',
                 hasTask: !!inc.taskId
             };
         });
     }
 
-
-    // 3. ADMIN/QUẢN LÝ NHẤN NÚT "PHÂN CÔNG"
-    // Logic: 1 Incident = 1 Task. Nếu có rồi -> Lỗi. Nếu chưa -> Tạo Task -> Gán Role.
     async assignIncident(
         incidentId: string,
-        roleName: string, // Role được chọn từ Dropdown
+        roleName: string,
         tenantId: string,
         userId: string,
     ) {
-        // 3.1 Lấy thông tin Incident
         const incident = await this.prisma.incident.findFirst({
             where: { id: incidentId, tenantId },
             include: { images: true, qrCode: true }
@@ -152,40 +159,35 @@ export class IncidentService {
 
         if (!incident) throw new NotFoundException('Không tìm thấy sự cố.');
 
-        // 3.2 Kiểm tra quy tắc 1 Incident = 1 Task
         if (incident.taskId) {
             throw new ConflictException('Sự cố này đã được tạo Task xử lý.');
         }
 
-        // 3.3 Kiểm tra Role có tồn tại trong Project hiện tại không
         const role = await this.roleService.findByNameAndProject(roleName, incident.projectId, tenantId);
         if (!role) {
             throw new BadRequestException(`Bộ phận '${roleName}' không tồn tại trong dự án này.`);
         }
 
-        // 3.4 Tạo Task mới
         const locationName = incident.qrCode ? incident.qrCode.name : 'QR Code';
         const task = await this.prisma.task.create({
             data: {
                 title: `Sự cố tại: ${locationName}`,
                 description: incident.description,
                 priority: 'HIGH',
-                status: 'PENDING', // Task mới tạo trạng thái Pending
+                status: 'PENDING',
                 projectId: incident.projectId,
                 tenantId: tenantId,
                 creatorId: userId,
-                // Gắn thẻ Role để User thuộc Role đó nhận diện được quyền tiếp nhận
                 tags: JSON.stringify(['Incident', `Role:${role.name}`]),
             }
         });
 
-        // 3.5 Copy ảnh từ Incident sang Task Attachment (để nhân viên xử lý xem)
         if (incident.images.length > 0) {
             for (const img of incident.images) {
                 await this.prisma.taskAttachment.create({
                     data: {
                         taskId: task.id,
-                        fileName: path.basename(img.url),
+                        fileName: path.basename(img.url) || 'evidence.jpg',
                         originalName: 'Incident Evidence',
                         mimeType: 'image/jpeg',
                         size: 0,
@@ -197,12 +199,11 @@ export class IncidentService {
             }
         }
 
-        // 3.6 Cập nhật ngược lại Incident: Link Task ID và đổi Status
         await this.prisma.incident.update({
             where: { id: incidentId },
             data: {
                 status: 'ASSIGNED',
-                department: role.name, // Lưu tên role hiển thị UI
+                department: role.name,
                 taskId: task.id
             }
         });

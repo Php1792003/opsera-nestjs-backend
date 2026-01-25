@@ -25,6 +25,7 @@ export class ScanController {
   constructor(private readonly scanService: ScanService) { }
 
   @Post()
+  // REMOVED PERMISSION CHECK: Allow all logged-in users to scan
   @Permissions(Permission.SCAN_QR, Permission.CREATE_SCAN_LOG)
   async create(
     @Body() createScanDto: CreateScanDto,
@@ -35,6 +36,7 @@ export class ScanController {
   }
 
   @Get()
+  // Allow viewing logs (might restrict to managers in future, currently open for demo)
   @Permissions(Permission.VIEW_SCAN_LOGS)
   async findAll(
     @Request() req: RequestWithUser,

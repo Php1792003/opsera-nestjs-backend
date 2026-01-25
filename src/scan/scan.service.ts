@@ -11,12 +11,7 @@ import { CreateScanDto } from './dto/create-scan.dto';
 export class ScanService {
   constructor(private prisma: PrismaService) { }
 
-  private calculateDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ): number {
+  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371000; // Earth radius in meters
     const toRad = (val: number) => (val * Math.PI) / 180;
     const dLat = toRad(lat2 - lat1);
@@ -32,62 +27,56 @@ export class ScanService {
   }
 
   async create(dto: CreateScanDto, userId: string, tenantId: string) {
-    // 1. Validate Images (Giữ nguyên)
+    // 1. Validate Images size
     if (dto.images && dto.images.length > 0) {
       if (dto.images.length > 5) throw new BadRequestException('Tối đa 5 ảnh.');
-      const maxSize = 20 * 1024 * 1024;
+      const maxSize = 20 * 1024 * 1024; // 20MB
       for (const img of dto.images) {
+        // Base64 size estimation
         if ((img.length * 3) / 4 > maxSize) throw new BadRequestException('Ảnh > 20MB.');
       }
     }
 
-    // 2. Validate QR Code (Giữ nguyên)
+    // 2. Validate QR Code
     const qrCode = await this.prisma.qRCode.findUnique({
       where: { data: dto.qrCodeData },
       include: { project: true },
     });
-    if (!qrCode || qrCode.tenantId !== tenantId) throw new ForbiddenException('Lỗi quyền truy cập.');
+    if (!qrCode || qrCode.tenantId !== tenantId) throw new ForbiddenException('Lỗi quyền truy cập hoặc QR không tồn tại.');
 
-    // 3. LẤY LỊCH SỬ QUÉT GẦN NHẤT
+    // 3. Anti-Cheat Logic (Rate Limit & Geofencing)
     const lastScan = await this.prisma.scanLog.findFirst({
       where: {
         userId, tenantId, status: 'VALID',
         latitude: { not: null }, longitude: { not: null },
       },
       orderBy: { scannedAt: 'desc' },
-      select: { scannedAt: true, latitude: true, longitude: true, accuracy: true },
+      select: { scannedAt: true, latitude: true, longitude: true },
     });
 
-    // 4. KIỂM TRA GIAN LẬN (LOGIC MỚI: 15 PHÚT)
     if (dto.status === 'VALID' || !dto.status) {
       if (lastScan) {
-        const timeDiff = (new Date().getTime() - new Date(lastScan.scannedAt).getTime()) / 1000; // Giây
+        const timeDiff = (new Date().getTime() - new Date(lastScan.scannedAt).getTime()) / 1000;
 
-        // A. Chặn Spam (30 giây) - Bắt buộc
+        // A. Rate Limit (30s)
         if (timeDiff < 30) {
           throw new BadRequestException(`Thao tác quá nhanh! Đợi ${Math.ceil(30 - timeDiff)}s.`);
         }
 
-        // B. KIỂM TRA KHOẢNG CÁCH (CHỈ CHECK NẾU CHƯA ĐỦ 15 PHÚT)
-        // 900 giây = 15 phút
+        // B. Geofencing (30m - Only check if within 15 mins)
+        // 900s = 15 mins
         if (timeDiff < 900) {
           if (dto.latitude && dto.longitude && lastScan.latitude && lastScan.longitude) {
             const distance = this.calculateDistance(lastScan.latitude, lastScan.longitude, dto.latitude, dto.longitude);
-
-            // Nếu chưa đủ 15 phút MÀ khoàng cách lại gần (< 30m) => Chặn
             if (distance < 30) {
-              const minutesLeft = Math.ceil((900 - timeDiff) / 60);
-              throw new BadRequestException(
-                `Vui lòng di chuyển đến vị trí tiếp theo.`
-              );
+              throw new BadRequestException(`Vui lòng di chuyển đến vị trí tiếp theo (Cách > 30m).`);
             }
           }
         }
-        // Nếu timeDiff >= 900 (đã qua 15p), hệ thống sẽ bỏ qua check distance -> Cho phép quét lại.
       }
     }
 
-    // 5. LƯU VÀO DB (Giữ nguyên)
+    // 4. Save to DB (Transaction)
     return this.prisma.$transaction(async (tx) => {
       const scanLog = await tx.scanLog.create({
         data: {
@@ -95,9 +84,13 @@ export class ScanService {
           location: dto.location, latitude: dto.latitude, longitude: dto.longitude,
           accuracy: dto.accuracy, status: dto.status || 'VALID', notes: dto.notes,
         },
-        include: { qrCode: { select: { name: true, location: true } }, user: { select: { fullName: true } } },
+        include: {
+          qrCode: { select: { name: true, location: true } },
+          user: { select: { fullName: true } }
+        },
       });
 
+      // Create Incident if status is ISSUE
       if (dto.status === 'ISSUE') {
         const incident = await tx.incident.create({
           data: {
@@ -106,6 +99,7 @@ export class ScanService {
             qrCodeId: qrCode.id, scanLogId: scanLog.id, reporterId: userId,
           },
         });
+
         if (dto.images?.length) {
           await tx.incidentImage.createMany({
             data: dto.images.map((img) => ({ incidentId: incident.id, url: img })),
@@ -116,18 +110,24 @@ export class ScanService {
     });
   }
 
-  // --- Các hàm findAll, findMyScans, findByQrCode giữ nguyên ---
   async findAll(tenantId: string, limit: number = 50, offset: number = 0) {
     const logs = await this.prisma.scanLog.findMany({
       where: { tenantId: tenantId },
       include: {
         qrCode: { select: { id: true, name: true, location: true, projectId: true } },
         user: { select: { id: true, fullName: true } },
+        // IMPORTANT: Include incidents to get images for frontend
+        incidents: {
+          include: { images: true }
+        }
       },
       orderBy: { scannedAt: 'desc' },
       take: limit,
       skip: offset,
     });
+
+    // Transform data to flatten structure if needed, or return as is
+    // Frontend expects array or { logs, total }
     const total = await this.prisma.scanLog.count({ where: { tenantId: tenantId } });
     return { logs, total };
   }
@@ -140,7 +140,10 @@ export class ScanService {
 
     return this.prisma.scanLog.findMany({
       where: { qrCodeId: qrCodeId, tenantId: tenantId },
-      include: { user: { select: { id: true, fullName: true, email: true } } },
+      include: {
+        user: { select: { id: true, fullName: true, email: true } },
+        incidents: { include: { images: true } }
+      },
       orderBy: { scannedAt: 'desc' },
       take: 100,
     });
@@ -149,7 +152,10 @@ export class ScanService {
   async findMyScans(userId: string, tenantId: string) {
     return this.prisma.scanLog.findMany({
       where: { userId: userId, tenantId: tenantId },
-      include: { qrCode: { select: { id: true, name: true, location: true } } },
+      include: {
+        qrCode: { select: { id: true, name: true, location: true } },
+        incidents: { include: { images: true } }
+      },
       orderBy: { scannedAt: 'desc' },
       take: 50,
     });
